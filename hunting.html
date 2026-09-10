@@ -14,7 +14,7 @@
 <label>Level<input id="huntLevel" type="number" min="8" value="300"></label>
 <label>Objetivo<select id="huntGoal"><option value="balance">Equilíbrio XP + profit</option><option value="xp">Máxima XP</option><option value="profit">Profit</option></select></label>
 <label>Buscar hunt<input id="huntSearch" type="search" placeholder="Ex.: Asura, Banuta, Rosha..."></label>
-<button class="btn active" id="huntBtn">Atualizar guia</button>
+<button type="button" class="btn active" id="huntBtn">Atualizar guia</button>
 </div>
 <div class="hunt-stats" id="huntStats"></div>
 <div class="panel" id="huntHighlights"></div>
@@ -43,5 +43,7 @@
 </div></section>
 </main>
 <footer>Mal Upados · Jadebra · <a href="index.html">Início</a> · <a href="ranking.html">Ranking</a> · <a href="guilda.html">Guilda</a> · <a href="hunting.html">Guia de Hunts</a> · <a href="arena.html">Arena</a> · <a href="caos.html">Caos</a></footer>
-<script src="hunt-tibiapal.js"></script><script src="hunt-team-tibiapal.js"></script><script src="guia-hunt.js"></script>
+<script src="hunt-tibiapal.js"></script>
+<script>window.calcHuntFromTibiaPal=function(){};</script>
+<script src="hunt-team-tibiapal.js"></script><script src="guia-hunt.js"></script>
 </body></html>
