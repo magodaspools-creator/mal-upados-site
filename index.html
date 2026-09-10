@@ -3,74 +3,145 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mal Upados | Guilda de Tibia</title>
+<title>Mal Upados | Guilda de Tibia — Jadebra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0f1115; --panel:#171a21; --panel2:#1e222b;
-    --gold:#e0b34d; --gold-dim:#8a6a2a; --text:#e8e6df; --muted:#9aa0ab;
-    --online:#4caf6b; --offline:#5a5f68;
+    --deep:#0a1420;
+    --deep2:#0f1e2e;
+    --panel:#122234;
+    --panel-line:#22384c;
+    --parchment:#e9dfc4;
+    --parchment-dim:#a8b0ae;
+    --gold:#c9a227;
+    --gold-bright:#e8c667;
+    --seal:#7c2b26;
+    --seal-bright:#a5453d;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:'Segoe UI',Tahoma,sans-serif;line-height:1.5}
-  header{
-    background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.85)),
-      radial-gradient(circle at 30% 20%,#2a3a4a,#0f1115 70%);
-    padding:60px 20px 40px;text-align:center;border-bottom:3px solid var(--gold-dim);
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--deep);color:var(--parchment);
+    font-family:'Source Sans 3',sans-serif;line-height:1.6;
   }
-  header h1{font-size:2.4rem;margin:0;color:var(--gold);letter-spacing:1px}
-  header p{color:var(--muted);margin-top:8px}
-  nav{display:flex;justify-content:center;gap:24px;margin-top:20px;flex-wrap:wrap}
-  nav a{color:var(--text);text-decoration:none;border:1px solid var(--gold-dim);padding:8px 16px;border-radius:6px;font-size:.9rem}
-  nav a:hover{background:var(--gold-dim);color:#0f1115}
-  main{max-width:960px;margin:0 auto;padding:40px 20px}
-  section{margin-bottom:50px}
-  h2{color:var(--gold);border-bottom:1px solid var(--gold-dim);padding-bottom:8px;font-size:1.4rem}
-  .status{color:var(--muted);font-size:.9rem;margin-bottom:12px}
-  table{width:100%;border-collapse:collapse;background:var(--panel);border-radius:8px;overflow:hidden}
-  th,td{padding:10px 12px;text-align:left;font-size:.92rem}
-  th{background:var(--panel2);color:var(--gold);text-transform:uppercase;font-size:.75rem;letter-spacing:.5px}
-  tr:nth-child(even){background:var(--panel2)}
-  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
-  .on{background:var(--online)} .off{background:var(--offline)}
-  .rank-label{color:var(--muted);font-size:.8rem}
-  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:12px}
-  .card{background:var(--panel);border:1px solid #262b35;border-radius:8px;padding:16px;text-align:center}
-  .card .num{font-size:1.6rem;color:var(--gold);font-weight:bold}
-  .card .label{font-size:.75rem;color:var(--muted);text-transform:uppercase}
-  footer{text-align:center;color:var(--muted);font-size:.8rem;padding:30px 20px;border-top:1px solid #262b35}
-  .err{color:#e07070}
-  .pos{color:var(--online)} .neg{color:#e07070}
-  .refresh{background:none;border:1px solid var(--gold-dim);color:var(--gold);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:.8rem}
-  .refresh:hover{background:var(--gold-dim);color:#0f1115}
+  h1,h2,.brand{font-family:'Cinzel',serif}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;overflow:hidden;
+    padding:96px 24px 80px;text-align:center;
+    background:
+      radial-gradient(ellipse 900px 500px at 50% -10%, #1c3448 0%, transparent 60%),
+      radial-gradient(ellipse 1200px 700px at 80% 110%, #12222f 0%, transparent 55%),
+      linear-gradient(180deg,#081018 0%,#0a1420 100%);
+    border-bottom:1px solid var(--panel-line);
+  }
+  .hero::before{
+    content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:repeating-linear-gradient(115deg, rgba(233,223,196,.02) 0 2px, transparent 2px 14px);
+  }
+  .hero-inner{position:relative;max-width:760px;margin:0 auto}
+  .hero .crest{font-size:2rem;letter-spacing:4px;color:var(--gold);margin-bottom:14px}
+  .hero h1{
+    font-size:clamp(2.6rem,6vw,4.4rem);font-weight:900;color:var(--gold-bright);
+    margin:0 0 18px;letter-spacing:1px;text-shadow:0 2px 24px rgba(200,150,50,.15);
+  }
+  .hero .tagline{font-size:1.15rem;color:var(--parchment-dim);max-width:520px;margin:0 auto 36px;font-style:italic}
+  .hero nav{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+  .hero nav a{
+    color:var(--parchment);text-decoration:none;font-size:.9rem;
+    padding:10px 20px;border:1px solid var(--panel-line);border-radius:2px;
+    background:rgba(233,223,196,.03);transition:border-color .15s, color .15s;
+  }
+  .hero nav a:hover{border-color:var(--gold);color:var(--gold-bright)}
+
+  main{max-width:920px;margin:0 auto;padding:0 24px}
+  section{padding:64px 0;border-bottom:1px solid var(--panel-line)}
+  section:last-of-type{border-bottom:none}
+  .eyebrow{color:var(--gold);font-size:.8rem;margin:0 0 6px}
+  h2{font-size:1.7rem;color:var(--parchment);margin:0 0 28px;font-weight:700}
+
+  /* ---------- STORY ---------- */
+  .story p{max-width:66ch;color:var(--parchment-dim);font-size:1.02rem}
+  .story strong{color:var(--gold-bright);font-weight:600}
+
+  /* ---------- TARGETS OF THE DAY ---------- */
+  .targets{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--panel-line);border:1px solid var(--panel-line)}
+  .target{background:var(--panel);padding:24px;display:flex;gap:16px;align-items:center}
+  .target img{width:64px;height:64px;image-rendering:pixelated;flex-shrink:0}
+  .target .label{font-size:.75rem;color:var(--gold);margin-bottom:4px}
+  .target .name{font-size:1.15rem;font-weight:600;color:var(--parchment)}
+  @media (max-width:600px){.targets{grid-template-columns:1fr}}
+
+  /* ---------- STATS ---------- */
+  .stats{display:flex;gap:1px;background:var(--panel-line);border:1px solid var(--panel-line);margin-top:28px}
+  .stat{flex:1;background:var(--panel);padding:20px;text-align:center}
+  .stat .num{font-family:'Cinzel',serif;font-size:1.9rem;color:var(--gold-bright);font-weight:700}
+  .stat .label{font-size:.72rem;color:var(--parchment-dim);margin-top:4px;letter-spacing:.5px}
+
+  /* ---------- TABLES ---------- */
+  .status{color:var(--parchment-dim);font-size:.88rem;margin-bottom:16px}
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:11px 14px;text-align:left;font-size:.92rem;border-bottom:1px solid var(--panel-line)}
+  th{color:var(--gold);font-weight:600;font-size:.78rem;border-bottom:2px solid var(--panel-line)}
+  tbody tr:hover{background:rgba(233,223,196,.03)}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px}
+  .on{background:#5ba86e} .off{background:#4b5761}
+  .rank-label{color:var(--parchment-dim);font-size:.82rem}
+  .pos{color:#6fbf7d} .neg{color:var(--seal-bright)}
+  .err{color:var(--seal-bright)}
+
+  .refresh{background:none;border:1px solid var(--panel-line);color:var(--gold);padding:8px 18px;border-radius:2px;cursor:pointer;font-size:.82rem;font-family:inherit}
+  .refresh:hover{border-color:var(--gold)}
+
+  footer{text-align:center;color:var(--parchment-dim);font-size:.8rem;padding:36px 24px}
+  footer a{color:var(--gold)}
 </style>
 </head>
 <body>
 
-<header>
-  <h1>⚔ Mal Upados</h1>
-  <p>Guilda de Tibia · Mundo Jadebra</p>
-  <nav>
-    <a href="#membros">Membros</a>
-    <a href="#ranking">Ranking de XP</a>
-    <a href="#sobre">Sobre</a>
-  </nav>
-</header>
+<div class="hero">
+  <div class="hero-inner">
+    <div class="crest">⚓ ✦ ⚔</div>
+    <h1>Mal Upados</h1>
+    <p class="tagline">Uma tripulação de Jadebra que confunde hunt com resenha — e vice-versa.</p>
+    <nav>
+      <a href="#historia">Nossa história</a>
+      <a href="#alvos">Alvos do dia</a>
+      <a href="#membros">Membros</a>
+      <a href="#ranking">Ranking de XP</a>
+    </nav>
+  </div>
+</div>
 
 <main>
 
-  <section id="sobre">
-    <h2>Sobre a tripulação</h2>
-    <p>Aqui é o ponto de encontro dos <strong>Mal Upados</strong>. Dados ao vivo da TibiaData API.</p>
-    <div class="cards" id="stats-cards">
-      <div class="card"><div class="num" id="stat-total">—</div><div class="label">Membros</div></div>
-      <div class="card"><div class="num" id="stat-online">—</div><div class="label">Online agora</div></div>
-      <div class="card"><div class="num" id="stat-level">—</div><div class="label">Level médio</div></div>
+  <section id="historia" class="story">
+    <p class="eyebrow">Nossa história</p>
+    <h2>Nem todo level vem fácil.</h2>
+    <p>Os <strong>Mal Upados</strong> são uma guild que atravessa Jadebra em busca de loot, XP e boas risadas — geralmente com mais confusão do que plano. Edite este parágrafo com a história de verdade da tripulação: quem fundou, como o nome surgiu, e o que faz vocês voltarem todo dia pro jogo.</p>
+  </section>
+
+  <section id="alvos">
+    <p class="eyebrow">Hoje em Jadebra</p>
+    <h2>Os alvos do dia</h2>
+    <div class="targets" id="targets">
+      <div class="target"><div><div class="label">Criatura boostada</div><div class="name" id="boosted-creature">Consultando…</div></div></div>
+      <div class="target"><div><div class="label">Boss boostado</div><div class="name" id="boosted-boss">Consultando…</div></div></div>
     </div>
   </section>
 
   <section id="membros">
+    <p class="eyebrow">A tripulação</p>
     <h2>Membros da guild</h2>
-    <div class="status" id="members-status">Carregando membros da API…</div>
+    <div class="stats" id="stats-cards">
+      <div class="stat"><div class="num" id="stat-total">—</div><div class="label">MEMBROS</div></div>
+      <div class="stat"><div class="num" id="stat-online">—</div><div class="label">ONLINE AGORA</div></div>
+      <div class="stat"><div class="num" id="stat-level">—</div><div class="label">LEVEL MÉDIO</div></div>
+    </div>
+    <div class="status" id="members-status" style="margin-top:28px">Carregando membros da API…</div>
     <div style="overflow-x:auto">
       <table id="members-table" style="display:none">
         <thead><tr><th>Status</th><th>Nome</th><th>Rank</th><th>Vocação</th><th>Level</th></tr></thead>
@@ -80,7 +151,8 @@
   </section>
 
   <section id="ranking">
-    <h2>Ranking de XP (últimos 7 dias)</h2>
+    <p class="eyebrow">Últimos 7 dias</p>
+    <h2>Ranking de XP</h2>
     <div class="status" id="ranking-status">Carregando histórico…</div>
     <div style="overflow-x:auto">
       <table id="ranking-table" style="display:none">
@@ -93,13 +165,28 @@
 </main>
 
 <footer>
-  Feito para a tripulação Mal Upados · Dados: <a href="https://tibiadata.com" style="color:var(--gold)">TibiaData API</a> · Imagens/marcas: Tibia / CipSoft
-  <br><button class="refresh" onclick="loadGuild()" style="margin-top:10px">↻ Atualizar dados</button>
+  Feito para a tripulação Mal Upados · Dados: <a href="https://tibiadata.com">TibiaData API</a> · Imagens/marcas: Tibia / CipSoft
+  <br><button class="refresh" onclick="loadGuild();loadTargets()" style="margin-top:14px">↻ Atualizar dados</button>
 </footer>
 
 <script>
 const GUILD_NAME = "Mal Upados";
 const API_URL = "https://api.tibiadata.com/v4/guild/" + encodeURIComponent(GUILD_NAME);
+
+async function loadTargets(){
+  try{
+    const res = await fetch("https://api.tibiadata.com/v4/creature/boostedcreature");
+    const data = await res.json();
+    const c = data.boosted_creature || data.creature || data.boostedcreature;
+    document.getElementById('boosted-creature').textContent = c?.name || "—";
+  }catch(e){ document.getElementById('boosted-creature').textContent = "Indisponível"; }
+  try{
+    const res = await fetch("https://api.tibiadata.com/v4/boostablebosses/boostedboss");
+    const data = await res.json();
+    const b = data.boosted_boss || data.boss || data.boostedboss;
+    document.getElementById('boosted-boss').textContent = b?.name || "—";
+  }catch(e){ document.getElementById('boosted-boss').textContent = "Indisponível"; }
+}
 
 async function loadGuild(){
   const statusEl = document.getElementById('members-status');
@@ -169,6 +256,7 @@ async function loadRanking(){
   }
 }
 
+loadTargets();
 loadGuild();
 loadRanking();
 </script>
