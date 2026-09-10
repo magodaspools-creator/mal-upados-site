@@ -1,111 +1,125 @@
 /*
- * FONTE EXTERNA: TibiaPal — Hunting Places
- * https://tibiapal.com/hunting
+ * FONTE EXTERNA: TibiaPal — Hunting Places (OLD)
+ * https://tibiapal.com/hunting-old
  *
- * Os nomes, níveis mínimos, XP/h, loot/h e tipo de dano abaixo são
- * referências do TibiaPal. O site Mal Upados apenas filtra e ordena
- * esses dados pelo level/vocação/objetivo informado pelo jogador.
+ * Esta é a base histórica mais completa do TibiaPal, escolhida pelo Mal Upados.
+ * Os valores abaixo são transcritos da tabela da fonte; o site NÃO cria XP/loot.
+ * Atenção: o próprio TibiaPal marca esta página como anterior ao Vocation Rebalance 2026.
  */
-const TIBIAPAL_URL='https://tibiapal.com/hunting';
+const TIBIAPAL_URL='https://tibiapal.com/hunting-old';
+const TIBIAPAL_LABEL='TibiaPal — Hunting Places (Old)';
 const huntSource={
 Knight:[
-{min:8,n:'Rotworms Liberty Bay/Darashia',type:'Physical'},
-{min:16,n:'Tarantulas Port Hope',type:'Physical'},
-{min:20,n:'Stonerefiners (Stealth Ring)',type:'Physical'},
-{min:30,n:'Coryms Port Hope',type:'Physical'},
-{min:35,n:'Mother of Scarabs Lair -3',type:'Physical'},
-{min:50,n:'Darashia Dragon Lair',type:'Physical'},
-{min:70,n:'Yalahar Bog Raiders Central',type:'Physical'},
-{min:90,n:'Nightmare Scions Krailos',type:'Physical'},
-{min:100,n:'Exotic Cave',type:'Physical'},
-{min:130,n:'Oramond West',type:'Physical'},
-{min:150,n:'Oramond Minos',type:'Physical'},
-{min:185,n:'Deeplings Library',type:'Physical'},
-{min:200,n:'Glooth Tower',type:'Physical, Energy'},
-{min:250,n:"Carnivora's Rock",type:'Fire, Ice'},
-{min:300,n:'Asura Palace',type:'Energy'},
-{min:300,n:'Deeper Banuta (Bottom Floor)',type:'Energy'},
-{min:350,n:'Lower Rosha',type:'Physical, Ice'},
-{min:400,n:'Prison -1',type:'Physical, Energy'},
-{min:400,n:'Winter Court',type:'Fire'},
-{min:450,n:'Nagas',type:'Earth, Energy'},
-{min:500,n:'Issavi Crypts (Sphinx, Wardens)',type:'Death'}
+{min:8,n:'Rotworms Liberty Bay/Darashia',xp:35,loot:5,style:'Physical'},
+{min:16,n:'Tarantulas Port Hope',xp:55,loot:10,style:'Physical'},
+{min:20,n:'Stonerefiners (Stealth Ring)',xp:100,loot:20,style:'Physical'},
+{min:30,n:'Coryms Port Hope',xp:150,loot:-30,style:'Physical'},
+{min:35,n:'Mother of Scarabs Lair -3',xp:200,loot:150,style:'Physical'},
+{min:35,n:'Pirates Yalahar',xp:180,loot:90,style:'Physical'},
+{min:50,n:"Lion's Rock",xp:500,loot:65,style:'Physical'},
+{min:50,n:'Darashia Dragon Lair',xp:250,loot:20,style:'Physical'},
+{min:70,n:'Yalahar Bog Raiders Central',xp:600,loot:20,style:'Physical'},
+{min:70,n:'Hive Surface',xp:450,loot:100,style:'Physical'},
+{min:90,n:'Carlin Cults',xp:1300,loot:75,style:'Physical'},
+{min:90,n:'Nightmare Scions Krailos',xp:1250,loot:0,style:'Physical'},
+{min:90,n:'Edron Heroes -2/-3',xp:1200,loot:150,style:'Physical'},
+{min:130,n:'Ravenous Lava Lurkers',xp:2100,loot:-200,style:'Physical'},
+{min:130,n:'Oramond West',xp:1900,loot:50,style:'Physical'},
+{min:150,n:'Barkless Ab Cults',xp:2200,loot:-250,style:'Physical'},
+{min:150,n:'Lower Spike',xp:1900,loot:100,style:'Physical'},
+{min:150,n:'Oramond Minos',xp:1500,loot:150,style:'Physical'},
+{min:200,n:'Yalahar Grim Reapers',xp:3500,loot:0,style:'Fire, Energy'},
+{min:200,n:'Werehyaenas South',xp:2600,loot:250,style:'Ice'},
+{min:200,n:'Glooth Tower',xp:2050,loot:250,style:'Physical, Energy'},
+{min:250,n:"Carnivora's Rock",xp:2000,loot:800,style:'Fire, Ice'},
+{min:300,n:'Warzone 4',xp:3500,loot:600,style:'Fire'},
+{min:300,n:'Asura Palace',xp:3400,loot:550,style:'Energy'},
+{min:300,n:'Deeper Banuta (Bottom Floor)',xp:3000,loot:800,style:'Energy'},
+{min:350,n:'Asura Mirror -1',xp:5700,loot:800,style:'Energy, Ice'},
+{min:350,n:'Warzone 5',xp:3900,loot:800,style:'Ice, Fire'},
+{min:400,n:'Buried Cathedral -1',xp:4500,loot:750,style:'Ice'},
+{min:400,n:'Prison -1',xp:4100,loot:850,style:'Physical, Energy'},
+{min:450,n:'Nagas',xp:5000,loot:500,style:'Earth, Energy'},
+{min:500,n:'Issavi Crypts (Sphinx, Wardens)',xp:6200,loot:500,style:'Death'},
+{min:500,n:'Summer Court full boxing',xp:6000,loot:1000,style:'Ice'}
 ],
 Paladin:[
 {min:8,n:'Swamp Trolls Port Hope/Venore',xp:30,loot:55,style:'Spears'},
+{min:8,n:'Crocodiles Port Hope',xp:30,loot:5,style:'Spears'},
 {min:15,n:'Edron Tomb',xp:55,loot:30,style:'Arrows'},
-{min:23,n:'Stonerefiners (Stealth Ring)',xp:210,loot:140,style:'Sniper Arrows'},
-{min:23,n:'Mutated Humans Yalahar',xp:150,loot:70,style:'Sniper Arrows'},
-{min:25,n:'Coryms Port Hope (Stealth Ring)',xp:160,loot:120,style:'Sniper Arrows'},
-{min:40,n:'Yalahar Dragons',xp:250,loot:10,style:'Onyx Arrows'},
-{min:50,n:'Krailos Surface',xp:230,loot:250,style:'Onyx Arrows'},
-{min:60,n:'Forbidden Temple (Ankrahmun Cults)',xp:400,loot:400,style:'Shatterstorm Arrows, Ethereal'},
-{min:70,n:'Iksupan',xp:950,loot:200,style:'Drill Bolts, Ethereal, Divine'},
-{min:90,n:'Edron South Were',xp:1550,loot:400,style:'Crystalline Arrows, Ethereal, Divine'},
-{min:90,n:'Exotic Cave',xp:1500,loot:300,style:'Crystalline Arrows, Ethereal'},
-{min:120,n:'Oramond West (Quara Raid)',xp:2300,loot:200,style:'Shatterstorm Arrows, Ethereal'},
-{min:150,n:'Yalahar Grim Reapers',xp:2750,loot:-400,style:'Firestorm Arrows, Divine'},
-{min:180,n:'Oramond Wildlife Raid (Active)',xp:4500,loot:1000,style:'Diamond Arrows, Ethereal'},
-{min:200,n:'Werehyaenas South',xp:3100,loot:300,style:'Diamond Arrows, Divine'},
-{min:200,n:'Asura Palace',xp:3100,loot:100,style:'Diamond Arrows, Ethereal'},
-{min:230,n:'Warzone 5',xp:4300,loot:800,style:'Diamond Arrows, Ethereal'},
-{min:250,n:'Asura Mirror',style:'Diamond Arrows, Ethereal'},
-{min:300,n:'Oramond Fury Dungeon',style:'Diamond Arrows, Ethereal'},
-{min:400,n:'Port Hope Flimsies -1 only',xp:6000,loot:1000,style:'Firestorm Arrows, Divine'},
-{min:500,n:'Venore Flimsies -1 and -2',xp:8800,loot:1500,style:'Firestorm Arrows, Divine'}
+{min:15,n:'Amazon Camp',xp:35,loot:60,style:'Spears'},
+{min:20,n:'Minotaurs Yalahar',xp:60,loot:0,style:'Arrows'},
+{min:25,n:'Stonerefiners (Stealth Ring)',xp:180,loot:40,style:'Royal Spears'},
+{min:25,n:'Mutated Humans Yalahar',xp:110,loot:5,style:'Royal Spears'},
+{min:40,n:'Zombies Cemetery Yalahar',xp:160,loot:-10,style:'Onyx Arrows'},
+{min:40,n:'Pirates Yalahar',xp:110,loot:60,style:'Onyx Arrows'},
+{min:50,n:'Ramoa Bonebeast Island',xp:350,loot:0,style:'Onyx Arrows, Avalanche'},
+{min:50,n:'Ankrahmun Cults & Lizards',xp:230,loot:200,style:'Onyx Arrows, Thunderstorm'},
+{min:70,n:'Iksupan',xp:525,loot:100,style:'Drill Bolts, Avalanche'},
+{min:90,n:'Nightmare Scions Krailos',xp:850,loot:0,style:'Crystalline Arrows, Avalanche'},
+{min:90,n:'Edron South Were',xp:800,loot:75,style:'Crystalline Arrows, GFB'},
+{min:90,n:'Werehyaenas -1',xp:750,loot:100,style:'Crystalline Arrows, Avalanche'},
+{min:90,n:'Oramond Minos',xp:700,loot:100,style:'Crystalline Arrows, Avalanche'},
+{min:100,n:'Ravenous Lava Lurkers',xp:1100,loot:-200,style:'Burst Arrows, Avalanche'},
+{min:130,n:'Banuta -1 (Hydras/SS/Medusa)',xp:750,loot:200,style:'Crystalline Arrows, Thunderstorm'},
+{min:150,n:'Ravenous Lava Lurkers',xp:2000,loot:-250,style:'Avalanche'},
+{min:150,n:'Yalahar Sunken Quarter',xp:1500,loot:80,style:'Thunderstorm'},
+{min:150,n:'Deeplings Library',xp:1400,loot:0,style:'Thunderstorm'},
+{min:200,n:'Yalahar Grim Reapers',xp:2700,loot:-300,style:'GFB'},
+{min:200,n:'Werehyaenas North',xp:2000,loot:250,style:'Avalanche'},
+{min:200,n:'Oramond West',xp:2000,loot:0,style:'Thunderstorm, GFB'},
+{min:250,n:'Werehyaenas South',xp:2600,loot:500,style:'Avalanche'},
+{min:250,n:'Medusa Tower',xp:2400,loot:450,style:'Thunderstorm, GFB'},
+{min:300,n:'Oramond Wildlife Raid',xp:3700,loot:900,style:'Avalanche'},
+{min:300,n:'Asura Palace',xp:3100,loot:350,style:'Avalanche'},
+{min:300,n:'Werelions -1',xp:2750,loot:700,style:'Avalanche'},
+{min:350,n:'Asura Mirror',xp:4500,loot:300,style:'Avalanche'},
+{min:400,n:'Oramond Catacombs',xp:5000,loot:850,style:'Avalanche'},
+{min:450,n:'Rosha West',xp:5200,loot:1000,style:'Avalanche'},
+{min:500,n:'Summer Court',xp:5300,loot:850,style:'Avalanche'}
 ],
-Monk:[
-{min:8,n:'Rotworms Liberty Bay/Darashia',xp:40,loot:0,style:'N/A'},
-{min:13,n:'Cyclops Mistrock',xp:75,loot:15,style:'N/A'},
-{min:20,n:'Edron Earth Elementals',xp:150,loot:10,style:'Fire'},
-{min:28,n:'Gargoyle Cave Meriana',xp:210,loot:300,style:'Fire'},
-{min:30,n:'Upper Spike',xp:290,loot:250,style:'Energy'},
-{min:30,n:'Chor',xp:325,loot:-10,style:'Fire'},
-{min:30,n:'Coryms Port Hope',xp:300,loot:300,style:'Fire'},
-{min:50,n:'Middle Spike',xp:750,loot:150,style:'Fire'},
-{min:55,n:'Water Elementals Port Hope',xp:670,loot:100,style:'Energy'},
-{min:70,n:'Krailos Ogres Surface',xp:420,loot:450,style:'Energy'},
-{min:80,n:'Iksupan',xp:1050,loot:400,style:'Energy'},
-{min:100,n:'Ravenous Lava Lurkers',style:'Energy, Earth'},
-{min:120,n:'Lizard City',xp:1200,loot:200,style:'Death'},
-{min:150,n:'Oramond West (Quara Raid)',xp:2200,loot:300,style:'Energy'},
-{min:175,n:'Brimstone Bugs WOTE',style:'Energy'},
-{min:200,n:'Werehyaenas',style:'Physical'},
-{min:220,n:'Book World: Chapter III',style:'Physical, Earth, Energy'},
-{min:250,n:'Asura Palace',style:'Physical, Energy'},
-{min:270,n:'Asura Mirror',style:'Energy'},
-{min:300,n:'Winter Court',style:'Earth'},
-{min:350,n:'Buried Cathedral',style:'Earth'},
-{min:400,n:'Upper Roshamuul',style:'Energy'},
-{min:450,n:'Azzilon Castle',style:'Energy'},
-{min:500,n:'Cobra Bastion',style:'Energy'}
-],
-Sorcerer:[
-{min:8,n:'Rotworms Liberty Bay/Darashia',xp:40,loot:0,style:'Single Target Strike Spells'},
-{min:28,n:'Upper Spike',xp:320,style:'Thunderstorm, GFB, Avalanche'},
+Druid:[
+{min:8,n:'Rotworms Liberty Bay/Darashia',xp:null,loot:null,style:'N/A'},
+{min:12,n:'Edron Forgotten Tomb',xp:75,loot:50,style:'N/A'},
+{min:14,n:'Coryms Port Hope (Stealth Ring)',xp:100,loot:-5,style:'N/A'},
+{min:15,n:'Elves Yalahar',xp:80,loot:150,style:'N/A'},
+{min:20,n:'Edron Earth Elementals',xp:150,loot:10,style:'N/A'},
+{min:28,n:'Upper Spike',xp:320,loot:75,style:'Thunderstorm, GFB, Avalanche'},
 {min:30,n:'Chor',xp:290,loot:-20,style:'GFB'},
-{min:30,n:'Coryms Port Hope (AOE)',xp:260,style:'GFB'},
-{min:50,n:'Yalahar Cults',xp:290,loot:400,style:'Thunderstorm'},
+{min:30,n:'Coryms Port Hope (AOE)',xp:260,loot:-100,style:'GFB'},
+{min:50,n:'Mother of Scarabs Lair',xp:680,loot:-10,style:'GFB'},
+{min:50,n:'Nibelor Crystal Spiders',xp:450,loot:-10,style:'Thunderstorm'},
+{min:60,n:'Middle Spike',xp:800,loot:-20,style:'GFB'},
 {min:70,n:'Krailos Ogres Surface',xp:530,loot:300,style:'Thunderstorm'},
 {min:80,n:'Issavi Surface (SD)',xp:830,loot:-200,style:'SD'},
-{min:100,n:'Grimvale -4',xp:1000,loot:500,style:'Strong Ice Wave + Forked Glacier'},
-{min:100,n:'Ravenous Lava Lurkers',style:'Forked Thorns + Forked Glacier'},
-{min:120,n:'Lizard City',xp:1350,loot:1000,style:'Strong Ice Wave + Forked Glacier'},
-{min:150,n:'Oramond West (Quara Raid)',xp:2000,loot:-100,style:'Thunderstorm'},
-{min:200,n:'Yalahar Grim Reapers',xp:3200,loot:-50,style:'Thunderstorm'},
-{min:200,n:'Werehyaenas South',xp:2600,loot:400,style:'Death'},
-{min:275,n:'Winter Court (Castle Only)',xp:4400,loot:1000,style:'Fire'},
-{min:300,n:'Asura Mirror',xp:4400,loot:400,style:'Energy'},
-{min:300,n:'Oramond Fury',xp:3500,loot:500,style:'Energy'},
-{min:400,n:'Falcons',xp:5900,loot:1500,style:'Fire/Energy'},
-{min:400,n:'Winter Court (Full Lap)',xp:5600,loot:1000,style:'Fire'},
-{min:500,n:'Cobra Bastion',xp:7200,loot:1200,style:'Death'},
-{min:500,n:'Warzone 3',xp:6700,loot:2000,style:'Energy'}
+{min:80,n:'Muggy Plains',xp:700,loot:-50,style:'Avalanche'},
+{min:100,n:'Ravenous Lava Lurkers',xp:1800,loot:-100,style:'Avalanche'},
+{min:100,n:'Sunken Quarter',xp:1300,loot:0,style:'Thunderstorm'},
+{min:100,n:'Edron Old Fortress -2 (Hero)',xp:1200,loot:100,style:'Avalanche'},
+{min:110,n:'Edron Were South',xp:1400,loot:100,style:'GFB'},
+{min:120,n:'Carlin Cults',xp:1200,loot:-100,style:'Avalanche'},
+{min:130,n:'Goroma Medusa/Serpents (Talahu)',xp:800,loot:100,style:'SD'},
+{min:150,n:'Oramond West',xp:2000,loot:-100,style:'GFB, Thunderstorm'},
+{min:150,n:'Deeplings Library',xp:1300,loot:100,style:'Thunderstorm'},
+{min:200,n:'Goroma Demons Avalanche',xp:950,loot:200,style:'Avalanche'},
+{min:250,n:'Yalahar Grim Reapers',xp:3500,loot:300,style:'GFB'},
+{min:250,n:'Werehyaenas North',xp:2200,loot:600,style:'Avalanche'},
+{min:300,n:'Lower Spike',xp:3500,loot:300,style:'Avalanche'},
+{min:300,n:'Candia Nibblemaws',xp:3200,loot:600,style:'Thunderstorm'},
+{min:300,n:'Werelions',xp:3000,loot:800,style:'Avalanche'},
+{min:400,n:'Winter Court',xp:4500,loot:900,style:'GFB'},
+{min:400,n:'Summer Court',xp:4500,loot:900,style:'Avalanche'},
+{min:400,n:'Falcons',xp:5500,loot:1300,style:'Avalanche, GFB'},
+{min:500,n:'Otherworld',xp:3200,loot:700,style:'Stoneshower'},
+{min:500,n:'Oramond Catacombs',xp:5000,loot:500,style:'Avalanche'},
+{min:500,n:'Issavi Goannas',xp:5500,loot:700,style:'Thunderstorm'},
+{min:600,n:'Warzone 3',xp:null,loot:null,style:'Thunderstorm'}
 ],
-Druid:null
+Sorcerer:[],
+Monk:[]
 };
-// TibiaPal publica uma tabela conjunta para Sorcerer/Druid ("Both Forks only").
-huntSource.Druid=huntSource.Sorcerer.map(h=>({...h}));
+/* O TibiaPal OLD possui uma tabela única para Druid/Sorcerer (Both Forks). */
+huntSource.Sorcerer=huntSource.Druid.map(h=>({...h}));
 
 function huntNum(v){
  if(v==null||v==='-'||v==='')return null;
@@ -118,34 +132,29 @@ function huntFmt(v){
  return v>=1000?(v/1000).toFixed(v%1000?2:0)+'kk':v+'k';
 }
 function huntRank(rows,level,goal){
- return rows.map(h=>{
-  const gap=Math.max(0,level-h.min);
-  const xp=huntNum(h.xp),loot=huntNum(h.loot);
-  let score=100-gap*0.35;
-  if(goal==='xp'&&xp!=null)score+=xp*0.02;
-  if(goal==='profit'&&loot!=null)score+=loot*0.03;
-  if(goal==='balance'){if(xp!=null)score+=xp*0.012;if(loot!=null)score+=loot*0.018;}
-  score-=Math.max(0,h.min-level)*4;
-  return {...h,score};
- }).sort((a,b)=>b.score-a.score).slice(0,3);
+ const eligible=rows.filter(h=>h.min<=level);
+ const pool=eligible.length?eligible:rows;
+ return pool.map(h=>{
+   const xp=huntNum(h.xp),loot=huntNum(h.loot);
+   let score=0;
+   if(goal==='xp') score=xp==null?-1:xp;
+   else if(goal==='profit') score=loot==null?-1:loot;
+   else score=(xp==null?-100000:xp)+(loot==null?0:loot*1.5);
+   return {...h,score};
+ }).sort((a,b)=>b.score-a.score||b.min-a.min).slice(0,3);
 }
 function calcHuntFromTibiaPal(){
  const level=Math.max(8,Number(document.getElementById('huntLevel')?.value||8));
  const voc=document.getElementById('huntVoc')?.value||'Knight';
  const goal=document.getElementById('huntGoal')?.value||'balance';
- const rows=huntSource[voc]||huntSource.Knight;
- let eligible=rows.filter(h=>h.min<=level);
- if(!eligible.length)eligible=rows;
- const ranked=huntRank(eligible,level,goal);
- const goalLabel={xp:'XP',profit:'profit',balance:'equilíbrio',safe:'proximidade ao level'}[goal]||'equilíbrio';
+ const ranked=huntRank(huntSource[voc]||huntSource.Knight,level,goal);
+ const goalLabel={xp:'maior XP/h registrada',profit:'maior loot/h registrado',balance:'melhor combinação de XP/h + loot/h'}[goal]||'melhor combinação';
  const el=document.getElementById('huntResult');
  if(!el)return;
- el.innerHTML=`<div class="eyebrow">${esc(voc)} · Level ${fmt(level)}</div><p><strong>Fonte:</strong> <a href="${TIBIAPAL_URL}" target="_blank" rel="noopener">TibiaPal — Hunting Places</a>. As hunts abaixo são registros da fonte; não são sugestões inventadas pelo Mal Upados. Ordenação: ${goalLabel}.</p>${ranked.map((h,i)=>`<div class="hunt-card" style="margin:10px 0;padding:14px;border:1px solid var(--line,#333);border-radius:10px"><div><span class="tag">${i===0?'RECOMENDADA':'ALTERNATIVA'}</span> <strong>${esc(h.n)}</strong></div><div class="small" style="margin-top:7px">TibiaPal: <strong>Level ${h.min}+</strong>${h.xp!=null?' · XP: '+huntFmt(h.xp)+'/h':''}${h.loot!=null?' · Loot: '+huntFmt(h.loot)+'/h':''}</div>${h.type?`<div class="small">Tipo: ${esc(h.type)}</div>`:''}${h.style?`<div class="small">Método/arma: ${esc(h.style)}</div>`:''}<div class="small">Distância do mínimo indicado pela fonte: ${Math.max(0,level-h.min)} levels.</div></div>`).join('')}`;
+ el.innerHTML=`<div class="eyebrow">${esc(voc)} · Level ${fmt(level)}</div><p><strong>Fonte:</strong> <a href="${TIBIAPAL_URL}" target="_blank" rel="noopener">${TIBIAPAL_LABEL}</a>. O TibiaPal marca esta base como antiga; estamos usando-a porque ela é a tabela histórica mais completa. Ordenação: ${goalLabel}. Nada abaixo foi criado pelo Mal Upados.</p>${ranked.map((h,i)=>`<div class="hunt-card" style="margin:10px 0;padding:14px;border:1px solid var(--line,#333);border-radius:10px"><div><span class="tag">${i===0?'RECOMENDADA':'ALTERNATIVA'}</span> <strong>${esc(h.n)}</strong></div><div class="small" style="margin-top:7px">TibiaPal: <strong>Level ${h.min}+</strong>${h.xp!=null?' · XP: '+huntFmt(h.xp)+'/h':''}${h.loot!=null?' · Loot: '+huntFmt(h.loot)+'/h':''}</div>${h.style?`<div class="small">Método/arma/runa: ${esc(h.style)}</div>`:''}<div class="small">Seu level: ${fmt(level)} · mínimo da fonte: ${h.min}+</div></div>`).join('')}`;
 }
-
 window.addEventListener('DOMContentLoaded',()=>{
  const btn=document.getElementById('huntBtn');
  if(btn)btn.onclick=calcHuntFromTibiaPal;
- const note=document.querySelector('#huntResult');
  setTimeout(calcHuntFromTibiaPal,50);
 });
