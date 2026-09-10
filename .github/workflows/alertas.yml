@@ -7,7 +7,8 @@ jobs:
   alertas:
     runs-on: ubuntu-latest
     steps:
-      - name: Consultar boosted
+      - uses: actions/checkout@v4
+      - name: Consultar boosted e avisar somente quando mudar
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -20,12 +21,26 @@ jobs:
               with urllib.request.urlopen(req,timeout=20) as r:return json.load(r)
           c=get('https://api.tibiadata.com/v4/creatures').get('creatures',{}).get('boosted',{})
           b=get('https://api.tibiadata.com/v4/boostablebosses').get('boostable_bosses',{}).get('boosted',{})
-          msg=f"⚡ MAL UPADOS — BOOSTED DO DIA\n\n🐉 Criatura: {c.get('name','Indisponível')}\n👹 Boss: {b.get('name','Indisponível')}\n\nJadebra · bora farmar."
-          d=os.getenv('DISCORD_WEBHOOK')
-          if d:
-              data=json.dumps({'content':msg}).encode();req=urllib.request.Request(d,data=data,headers={'Content-Type':'application/json'},method='POST');urllib.request.urlopen(req,timeout=20).read()
-          token=os.getenv('TELEGRAM_BOT_TOKEN');chat=os.getenv('TELEGRAM_CHAT_ID')
-          if token and chat:
-              data=urllib.parse.urlencode({'chat_id':chat,'text':msg}).encode();req=urllib.request.Request(f'https://api.telegram.org/bot{token}/sendMessage',data=data,method='POST');urllib.request.urlopen(req,timeout=20).read()
-          print(msg)
+          current={'creature':c.get('name','Indisponível'),'boss':b.get('name','Indisponível')}
+          try:
+              with open('alertas_estado.json',encoding='utf-8') as f: old=json.load(f)
+          except Exception: old={}
+          changed=current!=old
+          print('Anterior:',old);print('Atual:',current);print('Mudou:',changed)
+          if changed:
+              msg=f"⚡ MAL UPADOS — BOOSTED\n\n🐉 Criatura: {current['creature']}\n👹 Boss: {current['boss']}\n\nJadebra · bora farmar."
+              d=os.getenv('DISCORD_WEBHOOK')
+              if d:
+                  data=json.dumps({'content':msg}).encode();req=urllib.request.Request(d,data=data,headers={'Content-Type':'application/json'},method='POST');urllib.request.urlopen(req,timeout=20).read()
+              token=os.getenv('TELEGRAM_BOT_TOKEN');chat=os.getenv('TELEGRAM_CHAT_ID')
+              if token and chat:
+                  data=urllib.parse.urlencode({'chat_id':chat,'text':msg}).encode();req=urllib.request.Request(f'https://api.telegram.org/bot{token}/sendMessage',data=data,method='POST');urllib.request.urlopen(req,timeout=20).read()
+              with open('alertas_estado.json','w',encoding='utf-8') as f: json.dump(current,f,ensure_ascii=False,indent=2)
           PY
+      - name: Salvar estado
+        run: |
+          git config user.name "mal-upados-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add alertas_estado.json
+          git commit -m "atualiza estado dos alertas" || echo "nada novo"
+          git push
