@@ -57,7 +57,8 @@ function guiaScore(rows,goal){
 }
 function huntCurrentRows(mode,voc,level,search){
   const source=mode==='duo'?huntDuoSource:mode==='team'?huntTeamSource:(huntSource[voc]||[]);
-  return source.filter(h=>h.min<=level&&(!search||String(h.n).toLowerCase().includes(search)||String(h.style||'').toLowerCase().includes(search)));
+  const minLevel=Math.max(8,level-50);
+  return source.filter(h=>h.min<=level&&h.min>=minLevel&&(!search||String(h.n).toLowerCase().includes(search)||String(h.style||'').toLowerCase().includes(search)));
 }
 function huntVideoButton(name){const url=huntVideos[name];return url?`<a class="hunt-video" href="${url}" target="_blank" rel="noopener">▶ Ver vídeo</a>`:'';}
 function guiaRender(){
