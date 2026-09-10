@@ -5,8 +5,6 @@
     return document.getElementById('huntOrder')?.value || 'desc';
   }
 
-  // Substitui apenas a regra de faixa de level do Solo:
-  // agora entram todas as hunts cujo level mínimo seja <= ao level informado.
   window.huntCurrentRows = function(mode, voc, level, search){
     const source = mode==='duo' ? huntDuoSource : mode==='team' ? huntTeamSource : (huntSource[voc] || []);
     return source.filter(h=>{
@@ -15,8 +13,6 @@
     });
   };
 
-  // O render original continua responsável por cards, destaques, stats e filtros.
-  // Depois dele, apenas reorganizamos a lista principal pelo level mínimo.
   const originalRender = window.guiaRender;
   window.guiaRender = function(){
     originalRender();
@@ -38,16 +34,36 @@
   function setup(){
     const form=document.querySelector('.hunt-guide-form');
     const level=document.getElementById('huntLevel');
-    if(!form || !level || document.getElementById('huntOrder')) return;
+    if(!form || !level) return;
 
-    const label=document.createElement('label');
-    label.innerHTML='<span>Ordem</span><select id="huntOrder"><option value="desc">Maior level → menor</option><option value="asc">Menor level → maior</option></select>';
-    level.closest('label')?.insertAdjacentElement('afterend',label);
+    let order=document.getElementById('huntOrder');
+    if(!order){
+      const label=document.createElement('label');
+      label.innerHTML='<span>Ordem</span><select id="huntOrder"><option value="desc">Maior level → menor</option><option value="asc">Menor level → maior</option></select>';
+      level.closest('label')?.insertAdjacentElement('afterend',label);
+      order=document.getElementById('huntOrder');
+    }
 
-    document.getElementById('huntOrder').addEventListener('change', window.guiaRender);
+    order.addEventListener('change', window.guiaRender);
+
+    // Level: somente números, mínimo efetivo 8. Campo vazio usa 8.
+    level.addEventListener('keydown', e=>{
+      if(['e','E','+','-','.',' ,'].includes(e.key)) e.preventDefault();
+    });
+    level.addEventListener('blur', ()=>{
+      const raw=level.value.trim();
+      if(!raw){ level.value=''; window.guiaRender(); return; }
+      const n=Number(raw);
+      if(!Number.isFinite(n) || n<8){
+        level.value='8';
+      }else{
+        level.value=String(Math.floor(n));
+      }
+      window.guiaRender();
+    });
 
     const style=document.createElement('style');
-    style.textContent='.hunt-guide-form{grid-template-columns:repeat(5,1fr)}@media(max-width:800px){.hunt-form,.hunt-guide-form{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.hunt-form,.hunt-guide-form{grid-template-columns:1fr}}';
+    style.textContent='.hunt-guide-form{grid-template-columns:repeat(6,1fr)}@media(max-width:1000px){.hunt-form,.hunt-guide-form{grid-template-columns:repeat(3,1fr)}}@media(max-width:800px){.hunt-form,.hunt-guide-form{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.hunt-form,.hunt-guide-form{grid-template-columns:1fr}}#huntLevel{appearance:textfield;-moz-appearance:textfield}#huntLevel::-webkit-inner-spin-button,#huntLevel::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}';
     document.head.appendChild(style);
   }
 
