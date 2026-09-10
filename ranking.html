@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header class="top"><div class="nav"><a class="brand" href="index.html">⛧ MAL UPADOS</a><div class="links"><a href="index.html">Início</a><a class="active" href="ranking.html">Ranking</a><a href="guilda.html">Guilda</a><a href="caos.html">Caos</a></div></div></header>
+<header class="top"><div class="nav"><a class="brand" href="index.html">⛧ MAL UPADOS</a><div class="links"><a href="index.html">Início</a><a class="active" href="ranking.html">Ranking</a><a href="guilda.html">Guilda</a><a href="arena.html">Arena</a><a href="caos.html">Caos</a></div></div></header>
 <main>
 <div class="hero"><div class="sigil">⚔</div><div class="eyebrow">Competição da guilda</div><h1>Ranking <span>XP</span></h1><p>Quem realmente trabalhou dentro do período. Sem confundir level alto com XP feita.</p></div>
 <section>
@@ -29,11 +29,11 @@
 <div class="panel" id="season">Calculando…</div>
 </section>
 </main>
-<footer>Mal Upados · Jadebra · <a href="index.html">Início</a> · <a href="guilda.html">Guilda</a> · <a href="caos.html">Caos</a></footer>
+<footer>Mal Upados · Jadebra · <a href="index.html">Início</a> · <a href="guilda.html">Guilda</a> · <a href="arena.html">Arena</a> · <a href="caos.html">Caos</a></footer>
 <script>
 function totalXp(l){return Math.floor(50*(l**3-6*l**2+17*l-12)/3)}
 function fmt(n){return new Intl.NumberFormat('pt-BR').format(Math.round(n))}
-function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function esc(v){return String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]))}
 let history={},days=30;
 async function load(){try{const r=await fetch('historico.json?'+Date.now());if(!r.ok)throw Error();history=await r.json();render()}catch(e){document.getElementById('period').textContent='Histórico indisponível.'}}
 function pairFor(daysWanted,ds){const endIndex=ds.length-1;const startIndex=daysWanted===1?Math.max(0,endIndex-1):Math.max(0,endIndex-daysWanted);return{start:ds[startIndex],end:ds[endIndex]}}
