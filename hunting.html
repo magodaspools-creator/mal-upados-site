@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Guia de Hunts | Mal Upados</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
-</head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Guia de Hunts | Mal Upados</title><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"></head>
 <body>
 <header class="top"><div class="nav"><a class="brand" href="index.html">⛧ MAL UPADOS</a><div class="links"><a href="index.html">Início</a><a href="ranking.html">Ranking</a><a href="guilda.html">Guilda</a><a class="active" href="hunting.html">Guia de Hunts</a><a href="arena.html">Arena</a><a href="caos.html">Caos</a></div></div></header>
 <main>
-<div class="hero"><div class="sigil">⚔</div><div class="eyebrow">TibiaPal · Hunting Places Old</div><h1>Guia de <span>Hunts</span></h1><p>Encontre hunts compatíveis com seu level e vocação. Aqui não tem limite arbitrário de três resultados: mostramos a base disponível e deixamos você ordenar pelo que realmente importa.</p><div class="updated">Fonte histórica: TibiaPal — Hunting Places (Old)</div></div>
+<div class="hero"><div class="sigil">⚔</div><div class="eyebrow">TibiaPal · Hunting Places Old</div><h1>Guia de <span>Hunts</span></h1><p>Encontre hunts por level, vocação, duo ou teamhunt. A base vem do TibiaPal Old e agora inclui as tabelas de grupo.</p><div class="updated">Fonte histórica: TibiaPal — Hunting Places (Old)</div></div>
 <section>
 <div class="eyebrow">Encontre sua próxima hunt</div><h2>Filtro de Hunts</h2>
-<p class="lead">Os números são os registrados pelo TibiaPal. A página antiga é anterior ao Vocation Rebalance 2026, então trate XP e loot como referência histórica, não como garantia de rendimento atual.</p>
+<p class="lead">Os números são os registrados pelo TibiaPal. Nas tabelas de Duo e Teamhunt, a fonte lista os locais recomendados, mas não fornece XP/loot por entrada; por isso não inventamos esses números.</p>
 <div class="hunt-form hunt-guide-form">
+<label>Tipo<select id="huntMode"><option value="solo">Solo</option><option value="duo">Duo</option><option value="team">Teamhunt</option></select></label>
+<label id="huntVocWrap">Vocação<select id="huntVoc"><option>Knight</option><option>Paladin</option><option>Sorcerer</option><option>Druid</option><option>Monk</option></select></label>
 <label>Level<input id="huntLevel" type="number" min="8" value="300"></label>
-<label>Vocação<select id="huntVoc"><option>Knight</option><option>Paladin</option><option>Sorcerer</option><option>Druid</option><option>Monk</option></select></label>
 <label>Objetivo<select id="huntGoal"><option value="balance">Equilíbrio XP + profit</option><option value="xp">Máxima XP</option><option value="profit">Profit</option></select></label>
 <label>Buscar hunt<input id="huntSearch" type="search" placeholder="Ex.: Asura, Banuta, Rosha..."></label>
 <button class="btn active" id="huntBtn">Atualizar guia</button>
@@ -25,26 +21,27 @@
 <div class="panel" id="huntResult">Carregando dados do TibiaPal…</div>
 </section>
 <section>
-<div class="eyebrow">Mais do TibiaPal</div><h2>Não é só hunt solo</h2>
-<p class="lead">A página original também separa Duos e Teamhunts. Mantemos a fonte original acessível para esses formatos enquanto expandimos nossa base própria.</p>
+<div class="eyebrow">Base importada</div><h2>Duo + Teamhunt</h2>
+<p class="lead">As duas tabelas agora estão dentro do Mal Upados. Você pode filtrar por level e pesquisar o nome da hunt sem sair do site.</p>
 <div class="grid">
-<a class="card" href="https://tibiapal.com/hunting-old" target="_blank" rel="noopener"><h3>Duos</h3><p>Abra a tabela histórica completa do TibiaPal e consulte as opções de duo.</p></a>
-<a class="card" href="https://tibiapal.com/hunting-old" target="_blank" rel="noopener"><h3>Teamhunts</h3><p>Consulte as hunts de time diretamente na fonte histórica.</p></a>
-<a class="card" href="https://tibiapal.com/hunting" target="_blank" rel="noopener"><h3>Dados atuais</h3><p>Compare com a base nova do TibiaPal, que está sendo atualizada após o rebalance.</p></a>
+<div class="card"><h3>Duo</h3><p>Locais recomendados pelo TibiaPal para duas pessoas, do level 8 até 800+.</p></div>
+<div class="card"><h3>Teamhunt</h3><p>Locais recomendados pelo TibiaPal para grupos, chegando a hunts de level 800+.</p></div>
+<div class="card"><h3>Sem números inventados</h3><p>Como a tabela de grupo não traz XP/loot, o guia mostra esses campos como indisponíveis em vez de estimá-los.</p></div>
 </div>
 </section>
 <section>
-<div class="eyebrow">Dicas de hunt</div><h2>Como escolher melhor</h2>
-<div class="grid">
-<div class="card"><h3>XP não é tudo</h3><p>Uma hunt com XP maior pode dar prejuízo. Compare XP/h e loot/h antes de decidir.</p></div>
-<div class="card"><h3>Olhe o loot</h3><p>Profit positivo pode compensar uma XP um pouco menor, principalmente em sessões longas.</p></div>
-<div class="card"><h3>Seu level é o piso</h3><p>O level mostrado é o mínimo indicado na fonte. Ele não significa que a hunt será confortável no seu personagem.</p></div>
-<div class="card"><h3>Elemento importa</h3><p>Confira a coluna de método, arma ou runa. Uma hunt excelente para uma vocação pode ser ruim para outra.</p></div>
-<div class="card"><h3>Vídeo ajuda</h3><p>Quando a fonte tiver vídeo, use-o para entender rota, puxadas e comportamento antes de gastar uma sessão testando.</p></div>
-<div class="card"><h3>Teste no seu servidor</h3><p>Market, imbues, respawn, concorrência e sua execução alteram o resultado real. Use os números como ponto de partida.</p></div>
-</div>
+<div class="eyebrow">Mais do TibiaPal</div><h2>Fonte original</h2>
+<div class="grid"><a class="card" href="https://tibiapal.com/hunting-old" target="_blank" rel="noopener"><h3>Hunting Places Old</h3><p>Abra a tabela histórica completa diretamente no TibiaPal.</p></a><a class="card" href="https://tibiapal.com/hunting" target="_blank" rel="noopener"><h3>Dados atuais</h3><p>Compare com a base nova do TibiaPal, que está sendo atualizada após o rebalance.</p></a></div>
 </section>
+<section><div class="eyebrow">Dicas de hunt</div><h2>Como escolher melhor</h2><div class="grid">
+<div class="card"><h3>XP não é tudo</h3><p>Uma hunt com XP maior pode dar prejuízo. Compare XP/h e loot/h quando a fonte fornecer esses números.</p></div>
+<div class="card"><h3>Olhe o loot</h3><p>Profit positivo pode compensar uma XP um pouco menor, principalmente em sessões longas.</p></div>
+<div class="card"><h3>Seu level é o piso</h3><p>O level mostrado é o mínimo indicado na fonte. Não significa que a hunt será confortável no seu personagem.</p></div>
+<div class="card"><h3>Grupo muda tudo</h3><p>Em duo e teamhunt, composição, função de cada vocação e capacidade de puxar mobs mudam completamente a experiência.</p></div>
+<div class="card"><h3>Vídeo ajuda</h3><p>Quando a fonte tiver vídeo, use-o para entender rota, puxadas e comportamento antes de testar.</p></div>
+<div class="card"><h3>Teste no seu servidor</h3><p>Market, imbues, respawn, concorrência e sua execução alteram o resultado real.</p></div>
+</div></section>
 </main>
 <footer>Mal Upados · Jadebra · <a href="index.html">Início</a> · <a href="ranking.html">Ranking</a> · <a href="guilda.html">Guilda</a> · <a href="hunting.html">Guia de Hunts</a> · <a href="arena.html">Arena</a> · <a href="caos.html">Caos</a></footer>
-<script src="hunt-tibiapal.js"></script><script src="guia-hunt.js"></script>
+<script src="hunt-tibiapal.js"></script><script src="hunt-team-tibiapal.js"></script><script src="guia-hunt.js"></script>
 </body></html>
