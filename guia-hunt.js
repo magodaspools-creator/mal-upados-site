@@ -57,8 +57,8 @@ function guiaScore(rows,goal){
 }
 function huntCurrentRows(mode,voc,level,search){
   const source=mode==='duo'?huntDuoSource:mode==='team'?huntTeamSource:(huntSource[voc]||[]);
-  const minLevel=Math.max(8,level-50);
-  return source.filter(h=>h.min<=level&&h.min>=minLevel&&(!search||String(h.n).toLowerCase().includes(search)||String(h.style||'').toLowerCase().includes(search)));
+  const minLevel=mode==='solo'?Math.max(8,level-50):level;
+  return source.filter(h=>h.min>=minLevel&&(!search||String(h.n).toLowerCase().includes(search)||String(h.style||'').toLowerCase().includes(search)));
 }
 function huntVideoButton(name){const url=huntVideos[name];return url?`<a class="hunt-video" href="${url}" target="_blank" rel="noopener">▶ Ver vídeo</a>`:'';}
 function guiaRender(){
@@ -77,4 +77,4 @@ function guiaRender(){
   result.innerHTML=`<div class="hunt-result-head"><div><div class="eyebrow">${esc(title)}</div><h3>${rows.length} hunt${rows.length===1?'':'s'} encontrada${rows.length===1?'':'s'}</h3></div><div class="small">${goalLabel}</div></div><div class="hunt-list">${rows.map((h,i)=>`<article class="hunt-card"><div class="hunt-card-main"><div class="hunt-position">${i+1}</div><div><div class="hunt-title">${esc(h.n)}</div><div class="hunt-meta">Level ${h.min}+${h.style?' · '+esc(h.style):''}</div></div></div><div class="hunt-metrics"><div><span>Raw/h</span><strong>${groupMode?'—':huntFmt(h.xp)}</strong></div><div><span>Loot/h</span><strong>${groupMode?'—':huntFmt(h.loot)}</strong></div><div><span>${groupMode?'Fonte':'Margem'}</span><strong>${groupMode?'TibiaPal Old':(h.loot==null?'—':(h.loot<0?'Prejuízo':'Positivo'))}</strong></div></div><div class="hunt-card-foot"><span>${groupMode?'Tabela de grupo do TibiaPal':'Referência histórica do TibiaPal'}</span><span>${huntVideoButton(h.n)}</span>${i===0?'<span class="badge">PRIMEIRA OPÇÃO</span>':''}</span></div></article>`).join('')}</div>`;
 }
 function guiaModeSync(){const mode=document.getElementById('huntMode')?.value||'solo',wrap=document.getElementById('huntVocWrap'),goal=document.getElementById('huntGoal');if(wrap)wrap.style.display=mode==='solo'?'':'none';if(goal){goal.disabled=mode!=='solo';if(mode!=='solo')goal.value='balance';}guiaRender();}
-window.addEventListener('DOMContentLoaded',()=>{['huntLevel','huntSearch'].forEach(id=>document.getElementById(id)?.addEventListener('input',guiaRender));['huntVoc','huntGoal'].forEach(id=>document.getElementById(id)?.addEventListener('change',guiaRender));document.getElementById('huntMode')?.addEventListener('change',guiaModeSync);document.getElementById('huntBtn')?.addEventListener('click',guiaRender);guiaModeSync();});
+window.addEventListener('DOMContentLoaded',()=>{['huntLevel','huntSearch'].forEach(id=>document.getElementById(id)?.addEventListener('input',guiaRender));['huntVoc','huntGoal'].forEach(id=>document.getElementById(id)?.addEventListener('change',guiaRender));document.getElementById('huntMode')?.addEventListener('change',guiaModeSync);guiaModeSync();});
