@@ -11,7 +11,8 @@
 <div class="hunt-form hunt-guide-form">
 <label>Tipo<select id="huntMode"><option value="solo">Solo</option><option value="duo">Duo</option><option value="team">Teamhunt</option></select></label>
 <label id="huntVocWrap">Vocação<select id="huntVoc"><option>Knight</option><option>Paladin</option><option>Sorcerer</option><option>Druid</option><option>Monk</option></select></label>
-<label>Level<input id="huntLevel" type="number" min="8" value="300"></label>
+<label>Level<input id="huntLevel" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="8" autocomplete="off"></label>
+<label>Ordem<select id="huntOrder"><option value="desc">Maior level → menor</option><option value="asc">Menor level → maior</option></select></label>
 <label>Objetivo<select id="huntGoal"><option value="balance">Equilíbrio XP + profit</option><option value="xp">Máxima XP</option><option value="profit">Profit</option></select></label>
 <label>Buscar hunt<input id="huntSearch" type="search" placeholder="Ex.: Asura, Banuta, Rosha..."></label>
 </div>
@@ -44,5 +45,5 @@
 <footer>Mal Upados · Jadebra · <a href="index.html">Início</a> · <a href="ranking.html">Ranking</a> · <a href="guilda.html">Guilda</a> · <a href="hunting.html">Guia de Hunts</a> · <a href="arena.html">Arena</a> · <a href="caos.html">Caos</a></footer>
 <script src="hunt-tibiapal.js"></script>
 <script>window.calcHuntFromTibiaPal=function(){};</script>
-<script src="hunt-team-tibiapal.js"></script><script src="guia-hunt.js?v=20260910-2"></script><script src="hunt-order.js?v=20260910-1"></script>
+<script src="hunt-team-tibiapal.js"></script><script src="guia-hunt.js?v=20260910-3"></script><script src="hunt-order.js?v=20260910-1"></script>
 </body></html>
