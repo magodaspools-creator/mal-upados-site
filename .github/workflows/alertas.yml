@@ -1,0 +1,33 @@
+name: Alertas Mal Upados
+on:
+  schedule:
+    - cron: "15 * * * *"
+  workflow_dispatch:
+jobs:
+  alertas:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Consultar boosted
+        id: data
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python - <<'PY'
+          import json, os, urllib.request
+          def get(url):
+              req=urllib.request.Request(url,headers={'User-Agent':'MalUpados-Alerts/1.0'})
+              with urllib.request.urlopen(req,timeout=20) as r:return json.load(r)
+          c=get('https://api.tibiadata.com/v4/creatures').get('creatures',{}).get('boosted',{})
+          b=get('https://api.tibiadata.com/v4/boostablebosses').get('boostable_bosses',{}).get('boosted',{})
+          msg=f"⚡ MAL UPADOS — BOOSTED DO DIA\n\n🐉 Criatura: {c.get('name','Indisponível')}\n👹 Boss: {b.get('name','Indisponível')}\n\nJadebra · bora farmar."
+          open('/tmp/msg','w',encoding='utf-8').write(msg)
+          d=os.getenv('DISCORD_WEBHOOK')
+          if d:
+              data=json.dumps({'content':msg}).encode();req=urllib.request.Request(d,data=data,headers={'Content-Type':'application/json'},method='POST');urllib.request.urlopen(req,timeout=20).read()
+          token=os.getenv('TELEGRAM_BOT_TOKEN');chat=os.getenv('TELEGRAM_CHAT_ID')
+          if token and chat:
+              data=urllib.parse.urlencode({'chat_id':chat,'text':msg}).encode();req=urllib.request.Request(f'https://api.telegram.org/bot{token}/sendMessage',data=data,method='POST');urllib.request.urlopen(req,timeout=20).read()
+          print(msg)
+          PY
