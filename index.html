@@ -249,7 +249,7 @@ async function loadRanking(){
       tr.innerHTML = `<td>${i+1}</td><td>${r.nome}</td><td>${r.inicial}</td><td>${r.atual}</td><td class="${cls}">${r.ganho > 0 ? '+' : ''}${r.ganho}</td>`;
       body.appendChild(tr);
     });
-    statusEl.textContent = `Comparando ${dataAntiga} → ${dataRecente} (ganho de level, proxy de XP)`;
+    statusEl.textContent = `Comparando ${dataAntiga} → ${dataRecente} · Ganho de levels`;
     table.style.display = "table";
   }catch(err){
     statusEl.innerHTML = `<span class="err">${err.message}</span>`;
