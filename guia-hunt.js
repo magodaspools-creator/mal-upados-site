@@ -57,8 +57,12 @@ function guiaScore(rows,goal){
 }
 function huntCurrentRows(mode,voc,level,search){
   const source=mode==='duo'?huntDuoSource:mode==='team'?huntTeamSource:(huntSource[voc]||[]);
-  const minLevel=mode==='solo'?Math.max(8,level-50):level;
-  return source.filter(h=>h.min>=minLevel&&(!search||String(h.n).toLowerCase().includes(search)||String(h.style||'').toLowerCase().includes(search)));
+  return source.filter(h=>{
+    const levelOk=mode==='solo'
+      ? h.min>=Math.max(8,level-50) && h.min<=level
+      : h.min>=level;
+    return levelOk && (!search||String(h.n).toLowerCase().includes(search)||String(h.style||'').toLowerCase().includes(search));
+  });
 }
 function huntVideoButton(name){const url=huntVideos[name];return url?`<a class="hunt-video" href="${url}" target="_blank" rel="noopener">▶ Ver vídeo</a>`:'';}
 function guiaRender(){
