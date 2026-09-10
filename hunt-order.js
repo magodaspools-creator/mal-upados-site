@@ -39,16 +39,24 @@
     let order=document.getElementById('huntOrder');
     if(!order){
       const label=document.createElement('label');
+      label.id='huntOrderWrap';
       label.innerHTML='<span>Ordem</span><select id="huntOrder"><option value="desc">Maior level → menor</option><option value="asc">Menor level → maior</option></select>';
-      level.closest('label')?.insertAdjacentElement('afterend',label);
+      document.querySelector('#huntResult')?.parentNode?.insertBefore(label, document.querySelector('#huntResult'));
       order=document.getElementById('huntOrder');
+    }else{
+      // A ordenação fica fora da grade de filtros, perto da lista de hunts.
+      const wrap=order.closest('label');
+      const result=document.getElementById('huntResult');
+      if(wrap && result && wrap.parentNode===form){
+        result.parentNode.insertBefore(wrap, result);
+      }
     }
 
     order.addEventListener('change', window.guiaRender);
 
     // Level: somente números, mínimo efetivo 8. Campo vazio usa 8.
     level.addEventListener('keydown', e=>{
-      if(['e','E','+','-','.',' ,'].includes(e.key)) e.preventDefault();
+      if(['e','E','+','-','.'].includes(e.key)) e.preventDefault();
     });
     level.addEventListener('blur', ()=>{
       const raw=level.value.trim();
@@ -63,7 +71,7 @@
     });
 
     const style=document.createElement('style');
-    style.textContent='.hunt-guide-form{grid-template-columns:repeat(6,1fr)}@media(max-width:1000px){.hunt-form,.hunt-guide-form{grid-template-columns:repeat(3,1fr)}}@media(max-width:800px){.hunt-form,.hunt-guide-form{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.hunt-form,.hunt-guide-form{grid-template-columns:1fr}}#huntLevel{appearance:textfield;-moz-appearance:textfield}#huntLevel::-webkit-inner-spin-button,#huntLevel::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}';
+    style.textContent='.hunt-guide-form{grid-template-columns:repeat(5,1fr)}#huntOrderWrap{display:flex;align-items:center;gap:10px;margin:18px 0 10px;max-width:360px}#huntOrderWrap span{font-weight:700;white-space:nowrap}@media(max-width:1000px){.hunt-form,.hunt-guide-form{grid-template-columns:repeat(3,1fr)}}@media(max-width:800px){.hunt-form,.hunt-guide-form{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.hunt-form,.hunt-guide-form{grid-template-columns:1fr}#huntOrderWrap{max-width:none;margin:14px 0 10px;display:grid;grid-template-columns:1fr;gap:6px}}#huntLevel{appearance:textfield;-moz-appearance:textfield}#huntLevel::-webkit-inner-spin-button,#huntLevel::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}';
     document.head.appendChild(style);
   }
 
