@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mal Upados | Guilda de Tibia</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1e222b;
+    --gold:#e0b34d; --gold-dim:#8a6a2a; --text:#e8e6df; --muted:#9aa0ab;
+    --online:#4caf6b; --offline:#5a5f68;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Segoe UI',Tahoma,sans-serif;line-height:1.5}
+  header{
+    background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.85)),
+      radial-gradient(circle at 30% 20%,#2a3a4a,#0f1115 70%);
+    padding:60px 20px 40px;text-align:center;border-bottom:3px solid var(--gold-dim);
+  }
+  header h1{font-size:2.4rem;margin:0;color:var(--gold);letter-spacing:1px}
+  header p{color:var(--muted);margin-top:8px}
+  nav{display:flex;justify-content:center;gap:24px;margin-top:20px;flex-wrap:wrap}
+  nav a{color:var(--text);text-decoration:none;border:1px solid var(--gold-dim);padding:8px 16px;border-radius:6px;font-size:.9rem}
+  nav a:hover{background:var(--gold-dim);color:#0f1115}
+  main{max-width:960px;margin:0 auto;padding:40px 20px}
+  section{margin-bottom:50px}
+  h2{color:var(--gold);border-bottom:1px solid var(--gold-dim);padding-bottom:8px;font-size:1.4rem}
+  .status{color:var(--muted);font-size:.9rem;margin-bottom:12px}
+  table{width:100%;border-collapse:collapse;background:var(--panel);border-radius:8px;overflow:hidden}
+  th,td{padding:10px 12px;text-align:left;font-size:.92rem}
+  th{background:var(--panel2);color:var(--gold);text-transform:uppercase;font-size:.75rem;letter-spacing:.5px}
+  tr:nth-child(even){background:var(--panel2)}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+  .on{background:var(--online)} .off{background:var(--offline)}
+  .rank-label{color:var(--muted);font-size:.8rem}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:12px}
+  .card{background:var(--panel);border:1px solid #262b35;border-radius:8px;padding:16px;text-align:center}
+  .card .num{font-size:1.6rem;color:var(--gold);font-weight:bold}
+  .card .label{font-size:.75rem;color:var(--muted);text-transform:uppercase}
+  footer{text-align:center;color:var(--muted);font-size:.8rem;padding:30px 20px;border-top:1px solid #262b35}
+  .err{color:#e07070}
+  .pos{color:var(--online)} .neg{color:#e07070}
+  .refresh{background:none;border:1px solid var(--gold-dim);color:var(--gold);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:.8rem}
+  .refresh:hover{background:var(--gold-dim);color:#0f1115}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚔ Mal Upados</h1>
+  <p>Guilda de Tibia · Mundo Jadebra</p>
+  <nav>
+    <a href="#membros">Membros</a>
+    <a href="#ranking">Ranking de XP</a>
+    <a href="#sobre">Sobre</a>
+  </nav>
+</header>
+
+<main>
+
+  <section id="sobre">
+    <h2>Sobre a tripulação</h2>
+    <p>Aqui é o ponto de encontro dos <strong>Mal Upados</strong>. Dados ao vivo da TibiaData API.</p>
+    <div class="cards" id="stats-cards">
+      <div class="card"><div class="num" id="stat-total">—</div><div class="label">Membros</div></div>
+      <div class="card"><div class="num" id="stat-online">—</div><div class="label">Online agora</div></div>
+      <div class="card"><div class="num" id="stat-level">—</div><div class="label">Level médio</div></div>
+    </div>
+  </section>
+
+  <section id="membros">
+    <h2>Membros da guild</h2>
+    <div class="status" id="members-status">Carregando membros da API…</div>
+    <div style="overflow-x:auto">
+      <table id="members-table" style="display:none">
+        <thead><tr><th>Status</th><th>Nome</th><th>Rank</th><th>Vocação</th><th>Level</th></tr></thead>
+        <tbody id="members-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="ranking">
+    <h2>Ranking de XP (últimos 7 dias)</h2>
+    <div class="status" id="ranking-status">Carregando histórico…</div>
+    <div style="overflow-x:auto">
+      <table id="ranking-table" style="display:none">
+        <thead><tr><th>#</th><th>Nome</th><th>Level inicial</th><th>Level atual</th><th>Ganho</th></tr></thead>
+        <tbody id="ranking-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Feito para a tripulação Mal Upados · Dados: <a href="https://tibiadata.com" style="color:var(--gold)">TibiaData API</a> · Imagens/marcas: Tibia / CipSoft
+  <br><button class="refresh" onclick="loadGuild()" style="margin-top:10px">↻ Atualizar dados</button>
+</footer>
+
+<script>
+const GUILD_NAME = "Mal Upados";
+const API_URL = "https://api.tibiadata.com/v4/guild/" + encodeURIComponent(GUILD_NAME);
+
+async function loadGuild(){
+  const statusEl = document.getElementById('members-status');
+  const table = document.getElementById('members-table');
+  const body = document.getElementById('members-body');
+  statusEl.textContent = "Carregando membros da API…";
+  table.style.display = "none";
+  body.innerHTML = "";
+  try{
+    const res = await fetch(API_URL);
+    if(!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+    const guild = data.guild;
+    const members = guild.members;
+    let online = 0, levelSum = 0;
+    members.forEach(m=>{ if(m.status==="online") online++; levelSum += (m.level||0); });
+    document.getElementById('stat-total').textContent = members.length;
+    document.getElementById('stat-online').textContent = online;
+    document.getElementById('stat-level').textContent = members.length ? Math.round(levelSum/members.length) : "—";
+    members.sort((a,b)=> (b.status==='online') - (a.status==='online') || b.level - a.level)
+      .forEach(m=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td><span class="dot ${m.status==='online'?'on':'off'}"></span>${m.status==='online'?'Online':'Offline'}</td>
+          <td>${m.name}</td><td class="rank-label">${m.rank||''}</td><td>${m.vocation||''}</td><td>${m.level||''}</td>`;
+        body.appendChild(tr);
+      });
+    statusEl.textContent = `Guild "${guild.name}" · Mundo ${guild.world} · ${members.length} membros`;
+    table.style.display = "table";
+  }catch(err){
+    statusEl.innerHTML = `<span class="err">Não deu pra carregar (${err.message}).</span>`;
+  }
+}
+
+async function loadRanking(){
+  const statusEl = document.getElementById('ranking-status');
+  const table = document.getElementById('ranking-table');
+  const body = document.getElementById('ranking-body');
+  try{
+    const res = await fetch('historico.json?t=' + Date.now());
+    if(!res.ok) throw new Error("historico.json não encontrado");
+    const historico = await res.json();
+    const datas = Object.keys(historico).sort();
+    if(datas.length < 2){
+      statusEl.textContent = "Ainda só tem 1 dia de histórico — o ranking aparece a partir do 2º dia de coleta.";
+      return;
+    }
+    const dataAntiga = datas[Math.max(0, datas.length - 7)];
+    const dataRecente = datas[datas.length - 1];
+    const antigo = historico[dataAntiga];
+    const recente = historico[dataRecente];
+    const ranking = Object.keys(recente).map(nome => {
+      const inicial = antigo[nome] ?? recente[nome];
+      const atual = recente[nome];
+      return { nome, inicial, atual, ganho: atual - inicial };
+    }).sort((a,b)=> b.ganho - a.ganho);
+
+    ranking.forEach((r, i)=>{
+      const tr = document.createElement('tr');
+      const cls = r.ganho > 0 ? 'pos' : (r.ganho < 0 ? 'neg' : '');
+      tr.innerHTML = `<td>${i+1}</td><td>${r.nome}</td><td>${r.inicial}</td><td>${r.atual}</td><td class="${cls}">${r.ganho > 0 ? '+' : ''}${r.ganho}</td>`;
+      body.appendChild(tr);
+    });
+    statusEl.textContent = `Comparando ${dataAntiga} → ${dataRecente} (ganho de level, proxy de XP)`;
+    table.style.display = "table";
+  }catch(err){
+    statusEl.innerHTML = `<span class="err">${err.message}</span>`;
+  }
+}
+
+loadGuild();
+loadRanking();
+</script>
+
+</body>
+</html>
