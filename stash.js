@@ -1,74 +1,33 @@
 (function(){
-  const filesInput=document.getElementById('stashFiles'),drop=document.getElementById('dropzone'),preview=document.getElementById('stashFilesPreview'),world=document.getElementById('stashWorld'),analyze=document.getElementById('analyzeBtn'),result=document.getElementById('stashResult');
+  const filesInput=document.getElementById('stashFiles'),drop=document.getElementById('dropzone'),preview=document.getElementById('stashFilesPreview'),world=document.getElementById('stashWorld'),analyze=document.getElementById('analyzeBtn'),result=document.getElementById('stashResult'),tableWrap=document.getElementById('stashTableWrap'),table=document.getElementById('stashTable');
   let files=[];
   const esc=v=>String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
+  const money=v=>Number(v)>0?Number(v).toLocaleString('pt-BR')+' gp':'—';
   const GRID={cols:20,rows:11,pitch:37,tile:32,width:740,height:407};
-  const X_ORIGIN_OFFSET=-37;
-  const Y_ORIGIN_OFFSET=148;
+  const X_ORIGIN_OFFSET=-37,Y_ORIGIN_OFFSET=148;
+  const ITEM_API='https://tibiadata.bytewizards.de/api/v1/items/';
+  const MARKET_URL='https://www.tibia.com/community/?subtopic=market';
 
-  async function loadWorlds(){
-    try{
-      const r=await fetch('https://api.tibiadata.com/v4/worlds?'+Date.now());
-      if(!r.ok)throw Error();
-      const d=await r.json(),list=d?.worlds?.regular_worlds||d?.worlds?.regular||d?.worlds||[],arr=Array.isArray(list)?list:list.world||[];
-      const names=arr.map(x=>typeof x==='string'?x:x.name).filter(Boolean).sort((a,b)=>a.localeCompare(b));
-      world.innerHTML='<option value="">Selecione seu mundo</option>'+names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');
-    }catch(e){world.innerHTML='<option value="">Não foi possível carregar</option>';}
-  }
-  function render(){
-    preview.innerHTML='';
-    files.forEach((file,i)=>{const url=URL.createObjectURL(file),card=document.createElement('div');card.className='stash-thumb';card.innerHTML=`<button type="button" title="Remover">×</button><img src="${url}" alt="Print ${i+1}"><span>${esc(file.name)}</span>`;card.querySelector('button').onclick=()=>{files.splice(i,1);render()};preview.appendChild(card);});
-  }
+  async function loadWorlds(){try{const r=await fetch('https://api.tibiadata.com/v4/worlds?'+Date.now());if(!r.ok)throw Error();const d=await r.json(),list=d?.worlds?.regular_worlds||d?.worlds?.regular||d?.worlds||[],arr=Array.isArray(list)?list:list.world||[];const names=arr.map(x=>typeof x==='string'?x:x.name).filter(Boolean).sort((a,b)=>a.localeCompare(b));world.innerHTML='<option value="">Selecione seu mundo</option>'+names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');}catch(e){world.innerHTML='<option value="">Não foi possível carregar</option>';}}
+  function render(){preview.innerHTML='';files.forEach((file,i)=>{const url=URL.createObjectURL(file),card=document.createElement('div');card.className='stash-thumb';card.innerHTML=`<button type="button" title="Remover">×</button><img src="${url}" alt="Print ${i+1}"><span>${esc(file.name)}</span>`;card.querySelector('button').onclick=()=>{files.splice(i,1);render()};preview.appendChild(card);});}
   function add(list){files=[...files,...[...list].filter(f=>/^image\/(png|jpeg|webp)$/.test(f.type))].slice(0,12);render();}
-  filesInput.addEventListener('change',e=>add(e.target.files));
-  drop.addEventListener('click',e=>{if(!e.target.closest('button'))filesInput.click()});
-  ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag')}));
-  ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag')}));
-  drop.addEventListener('drop',e=>add(e.dataTransfer.files));
+  filesInput.addEventListener('change',e=>add(e.target.files));drop.addEventListener('click',e=>{if(!e.target.closest('button'))filesInput.click()});['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag')}));['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag')}));drop.addEventListener('drop',e=>add(e.dataTransfer.files));
   function loadImage(file){return new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=URL.createObjectURL(file);});}
   function lum(r,g,b){return .2126*r+.7152*g+.0722*b;}
-  function buildMaps(canvas){
-    const w=canvas.width,h=canvas.height,ctx=canvas.getContext('2d',{willReadFrequently:true}),d=ctx.getImageData(0,0,w,h).data,v=new Float32Array(w*h),hm=new Float32Array(w*h);
-    for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,r=d[i],g=d[i+1],b=d[i+2];if(x){const j=i-4;v[y*w+x]=Math.abs(lum(r,g,b)-lum(d[j],d[j+1],d[j+2]));}if(y){const j=i-w*4;hm[y*w+x]=Math.abs(lum(r,g,b)-lum(d[j],d[j+1],d[j+2]));}}
-    return{w,h,v,hm};
-  }
+  function buildMaps(canvas){const w=canvas.width,h=canvas.height,ctx=canvas.getContext('2d',{willReadFrequently:true}),d=ctx.getImageData(0,0,w,h).data,v=new Float32Array(w*h),hm=new Float32Array(w*h);for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,r=d[i],g=d[i+1],b=d[i+2];if(x){const j=i-4;v[y*w+x]=Math.abs(lum(r,g,b)-lum(d[j],d[j+1],d[j+2]));}if(y){const j=i-w*4;hm[y*w+x]=Math.abs(lum(r,g,b)-lum(d[j],d[j+1],d[j+2]));}}return{w,h,v,hm};}
   function sumV(m,x,y0,y1){let s=0,n=0;for(let xx=Math.max(0,x-1);xx<=Math.min(m.w-1,x+1);xx++)for(let y=y0;y<y1;y++){s+=m.v[y*m.w+xx];n++;}return n?s/n:0;}
   function sumH(m,y,x0,x1){let s=0,n=0;for(let yy=Math.max(0,y-1);yy<=Math.min(m.h-1,y+1);yy++)for(let x=x0;x<x1;x++){s+=m.hm[yy*m.w+x];n++;}return n?s/n:0;}
-  function score(m,x,y){
-    if(x<0||y<0||x+GRID.width>m.w||y+GRID.height>m.h)return-Infinity;
-    let v=0,h=0;
-    for(let c=0;c<=20;c++)v+=sumV(m,x+c*37,y,y+407);
-    for(let r=0;r<=11;r++)h+=sumH(m,y+r*37,x,x+740);
-    return v/21*.38+h/12*.42;
-  }
-  function locateStashGrid(canvas){
-    const m=buildMaps(canvas);let best={score:-Infinity,x:0,y:0};
-    for(let y=2;y<=m.h-GRID.height-2;y+=2)for(let x=2;x<=m.w-GRID.width-2;x+=2){const s=score(m,x,y);if(s>best.score)best={score:s,x,y};}
-    if(best.score===-Infinity)return null;
-    const x=best.x+X_ORIGIN_OFFSET;
-    const y=best.y+Y_ORIGIN_OFFSET;
-    if(x<0||y<0||x+GRID.width>m.w||y+GRID.height>m.h)return null;
-    return{x,y,cols:20,rows:11,pitch:37,rowPitch:37,tile:32,width:740,height:407,confidence:1,originOffset:{x:X_ORIGIN_OFFSET,y:Y_ORIGIN_OFFSET}};
-  }
-  function makeOverlay(report){
-    const{c,grid}=report,out=document.createElement('canvas');out.width=c.width;out.height=c.height;const ctx=out.getContext('2d');ctx.drawImage(c,0,0);if(!grid)return out;
-    ctx.save();ctx.strokeStyle='rgba(240,196,92,.98)';ctx.lineWidth=2;ctx.strokeRect(grid.x,grid.y,grid.width,grid.height);ctx.font='bold 13px Inter,Arial';ctx.textBaseline='top';
-    for(let r=0;r<grid.rows;r++)for(let col=0;col<grid.cols;col++){const x=grid.x+col*37,y=grid.y+r*37;ctx.strokeRect(x,y,37,37);ctx.fillStyle='rgba(0,0,0,.72)';ctx.fillRect(x+1,y+1,22,15);ctx.fillStyle='#fff';ctx.fillText(String(r*20+col+1),x+3,y+2);}
-    ctx.restore();return out;
-  }
+  function score(m,x,y){if(x<0||y<0||x+GRID.width>m.w||y+GRID.height>m.h)return-Infinity;let v=0,h=0;for(let c=0;c<=20;c++)v+=sumV(m,x+c*37,y,y+407);for(let r=0;r<=11;r++)h+=sumH(m,y+r*37,x,x+740);return v/21*.38+h/12*.42;}
+  function locateStashGrid(canvas){const m=buildMaps(canvas);let best={score:-Infinity,x:0,y:0};for(let y=2;y<=m.h-GRID.height-2;y+=2)for(let x=2;x<=m.w-GRID.width-2;x+=2){const s=score(m,x,y);if(s>best.score)best={score:s,x,y};}if(best.score===-Infinity)return null;const x=best.x+X_ORIGIN_OFFSET,y=best.y+Y_ORIGIN_OFFSET;if(x<0||y<0||x+GRID.width>m.w||y+GRID.height>m.h)return null;return{x,y,cols:20,rows:11,pitch:37,rowPitch:37,tile:32,width:740,height:407,confidence:1,originOffset:{x:X_ORIGIN_OFFSET,y:Y_ORIGIN_OFFSET}};}
+  function makeOverlay(report){const{c,grid}=report,out=document.createElement('canvas');out.width=c.width;out.height=c.height;const ctx=out.getContext('2d');ctx.drawImage(c,0,0);if(!grid)return out;ctx.save();ctx.strokeStyle='rgba(240,196,92,.98)';ctx.lineWidth=2;ctx.strokeRect(grid.x,grid.y,grid.width,grid.height);ctx.font='bold 13px Inter,Arial';ctx.textBaseline='top';for(let r=0;r<grid.rows;r++)for(let col=0;col<grid.cols;col++){const x=grid.x+col*37,y=grid.y+r*37;ctx.strokeRect(x,y,37,37);ctx.fillStyle='rgba(0,0,0,.72)';ctx.fillRect(x+1,y+1,22,15);ctx.fillStyle='#fff';ctx.fillText(String(r*20+col+1),x+3,y+2);}ctx.restore();return out;}
   function panel(){let p=document.getElementById('stashDetector');if(p)return p;p=document.createElement('div');p.id='stashDetector';p.className='panel';p.style.marginTop='14px';result.parentElement.insertBefore(p,result);return p;}
-  function renderReport(report,host,index){
-    const block=document.createElement('div');block.style.cssText='margin-top:18px;padding-top:18px;border-top:1px solid var(--line)';const g=report.grid;
-    if(!g){block.innerHTML=`<strong>Print ${index+1}</strong><br><span class="stash-note">Não encontrei a grade 20×11 automaticamente neste print.</span>`;host.appendChild(block);return;}
-    block.innerHTML=`<strong>Print ${index+1}</strong><br><span class="stash-note">Grade detectada automaticamente · 20 × 11 · origem ${g.x}, ${g.y} · passo 37 × 37 px.</span>`;
-    block.appendChild(makeOverlay(report));
-    const tiles=document.createElement('div');tiles.style.cssText='display:grid;grid-template-columns:repeat(20,32px);gap:3px;margin-top:12px;max-width:100%;overflow:auto;padding:6px;background:#080a0d;border:1px solid var(--line);border-radius:10px';
-    for(let n=0;n<220;n++){const col=n%20,row=Math.floor(n/20),sx=Math.round(g.x+col*37+2.5),sy=Math.round(g.y+row*37+2.5),tile=document.createElement('canvas');tile.width=32;tile.height=32;tile.title=`Slot ${n+1} · linha ${row+1} · coluna ${col+1}`;tile.style.cssText='width:32px;height:32px;image-rendering:pixelated;border:1px solid rgba(255,255,255,.08);background:#111';tile.getContext('2d').drawImage(report.c,sx,sy,32,32,0,0,32,32);tiles.appendChild(tile);}block.appendChild(tiles);host.appendChild(block);
-  }
+  function renderReport(report,host,index){const block=document.createElement('div');block.style.cssText='margin-top:18px;padding-top:18px;border-top:1px solid var(--line)';const g=report.grid;if(!g){block.innerHTML=`<strong>Print ${index+1}</strong><br><span class="stash-note">Não encontrei a grade 20×11 automaticamente neste print.</span>`;host.appendChild(block);return;}block.innerHTML=`<strong>Print ${index+1}</strong><br><span class="stash-note">Grade detectada automaticamente · 20 × 11 · origem ${g.x}, ${g.y} · passo 37 × 37 px.</span>`;block.appendChild(makeOverlay(report));const tiles=document.createElement('div');tiles.style.cssText='display:grid;grid-template-columns:repeat(20,32px);gap:3px;margin-top:12px;max-width:100%;overflow:auto;padding:6px;background:#080a0d;border:1px solid var(--line);border-radius:10px';for(let n=0;n<220;n++){const col=n%20,row=Math.floor(n/20),sx=Math.round(g.x+col*37+2.5),sy=Math.round(g.y+row*37+2.5),tile=document.createElement('canvas');tile.width=32;tile.height=32;tile.title=`Slot ${n+1} · linha ${row+1} · coluna ${col+1}`;tile.style.cssText='width:32px;height:32px;image-rendering:pixelated;border:1px solid rgba(255,255,255,.08);background:#111';tile.getContext('2d').drawImage(report.c,sx,sy,32,32,0,0,32,32);tiles.appendChild(tile);}block.appendChild(tiles);host.appendChild(block);}
+  function unwrapItem(d){return d?.item||d?.data?.item||d?.data||d;}
+  function normalizeOffers(item){const buys=item?.bought_by||item?.boughtBy||item?.buy_offers||item?.buyOffers||[];return Array.isArray(buys)?buys.map(x=>({npc:x.npc_title||x.npcTitle||x.npc_name||x.npcName||'NPC',value:Number(x.value??x.price??0)||0})).filter(x=>x.value>0):[];}
+  async function fetchItem(name){if(!name)return null;try{const r=await fetch(ITEM_API+encodeURIComponent(name));if(!r.ok)return null;return unwrapItem(await r.json());}catch(e){return null;}}
+  async function enrichMatches(){const matches=window.StashRecognition?.matchAll?.({limit:3,threshold:18})||[];const rows=[];for(const m of matches){if(m.status==='unknown'||!m.candidates?.length)continue;const c=m.candidates[0];if(m.status==='ambiguous'){rows.push({...m,itemName:'Ambíguo',quantity:null,npcOffers:[],ambiguous:true});continue;}const item=await fetchItem(c.name);const offers=normalizeOffers(item);const npcBest=offers.length?Math.max(...offers.map(x=>x.value)):0;rows.push({...m,itemName:item?.name||c.name,quantity:null,npcOffers:offers,npcBest});}return rows;}
+  function renderResults(rows){table.innerHTML='';let npcTotal=0;rows.forEach(r=>{const qty=r.quantity,npc=r.npcBest||0,sell=qty?npc*qty:0;if(qty)npcTotal+=sell;const locations=r.npcOffers.map(x=>`${esc(x.npc)} (${money(x.value)})`).join('<br>')||'Nenhum NPC identificado';const action=r.ambiguous?'CONFERIR ITEM':r.npcOffers.length?'VENDER NO NPC':'VERIFICAR';const cls=r.ambiguous?'action-check':r.npcOffers.length?'action-npc':'action-check';const tr=document.createElement('tr');tr.innerHTML=`<td><strong>${esc(r.itemName)}</strong><br><span class="stash-note">slot ${r.slot} · ${r.status==='matched'?'match determinístico':'mais de um candidato'}</span></td><td>${qty??'—'}</td><td>${locations}</td><td><a href="${MARKET_URL}" target="_blank" rel="noopener">Abrir Market</a><br><span class="stash-note">cotação por mundo</span></td><td>${sell?money(sell):'—'}</td><td><span class="${cls}">${action}</span></td>`;table.appendChild(tr);});tableWrap.hidden=!rows.length;document.getElementById('npcTotal').textContent=npcTotal?money(npcTotal):'—';document.getElementById('marketTotal').textContent='—';document.getElementById('bestTotal').textContent=npcTotal?money(npcTotal):'—';return rows.length?`${rows.length} item${rows.length===1?'':'s'} reconhecido${rows.length===1?'':'s'} e enriquecido com dados de NPC.`:'Nenhum item foi reconhecido pela base de sprites ainda.';}
   async function inspect(file){const img=await loadImage(file),c=document.createElement('canvas');c.width=img.naturalWidth;c.height=img.naturalHeight;c.getContext('2d').drawImage(img,0,0);return{file,img,c,grid:locateStashGrid(c)};}
-  analyze.addEventListener('click',async()=>{
-    if(!world.value){alert('Escolha o mundo do personagem primeiro.');return}if(!files.length){alert('Envie pelo menos um print do Stash.');return}analyze.disabled=true;analyze.textContent='Detectando Stash automaticamente…';result.innerHTML='<strong>Detectando o Stash automaticamente…</strong><br><span class="stash-note">Localizando a grade 20 × 11 sem calibração manual.</span>';
-    try{const reports=[];for(const file of files){reports.push(await inspect(file));await new Promise(r=>setTimeout(r,0));}const host=panel();host.innerHTML='<div class="eyebrow">Scanner · Detecção automática</div><h3 style="margin:4px 0 8px">Stash localizado automaticamente</h3><p class="stash-note">A posição da grade foi determinada pelo conteúdo do screenshot. Nenhum ajuste manual é necessário.</p>';reports.forEach((r,i)=>renderReport(r,host,i));window.__stashReports=reports;const good=reports.filter(r=>r.grid).length;result.innerHTML=`<strong>${files.length} print${files.length===1?'':'s'} processado${files.length===1?'':'s'}.</strong><br><span class="stash-note">${good}/${reports.length} Stash${good===1?'':'s'} localizado${good===1?'':'s'} automaticamente.</span>`;document.getElementById('npcTotal').textContent='—';document.getElementById('marketTotal').textContent='—';document.getElementById('bestTotal').textContent='—';}catch(e){console.error(e);result.innerHTML='<strong>Falha ao analisar a imagem.</strong><br><span class="stash-note">Use o PNG original do Tibia, sem redimensionar ou recomprimir.</span>'}finally{analyze.disabled=false;analyze.textContent='Analisar Stash';}
-  });
+  analyze.addEventListener('click',async()=>{if(!world.value){alert('Escolha o mundo do personagem primeiro.');return}if(!files.length){alert('Envie pelo menos um print do Stash.');return}analyze.disabled=true;analyze.textContent='Analisando itens…';result.innerHTML='<strong>Detectando e reconhecendo o Stash…</strong><br><span class="stash-note">Localizando a grade e consultando os dados dos itens.</span>';try{const reports=[];for(const file of files){reports.push(await inspect(file));await new Promise(r=>setTimeout(r,0));}const host=panel();host.innerHTML='<div class="eyebrow">Scanner · Reconhecimento + valorização</div><h3 style="margin:4px 0 8px">Stash localizado e preparado para avaliação</h3><p class="stash-note">Grade 20 × 11 detectada automaticamente. Os itens reconhecidos entram na tabela de NPC/Market.</p>';reports.forEach((r,i)=>renderReport(r,host,i));window.__stashReports=reports;await new Promise(r=>setTimeout(r,100));const rows=await enrichMatches();const msg=renderResults(rows);result.innerHTML=`<strong>${msg}</strong><br><span class="stash-note">NPC: dados de compra. Market: abertura do mercado do Tibia para cotação do mundo selecionado.</span>`;}catch(e){console.error(e);result.innerHTML='<strong>Falha ao analisar a imagem.</strong><br><span class="stash-note">Use o PNG original do Tibia, sem redimensionar ou recomprimir.</span>'}finally{analyze.disabled=false;analyze.textContent='Analisar Stash';}});
   loadWorlds();
 })();
