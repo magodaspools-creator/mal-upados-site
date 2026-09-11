@@ -25,7 +25,7 @@
   function capacity(){return current()?.slots||0}
 
   // Cada Amuleto/Trinket comprado ocupa 1 slot físico da Backpack.
-  // O jogador pode possuir vários Amuletos e Trinkets, mas continua equipando conforme as regras de cada tipo.
+  // Upgrade de Trinket NÃO cria uma nova unidade: substitui a atual no mesmo slot.
   function specialItems(){
     if(typeof SHOP_ITEMS==='undefined')return [];
     ensure();
@@ -59,8 +59,13 @@
       const item=itemById(btn.dataset.id);if(!item)return;
       const action=(btn.textContent||'').toLowerCase();
       const isSpecial=item.category==='amulets'||item.category==='trinkets';
-      const isBuy=!game.shopOwned.includes(item.id);
+      // Upgrade de Trinket troca o ID da unidade existente pelo próximo nível.
+      // Portanto NÃO consome slot adicional e nunca deve ser bloqueado por capacidade.
+      const isUpgrade=isSpecial&&item.category==='trinkets'&&action.includes('upgrade');
+      const isBuy=!game.shopOwned.includes(item.id)&&!isUpgrade;
       const isEquip=game.shopOwned.includes(item.id)&&action.includes('equipar');
+
+      if(isUpgrade)return;
 
       if(isSpecial&&isBuy&&!canCarrySpecial(item)){
         e.preventDefault();
