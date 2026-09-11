@@ -109,6 +109,15 @@
       const activeNow=current&&equipped().includes(current.id);
       const next=current&&current.level<3?find(item.type,current.level+1):null;
       const ownedBase=!!current;
+      let levelBadge=card.querySelector('.arena-trinket-level-badge');
+      if(!levelBadge){
+        levelBadge=document.createElement('div');
+        levelBadge.className='arena-trinket-level-badge';
+        card.prepend(levelBadge);
+      }
+      levelBadge.textContent=`NÍVEL ${current?.level||1}`;
+      levelBadge.classList.toggle('owned',ownedBase);
+      levelBadge.classList.toggle('max',current?.level===3);
 
       if(!ownedBase){
         btn.textContent=`Comprar · ${fmt(item.price)} gold`;
@@ -135,11 +144,7 @@
 
   const previousRender=typeof shopRender==='function'?shopRender:null;
   if(previousRender&&!window.__arenaTrinketShopWrapped){
-    window.shopRender=function(){
-      ensure();
-      previousRender();
-      renderTrinketCards();
-    };
+    window.shopRender=function(){ensure();previousRender();renderTrinketCards()};
     window.__arenaTrinketShopWrapped=true;
   }
 
@@ -173,38 +178,20 @@
     setTimeout(()=>el.remove(),850);
   }
 
-  const D6_FACES={
-    1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]
-  };
-  function d6Face(n){
-    const dots=new Array(9).fill('').map((_,i)=>D6_FACES[n].includes(i)?'<i></i>':'<i class="empty"></i>').join('');
-    return `<div class="arena-d6-face" aria-label="Dado mostrando ${n}">${dots}</div>`;
-  }
+  const D6_FACES={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
+  function d6Face(n){const dots=new Array(9).fill('').map((_,i)=>D6_FACES[n].includes(i)?'<i></i>':'<i class="empty"></i>').join('');return `<div class="arena-d6-face" aria-label="Dado mostrando ${n}">${dots}</div>`}
   function showCritDice(roll,multiplier,onDone){
-    const area=document.getElementById('battleArea');
-    if(!area){onDone();return}
+    const area=document.getElementById('battleArea');if(!area){onDone();return}
     area.querySelector('.arena-crit-dice-overlay')?.remove();
-    const el=document.createElement('div');
-    el.className='arena-crit-dice-overlay';
+    const el=document.createElement('div');el.className='arena-crit-dice-overlay';
     el.innerHTML=`<div class="arena-crit-dice-modal"><div class="arena-crit-dice-title">CRÍTICO!</div><div class="arena-crit-dice-sub">Role o D6 para definir o dano</div><div class="arena-d6-wrap">${d6Face(1)}</div><div class="arena-crit-dice-result">?</div><div class="arena-crit-dice-mult">Dano crítico: rolando...</div></div>`;
-    area.appendChild(el);
-    let ticks=0;
-    const face=el.querySelector('.arena-d6-wrap');
-    const result=el.querySelector('.arena-crit-dice-result');
-    const mult=el.querySelector('.arena-crit-dice-mult');
-    const timer=setInterval(()=>{
-      ticks++;
-      const n=1+Math.floor(Math.random()*6);
-      face.innerHTML=d6Face(n);
-      if(ticks>=9){
-        clearInterval(timer);
-        face.innerHTML=d6Face(roll);
-        result.textContent=roll;
-        mult.textContent=`Dano crítico: x${multiplier.toFixed(2)}`;
-        el.classList.add('resolved');
-        setTimeout(()=>{el.remove();onDone()},650);
-      }
-    },75);
+    area.appendChild(el);let ticks=0;const face=el.querySelector('.arena-d6-wrap');const result=el.querySelector('.arena-crit-dice-result');const mult=el.querySelector('.arena-crit-dice-mult');
+    const timer=setInterval(()=>{ticks++;const n=1+Math.floor(Math.random()*6);face.innerHTML=d6Face(n);if(ticks>=9){clearInterval(timer);face.innerHTML=d6Face(roll);result.textContent=roll;mult.textContent=`Dano crítico: x${multiplier.toFixed(2)}`;el.classList.add('resolved');setTimeout(()=>{el.remove();onDone()},650)}},75)
+  }
+
+  function installTrinketLevelStyle(){
+    if(document.getElementById('arena-trinket-level-style'))return;
+    const s=document.createElement('style');s.id='arena-trinket-level-style';s.textContent=`.shop-item{position:relative}.arena-trinket-level-badge{display:block;width:max-content;margin:-4px 0 10px;padding:5px 12px;border:2px solid rgba(220,180,90,.65);border-radius:999px;background:rgba(80,58,24,.5);color:#f2d37d;font:900 .78rem/1 Arial,sans-serif;letter-spacing:1.2px;box-shadow:0 2px 10px rgba(0,0,0,.25)}.arena-trinket-level-badge.owned{border-color:#e6c15c;background:rgba(126,91,25,.55);color:#ffe29a}.arena-trinket-level-badge.max{border-color:#8ed6a0;background:rgba(35,96,52,.5);color:#b8f0c6}@media(max-width:620px){.arena-trinket-level-badge{font-size:.74rem;padding:5px 10px;margin-bottom:8px}}`;document.head.appendChild(s)
   }
 
   function installCritStyle(){
@@ -214,15 +201,10 @@
 
   function resolveAttack(originalAttack,baseAttack,b,roll,multiplier){
     if(!battle){window.__arenaCritRolling=false;return}
-    battle.attack=Math.floor(baseAttack*multiplier);
-    const beforeHp=battle.hp;
-    originalAttack();
-    const dealt=Math.max(0,beforeHp-(battle?.hp??0));
-    battle.attack=baseAttack;
+    battle.attack=Math.floor(baseAttack*multiplier);const beforeHp=battle.hp;originalAttack();const dealt=Math.max(0,beforeHp-(battle?.hp??0));battle.attack=baseAttack;
     battleLog(`<span class="loot">CRÍTICO! D6 = ${roll} · x${multiplier.toFixed(2)} dano</span>`);
     if(battle&&b.lifesteal>0&&dealt>0){const healed=Math.max(1,Math.floor(dealt*b.lifesteal/100));battle.playerHp=Math.min(battle.playerMax,battle.playerHp+healed);battleLog(`🩸 Roubo de vida: +${healed} HP`)}
-    if(battle&&typeof renderBattle==='function')renderBattle();
-    window.__arenaCritRolling=false;
+    if(battle&&typeof renderBattle==='function')renderBattle();window.__arenaCritRolling=false;
   }
 
   function combatWrap(){
@@ -230,35 +212,19 @@
     const originalAttack=attack;
     window.attack=function(){
       if(!battle||window.__arenaCritRolling)return;
-      const b=bonuses();
-      const baseAttack=battle.attack;
-      const critical=b.crit>0&&Math.random()*100<b.crit;
-      if(!critical){
-        const beforeHp=battle.hp;
-        originalAttack();
-        const dealt=Math.max(0,beforeHp-(battle?.hp??0));
-        if(b.lifesteal>0&&dealt>0&&battle){const healed=Math.max(1,Math.floor(dealt*b.lifesteal/100));battle.playerHp=Math.min(battle.playerMax,battle.playerHp+healed);battleLog(`🩸 Roubo de vida: +${healed} HP`)}
-        if(battle&&typeof renderBattle==='function')renderBattle();
-        return;
-      }
-
-      window.__arenaCritRolling=true;
-      const roll=1+Math.floor(Math.random()*6);
-      const multiplier=1+(roll*0.25); // D6: 1=1.25x ... 6=2.50x
-      showCritDice(roll,multiplier,()=>resolveAttack(originalAttack,baseAttack,b,roll,multiplier));
+      const b=bonuses();const baseAttack=battle.attack;const critical=b.crit>0&&Math.random()*100<b.crit;
+      if(!critical){const beforeHp=battle.hp;originalAttack();const dealt=Math.max(0,beforeHp-(battle?.hp??0));if(b.lifesteal>0&&dealt>0&&battle){const healed=Math.max(1,Math.floor(dealt*b.lifesteal/100));battle.playerHp=Math.min(battle.playerMax,battle.playerHp+healed);battleLog(`🩸 Roubo de vida: +${healed} HP`)}if(battle&&typeof renderBattle==='function')renderBattle();return}
+      window.__arenaCritRolling=true;const roll=1+Math.floor(Math.random()*6);const multiplier=1+(roll*0.25);showCritDice(roll,multiplier,()=>resolveAttack(originalAttack,baseAttack,b,roll,multiplier));
     };
     window.__arenaTrinketAttackWrapped=true;
   }
 
   function winWrap(){
     if(typeof winBattle!=='function'||window.__arenaTrinketWinWrapped)return;
-    const originalWin=winBattle;
-    window.winBattle=function(){const b=bonuses();if(b.loot>0&&battle)battle.gold=Math.floor(battle.gold*(1+b.loot/100));originalWin();if(b.loot>0)toast(`Trinket de Loot: +${b.loot}% gold nesta vitória.`)};
-    window.__arenaTrinketWinWrapped=true;
+    const originalWin=winBattle;window.winBattle=function(){const b=bonuses();if(b.loot>0&&battle)battle.gold=Math.floor(battle.gold*(1+b.loot/100));originalWin();if(b.loot>0)toast(`Trinket de Loot: +${b.loot}% gold nesta vitória.`)};window.__arenaTrinketWinWrapped=true;
   }
 
-  function install(){ensure();installCritStyle();combatWrap();winWrap();if(typeof shopRender==='function')shopRender()}
-
+  function install(){ensure();installTrinketLevelStyle();installCritStyle();combatWrap();winWrap();if(typeof shopRender==='function')shopRender()}
   window.arenaTrinkets={TRINKETS,owned,active,equipped,bonuses,equip,unequip,typeEquipped,upgrade};
   install();window.addEventListener('load',install);setTimeout(install,500);
 })();
