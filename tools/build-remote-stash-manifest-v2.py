@@ -8,7 +8,7 @@ from pathlib import Path
 import requests
 from PIL import Image
 
-ITEMS_API = "https://tibiadata.bytewizards.de/api/v1/items/list"
+CATALOG_URL = "https://tibiawiki.dev/api/items?expand=true"
 SPRITE_BASE = "https://item-images.ots.me/latest_otbr/"
 OUT = Path("stash-sprites/manifest.json")
 MAX_WORKERS = 24
@@ -62,10 +62,10 @@ def extract_items(payload):
 
 def load_catalog():
     headers = {
-        "User-Agent": "MalUpados-Stash-Builder/3.0 (+https://mal-upados-site.github.io/)",
+        "User-Agent": "MalUpados-Stash-Builder/4.0 (+https://mal-upados-site.github.io/)",
         "Accept": "application/json",
     }
-    r = requests.get(ITEMS_API, timeout=60, headers=headers)
+    r = requests.get(CATALOG_URL, timeout=90, headers=headers)
     r.raise_for_status()
     batch = extract_items(r.json())
     found = {}
@@ -81,8 +81,8 @@ def load_catalog():
         if name and 1 <= item_id <= 100000:
             found[item_id] = str(name)
     if not found:
-        raise RuntimeError("TibiaData /items/list não retornou IDs de itens.")
-    print(f"Catálogo TibiaData: {len(found)} itens")
+        raise RuntimeError("TibiaWikiApi /api/items?expand=true não retornou IDs de itens.")
+    print(f"Catálogo TibiaWikiApi: {len(found)} itens")
     return found
 
 
@@ -90,7 +90,7 @@ def fetch_one(item):
     item_id, name = item
     url = f"{SPRITE_BASE}{item_id}.png"
     try:
-        r = requests.get(url, timeout=20, headers={"User-Agent": "MalUpados-Stash-Builder/3.0"})
+        r = requests.get(url, timeout=20, headers={"User-Agent": "MalUpados-Stash-Builder/4.0"})
         if r.status_code != 200 or not r.content:
             return None
         img = Image.open(io.BytesIO(r.content)).convert("RGBA")
@@ -112,7 +112,7 @@ def fetch_one(item):
 
 
 def main():
-    print("Baixando catálogo atual de itens via TibiaData /list...")
+    print("Baixando catálogo estruturado de itens via TibiaWikiApi...")
     items = load_catalog()
     out = []
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
@@ -128,7 +128,7 @@ def main():
     OUT.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "version": "2026.09.11-remote-15.10+",
-        "source": "TibiaData /items/list + item-images.ots.me",
+        "source": "TibiaWikiApi + item-images.ots.me",
         "baseUrl": SPRITE_BASE,
         "generatedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "items": out,
