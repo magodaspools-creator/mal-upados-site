@@ -8,8 +8,11 @@ GUILD = "Mal Upados"
 BASE = "https://api.tibiadata.com/v4"
 HISTORICO_LEVEL = "historico.json"
 HISTORICO_XP = "historico_xp.json"
-TOP_PAGES = 10
-VOCATIONS = ("knight", "paladin", "druid", "sorcerer", "monk")
+
+# TibiaData v4 retorna 50 jogadores por pagina.
+# 20 paginas = Top 1000 de cada vocacao.
+TOP_PAGES = 20
+VOCATIONS = ("knights", "paladins", "druids", "sorcerers", "monks")
 
 
 def get_json(url):
@@ -37,10 +40,9 @@ historico[hoje] = {m["name"]: m["level"] for m in membros}
 with open(HISTORICO_LEVEL, "w", encoding="utf-8") as f:
     json.dump(historico, f, ensure_ascii=False, indent=2)
 
-# XP exata: replica a estrategia de highscores por vocacao.
-# Buscamos as 1000 primeiras posicoes de Experience de cada vocacao.
-# Assim nao dependemos apenas do highscore geral, que pode deixar membros
-# da guilda fora da janela consultada.
+# XP exata: highscores de Experience filtrados por vocacao.
+# A API usa os identificadores no plural: knights, paladins, druids,
+# sorcerers e monks. Cada vocacao possui ate 1000 posicoes acessiveis.
 experiencias = {}
 fontes = {}
 
