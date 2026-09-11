@@ -3,7 +3,6 @@
 (()=>{
   const STYLE_ID='arena-profile-ui-style';
   const SET_ID='arenaEquipmentSet';
-  const TOTAL_XP_ID='arenaTotalXp';
 
   function totalXp(){
     if(typeof game==='undefined'||!game)return 0;
@@ -53,6 +52,7 @@
     const style=document.createElement('style');
     style.id=STYLE_ID;
     style.textContent=`
+      .character-panel>.equipment{display:none}
       .arena-set-details{margin:12px 0 2px;border:1px solid var(--line);background:#101216}
       .arena-set-details>summary{list-style:none;cursor:pointer;padding:10px 11px;color:var(--gold2);font-size:.64rem;font-weight:800;letter-spacing:1px;text-transform:uppercase}
       .arena-set-details>summary::-webkit-details-marker{display:none}
@@ -84,7 +84,7 @@
   }
 
   function updateTotalXp(){
-    const el=document.getElementById(TOTAL_XP_ID)||document.getElementById('arenaXp');
+    const el=document.getElementById('arenaXp');
     if(el)el.textContent=fmt(totalXp());
   }
 
