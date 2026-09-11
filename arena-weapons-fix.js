@@ -1,5 +1,4 @@
 // Arsenal extra da Arena: armas para todas as vocações.
-// Mantemos a categoria de armas existente e adicionamos itens especializados.
 const CLASS_WEAPONS=[
   {id:'knight-sword',name:'Executioner Sword',icon:'⚔️',category:'weapons',class:'Knight',price:420,attack:16,defense:0,minLevel:6,bonus:'+16 ataque · Knight'},
   {id:'knight-axe',name:'Dragon Slayer',icon:'🪓',category:'weapons',class:'Knight',price:620,attack:19,defense:0,minLevel:9,bonus:'+19 ataque · Knight'},
@@ -43,6 +42,33 @@ function arenaWeaponBonus(){
     });
   }
   return {attack,defense};
+}
+
+function arenaEquippedWeaponName(){
+  const id=game?.shopEquipped?.weapon;
+  if(id&&typeof SHOP_ITEMS!=='undefined'){
+    const item=SHOP_ITEMS.find(x=>x.id===id);
+    if(item)return item.name;
+  }
+  return WEAPONS[game?.weapon||0]?.[0]||'Espada de Bronze';
+}
+
+if(typeof renderPlayer==='function'){
+  window.renderPlayer=function(){
+    document.getElementById('playerName').textContent=game.character;
+    document.getElementById('arenaLevel').textContent=fmt(game.level);
+    document.getElementById('arenaXp').textContent=fmt(game.xp);
+    document.getElementById('gold').textContent=fmt(game.gold);
+    document.getElementById('wins').textContent=fmt(game.wins);
+    document.getElementById('weapon').textContent=arenaEquippedWeaponName();
+    document.getElementById('armor').textContent=WEAPONS && game?.shopEquipped?.armor ? (SHOP_ITEMS.find(x=>x.id===game.shopEquipped.armor)?.name||'Leather Armor') : (ARMORS[game.armor]?.[0]||'Leather Armor');
+    const member=(typeof members!=='undefined'&&Array.isArray(members))?members.find(m=>m.name===game.character):null;
+    document.getElementById('avatar').textContent=VOC_ICONS[member?.vocation]||'⚔';
+    const need=xpNeed();
+    document.getElementById('xpText').textContent=`${fmt(game.xp)} / ${fmt(need)}`;
+    document.getElementById('xpBar').style.width=Math.min(100,game.xp/need*100)+'%';
+    document.getElementById('classLine').textContent=member?.vocation||'Aventureiro';
+  };
 }
 
 if(typeof startBattle==='function'){
