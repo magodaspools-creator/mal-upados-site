@@ -6,6 +6,7 @@
     "build-stash-base": "node build-stash-sprite-base.mjs"
   },
   "dependencies": {
+    "sharp": "latest",
     "tibia-assets": "latest"
   }
 }
