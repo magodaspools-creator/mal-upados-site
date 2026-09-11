@@ -19,9 +19,7 @@
 
   function addCatalog(){
     if(typeof SHOP_CATEGORIES!=='undefined'&&!SHOP_CATEGORIES.some(x=>x.id==='bless'))SHOP_CATEGORIES.push(BLESS_CATEGORY);
-    if(typeof SHOP_ITEMS!=='undefined'){
-      BLESS_ITEMS.forEach(item=>{if(!SHOP_ITEMS.some(x=>x.id===item.id))SHOP_ITEMS.push(item)});
-    }
+    if(typeof SHOP_ITEMS!=='undefined')BLESS_ITEMS.forEach(item=>{if(!SHOP_ITEMS.some(x=>x.id===item.id))SHOP_ITEMS.push(item)});
   }
 
   function totalBlesses(){ensure();return BLESS_ITEMS.reduce((n,x)=>n+(game.blesses[x.id]||0),0)}
@@ -37,7 +35,6 @@
     if(!b)return 0;
     return b.id==='bless-basic'?10:b.id==='bless-greater'?25:50;
   }
-
   function consumeBless(){
     ensure();
     const b=bestBless();
@@ -59,14 +56,15 @@
     game.gold-=item.price;
     game.blesses[item.id]=(game.blesses[item.id]||0)+1;
     persist();
-    toast(`${item.name} adquirida. Ela será consumida ao morrer se proteger uma perda de item.`);
+    toast(`${item.name} adquirida. Será consumida quando uma morte precisar de proteção contra perda de item.`);
     shopRender();
     return true;
   }
 
   function installShop(){
     addCatalog();
-    if(typeof shopRender!=='function')return;
+    if(typeof shopRender!=='function'||window.__arenaBlessShopInstalled)return;
+    window.__arenaBlessShopInstalled=true;
     const original=shopRender;
     window.shopRender=function(){
       ensure();
@@ -103,14 +101,10 @@
     );
   }
 
-  function loseRandomSetItem(){
-    const pool=itemLossPool();
-    if(!pool.length)return null;
-    const item=pool[Math.floor(Math.random()*pool.length)];
+  function removeItem(item){
     const slot=item.category==='weapons'||item.category==='wands'?'weapon':item.category;
     if(game.shopOwned)game.shopOwned=game.shopOwned.filter(id=>id!==item.id);
     if(game.shopEquipped&&game.shopEquipped[slot]===item.id)game.shopEquipped[slot]=null;
-    return item;
   }
 
   function deathPenalty(){
@@ -118,52 +112,53 @@
     const roll=Math.random();
     let result={type:'gold',message:'',protected:false,bless:null};
 
-    // 45% item, 40% gold, 15% level/XP.
+    // 45% item do set, 40% gold, 15% XP/nível. A Backpack nunca entra no sorteio.
     if(roll<0.45){
-      const item=loseRandomSetItem();
-      if(!item){
+      const pool=itemLossPool();
+      if(!pool.length){
         result.type='gold';
       }else{
+        const item=pool[Math.floor(Math.random()*pool.length)];
         const bless=consumeBless();
         if(bless){
           result.type='protected';
           result.protected=true;
           result.bless=bless;
+          result.item=item;
           result.message=`${bless.name} protegeu seu ${item.name}! A Bless foi consumida.`;
         }else{
+          removeItem(item);
           result.type='item';
           result.item=item;
           result.message=`Você perdeu ${item.name}. A Backpack não pode ser perdida.`;
         }
       }
-    }
-
-    if(result.type==='gold'){
+    }else if(roll<0.85){
       const lost=Math.max(10,Math.floor(game.gold*(0.08+Math.random()*0.08)));
       game.gold=Math.max(0,game.gold-lost);
+      result.type='gold';
       result.lost=lost;
       result.message=`Você perdeu ${fmt(lost)} gold.`;
-    }
-
-    if(roll>=0.85){
+    }else{
       const lostXP=Math.max(10,Math.floor((100+((game.level-1)*65))*0.20));
       if(game.xp>=lostXP){
         game.xp-=lostXP;
       }else if(game.level>1){
         game.level--;
-        game.xp=Math.max(0,xpNeed()-lostXP);
+        game.xp=0;
       }else{
         game.xp=0;
       }
       result.type='xp';
-      result.message=`A morte também fez você perder ${fmt(lostXP)} XP.`;
+      result.message=game.level>1?`Você perdeu ${fmt(lostXP)} XP.`:`Você perdeu ${fmt(lostXP)} XP. O Level não pode cair abaixo de 1.`;
     }
 
     return result;
   }
 
   function installDeath(){
-    if(typeof loseBattle!=='function')return;
+    if(typeof loseBattle!=='function'||window.__arenaBlessDeathInstalled)return;
+    window.__arenaBlessDeathInstalled=true;
     const original=loseBattle;
     window.loseBattle=function(){
       const result=deathPenalty();
@@ -173,9 +168,7 @@
       const resultBox=document.querySelector('#battleArea .battle-empty.result');
       if(!resultBox)return;
       const p=resultBox.querySelector('p');
-      if(p){
-        p.innerHTML=`<strong class="death-penalty">${esc(result.message)}</strong><br><span>Seu equipamento e progresso podem sofrer consequências. A Backpack está protegida.</span>`;
-      }
+      if(p)p.innerHTML=`<strong class="death-penalty">${esc(result.message)}</strong><br><span>Seu equipamento e progresso podem sofrer consequências. A Backpack está protegida.</span>`;
       const title=resultBox.querySelector('h3');
       if(title)title.textContent=result.type==='protected'?'Você caiu, mas a Bless protegeu seu set.':'Você caiu.';
       const icon=resultBox.querySelector('.battle-icon');
@@ -203,18 +196,6 @@
   }
 
   window.arenaDeathBless={BLESS_ITEMS,ensure,totalBlesses,protectionPercent,deathPenalty};
-  document.addEventListener('DOMContentLoaded',()=>{
-    ensure();
-    addCatalog();
-    installShop();
-    installDeath();
-    addDeathPanel();
-  });
-  window.addEventListener('load',()=>{
-    ensure();
-    addCatalog();
-    installShop();
-    installDeath();
-    addDeathPanel();
-  });
+  document.addEventListener('DOMContentLoaded',()=>{ensure();addCatalog();installShop();installDeath();addDeathPanel()});
+  window.addEventListener('load',()=>{ensure();addCatalog();installShop();installDeath();addDeathPanel()});
 })();
