@@ -1,0 +1,8 @@
+/* Ajuste visual isolado da grade de equipamento no mobile. */
+.character-panel .arena-set-details{grid-column:1/-1!important;width:100%;box-sizing:border-box;min-width:0}
+@media(max-width:620px){
+  .character-panel .arena-set-details{grid-column:1/-1!important;width:100%!important;}
+  .arena-set-grid{width:100%;box-sizing:border-box;overflow:hidden}
+  .arena-equipment-stage{width:100%;box-sizing:border-box;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 8px}
+  .arena-equipment-slot{max-width:70px;width:100%;min-width:0}
+}
