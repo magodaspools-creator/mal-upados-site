@@ -8,7 +8,8 @@ GUILD = "Mal Upados"
 BASE = "https://api.tibiadata.com/v4"
 HISTORICO_LEVEL = "historico.json"
 HISTORICO_XP = "historico_xp.json"
-MAX_PAGES = 10
+TOP_PAGES = 10
+VOCATIONS = ("knight", "paladin", "druid", "sorcerer", "monk")
 
 
 def get_json(url):
@@ -36,26 +37,33 @@ historico[hoje] = {m["name"]: m["level"] for m in membros}
 with open(HISTORICO_LEVEL, "w", encoding="utf-8") as f:
     json.dump(historico, f, ensure_ascii=False, indent=2)
 
-# XP exata vem do highscore de Experience do mundo.
-# O endpoint de personagem/guilda fornece level, mas nao a XP total.
-# Procuramos ate 10 paginas (ate 3000 personagens) para cobrir a guilda.
+# XP exata: replica a estrategia de highscores por vocacao.
+# Buscamos as 1000 primeiras posicoes de Experience de cada vocacao.
+# Assim nao dependemos apenas do highscore geral, que pode deixar membros
+# da guilda fora da janela consultada.
 experiencias = {}
-for page in range(1, MAX_PAGES + 1):
-    url = f"{BASE}/highscores/{urllib.parse.quote(world)}/experience/all/{page}"
-    try:
-        hs = get_json(url).get("highscores", {})
-        for item in hs.get("highscore_list", []):
-            nome = item.get("name")
-            valor = item.get("value")
-            if nome and isinstance(valor, int):
-                experiencias[nome.casefold()] = valor
-        pagina = hs.get("highscore_page", {})
-        total = int(pagina.get("total_pages") or page)
-        if page >= min(total, MAX_PAGES):
+fontes = {}
+
+for vocacao in VOCATIONS:
+    for page in range(1, TOP_PAGES + 1):
+        url = f"{BASE}/highscores/{urllib.parse.quote(world)}/experience/{vocacao}/{page}"
+        try:
+            hs = get_json(url).get("highscores", {})
+            for item in hs.get("highscore_list", []):
+                nome = item.get("name")
+                valor = item.get("value")
+                if nome and isinstance(valor, int):
+                    chave = nome.casefold()
+                    experiencias[chave] = valor
+                    fontes[chave] = vocacao
+
+            pagina = hs.get("highscore_page", {})
+            total = int(pagina.get("total_pages") or page)
+            if page >= min(total, TOP_PAGES):
+                break
+        except Exception as exc:
+            print(f"Falha ao consultar highscores {vocacao} pagina {page}: {exc}")
             break
-    except Exception as exc:
-        print(f"Falha ao consultar highscores pagina {page}: {exc}")
-        break
 
 xp_historico = {}
 if os.path.exists(HISTORICO_XP):
@@ -67,6 +75,7 @@ xp_historico[hoje] = {
         "level": m["level"],
         "experience": experiencias.get(m["name"].casefold()),
         "experience_exact": m["name"].casefold() in experiencias,
+        "experience_vocation": fontes.get(m["name"].casefold()),
     }
     for m in membros
 }
@@ -75,4 +84,8 @@ with open(HISTORICO_XP, "w", encoding="utf-8") as f:
     json.dump(xp_historico, f, ensure_ascii=False, indent=2)
 
 exatos = sum(1 for v in xp_historico[hoje].values() if v["experience_exact"])
-print(f"Historico atualizado: {hoje} | mundo: {world} | membros: {len(membros)} | XP exata: {exatos}/{len(membros)}")
+print(
+    f"Historico atualizado: {hoje} | mundo: {world} | "
+    f"membros: {len(membros)} | XP exata: {exatos}/{len(membros)} | "
+    f"vocoes consultadas: {', '.join(VOCATIONS)}"
+)
