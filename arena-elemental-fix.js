@@ -11,15 +11,15 @@
   const ZONE_ELEMENTS=['earth','fire','energy','ice','death'];
 
   const AMULETS=[
-    {id:'earthguard-amulet',name:'Earthguard Amulet',icon:'🌿',category:'amulets',price:5500,attack:0,defense:0,minLevel:1,bonus:'85% resistência a Terra',element:'earth',elementalResistance:0.85},
-    {id:'fireheart-amulet',name:'Fireheart Amulet',icon:'🔥',category:'amulets',price:7500,attack:0,defense:0,minLevel:5,bonus:'85% resistência a Fogo',element:'fire',elementalResistance:0.85},
-    {id:'energy-prism-amulet',name:'Energy Prism Amulet',icon:'⚡',category:'amulets',price:9500,attack:0,defense:0,minLevel:12,bonus:'85% resistência a Energy',element:'energy',elementalResistance:0.85},
-    {id:'frost-amulet',name:'Frost Amulet',icon:'❄️',category:'amulets',price:12000,attack:0,defense:0,minLevel:20,bonus:'85% resistência a Gelo',element:'ice',elementalResistance:0.85},
-    {id:'death-amulet',name:'Death Amulet',icon:'💀',category:'amulets',price:15000,attack:0,defense:0,minLevel:35,bonus:'85% resistência a Death',element:'death',elementalResistance:0.85}
+    {id:'earthguard-amulet',name:'Earthguard Amulet',icon:'🌿',category:'amulet',price:5500,attack:0,defense:0,minLevel:1,bonus:'85% resistência a Terra',element:'earth',elementalResistance:0.85},
+    {id:'fireheart-amulet',name:'Fireheart Amulet',icon:'🔥',category:'amulet',price:7500,attack:0,defense:0,minLevel:5,bonus:'85% resistência a Fogo',element:'fire',elementalResistance:0.85},
+    {id:'energy-prism-amulet',name:'Energy Prism Amulet',icon:'⚡',category:'amulet',price:9500,attack:0,defense:0,minLevel:12,bonus:'85% resistência a Energy',element:'energy',elementalResistance:0.85},
+    {id:'frost-amulet',name:'Frost Amulet',icon:'❄️',category:'amulet',price:12000,attack:0,defense:0,minLevel:20,bonus:'85% resistência a Gelo',element:'ice',elementalResistance:0.85},
+    {id:'death-amulet',name:'Death Amulet',icon:'💀',category:'amulet',price:15000,attack:0,defense:0,minLevel:35,bonus:'85% resistência a Death',element:'death',elementalResistance:0.85}
   ];
 
-  if(typeof SHOP_CATEGORIES!=='undefined'&&!SHOP_CATEGORIES.some(x=>x.id==='amulets')){
-    SHOP_CATEGORIES.push({id:'amulets',label:'Amuletos'});
+  if(typeof SHOP_CATEGORIES!=='undefined'&&!SHOP_CATEGORIES.some(x=>x.id==='amulet')){
+    SHOP_CATEGORIES.push({id:'amulet',label:'Amuletos'});
   }
   if(typeof SHOP_ITEMS!=='undefined')AMULETS.forEach(item=>{if(!SHOP_ITEMS.some(x=>x.id===item.id))SHOP_ITEMS.push(item)});
 
@@ -37,7 +37,7 @@
 
   if(typeof slotFor==='function'){
     slotFor=function(item){
-      if(item?.category==='amulets')return 'amulet';
+      if(item?.category==='amulet')return 'amulet';
       return item?.category==='weapons'||item?.category==='wands'?'weapon':item?.category;
     };
   }
@@ -54,7 +54,6 @@
   function elementForZone(zoneIndex){return ELEMENTS[ZONE_ELEMENTS[zoneIndex]]||ELEMENTS.earth}
   function elementLabel(element){const e=ELEMENTS[element]||ELEMENTS.earth;return `${e.icon} ${e.name}`}
 
-  // Exposto para o visual do set e eventuais módulos futuros.
   window.arenaElementalState={ELEMENTS,ZONE_ELEMENTS,currentAmulet,resistanceFor,elementForZone,elementLabel};
 
   if(typeof startBattle==='function'){
@@ -76,7 +75,6 @@
         attack:15+game.level*4+attackBonus*3,
         enemyDelay:0,log:[]
       };
-      renderBattle();
       battleLog(`<span style="color:${elemental.color}">${elementLabel(battle.element)} · ataque elemental ativo</span>`);
       renderBattle();
     };
