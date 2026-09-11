@@ -1,4 +1,4 @@
-name: Build Stash Sprite Manifest v2
+name: Build Stash Sprite Manifest v3
 
 on:
   push:
@@ -39,5 +39,5 @@ jobs:
             echo 'Manifest sem alterações.'
             exit 0
           fi
-          git commit -m 'chore(stash): refresh sprite manifest [stash-data-v2]'
+          git commit -m 'chore(stash): refresh full sprite manifest'
           git push
