@@ -5,14 +5,15 @@
   const esc=v=>String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
   const money=v=>Number(v)>0?Number(v).toLocaleString('pt-BR')+' gp':'—';
   const GRID={cols:20,rows:11,pitch:37,tile:32,width:740,height:407};
-  const X_ORIGIN_OFFSET=-37,Y_ORIGIN_OFFSET=148;
   const ITEM_API='https://tibiadata.bytewizards.de/api/v1/items/';
   const MARKET_URL='https://www.tibia.com/community/?subtopic=market';
   const itemCache=new Map();
+
   function setStatus(title,text){if(status)status.innerHTML=`<div class="title">${esc(title)}</div><div class="stash-note">${text}</div>`;}
   function renderWorlds(names){worldSelect.innerHTML='<option value="">Selecione seu mundo</option>';names.forEach(name=>{const o=document.createElement('option');o.value=name;o.textContent=name;worldSelect.appendChild(o);});worldSelect.disabled=!names.length;}
   async function loadWorlds(){try{const r=await fetch('https://api.tibiadata.com/v4/worlds?'+Date.now());if(!r.ok)throw Error();const d=await r.json(),list=d?.worlds?.regular_worlds||d?.worlds?.regular||d?.worlds?.allworlds||d?.worlds||[],arr=Array.isArray(list)?list:list.world||list.allworlds||[];renderWorlds(arr.map(x=>typeof x==='string'?x:x.name).filter(Boolean).sort((a,b)=>a.localeCompare(b)));}catch(e){renderWorlds([]);}}
   worldSelect.addEventListener('change',()=>{worldValue=worldSelect.value;});
+
   function render(){preview.innerHTML='';if(!file)return;const url=URL.createObjectURL(file),card=document.createElement('div');card.className='stash-thumb';card.innerHTML=`<button type="button" title="Remover">×</button><img src="${url}" alt="Print do Stash"><span>${esc(file.name)}</span>`;card.querySelector('button').onclick=()=>{file=null;render()};preview.appendChild(card);}
   function setFile(f){if(!f||!/^image\/(png|jpeg|webp)$/.test(f.type))return;file=f;render();}
   filesInput.addEventListener('change',e=>setFile(e.target.files[0]));
@@ -20,43 +21,82 @@
   ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag')}));
   ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag')}));
   drop.addEventListener('drop',e=>setFile(e.dataTransfer.files[0]));
+
   function loadImage(f){return new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=URL.createObjectURL(f);});}
   function lum(r,g,b){return .2126*r+.7152*g+.0722*b;}
-  function buildMaps(canvas){const w=canvas.width,h=canvas.height,ctx=canvas.getContext('2d',{willReadFrequently:true}),d=ctx.getImageData(0,0,w,h).data,v=new Float32Array(w),hm=new Float32Array(h);
+  function buildMaps(canvas){
+    const w=canvas.width,h=canvas.height,ctx=canvas.getContext('2d',{willReadFrequently:true}),d=ctx.getImageData(0,0,w,h).data,v=new Float32Array(w),hm=new Float32Array(h);
     for(let y=0;y<h;y++)for(let x=1;x<w;x++){const i=(y*w+x)*4,j=i-4;v[x]+=Math.abs(lum(d[i],d[i+1],d[i+2])-lum(d[j],d[j+1],d[j+2]));}
     for(let y=1;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,j=i-w*4;hm[y]+=Math.abs(lum(d[i],d[i+1],d[i+2])-lum(d[j],d[j+1],d[j+2]));}
     return{w,h,v,hm};
   }
+  function peakPositions(profile,min,max,count=36){
+    const peaks=[];
+    for(let i=Math.max(2,min);i<=Math.min(profile.length-3,max);i++)if(profile[i]>=profile[i-1]&&profile[i]>=profile[i+1])peaks.push({p:i,v:profile[i]});
+    peaks.sort((a,b)=>b.v-a.v);
+    const out=[];
+    for(const p of peaks){if(out.every(q=>Math.abs(q.p-p.p)>2)){out.push(p);if(out.length>=count)break;}}
+    return out;
+  }
+  function periodicScore(profile,p,steps){let s=0;for(let i=0;i<=steps;i++)s+=profile[p+i*37]||0;return s/(steps+1);}
   function locateStashGrid(canvas){
-    const m=buildMaps(canvas),colPrefix=new Float64Array(m.w+1),rowPrefix=new Float64Array(m.h+1);
-    for(let x=0;x<m.w;x++)colPrefix[x+1]=colPrefix[x]+m.v[x];
-    for(let y=0;y<m.h;y++)rowPrefix[y+1]=rowPrefix[y]+m.hm[y];
-    const colSum=x=>x<0||x>=m.w?0:(colPrefix[Math.min(m.w,x+2)]-colPrefix[Math.max(0,x-1)])/3;
-    const rowSum=y=>y<0||y>=m.h?0:(rowPrefix[Math.min(m.h,y+2)]-rowPrefix[Math.max(0,y-1)])/3;
-    function score(x,y){if(x<0||y<0||x+GRID.width>m.w||y+GRID.height>m.h)return -Infinity;let v=0,h=0;for(let c=0;c<=20;c++)v+=colSum(x+c*37);for(let r=0;r<=11;r++)h+=rowSum(y+r*37);return v/21*.38+h/12*.42;}
-    let best={score:-Infinity,x:0,y:0};
-    for(let y=2;y<=m.h-GRID.height-2;y+=2)for(let x=2;x<=m.w-GRID.width-2;x+=2){const s=score(x,y);if(s>best.score)best={score:s,x,y};}
-    if(best.score===-Infinity)return null;
-    const x=best.x+X_ORIGIN_OFFSET,y=best.y+Y_ORIGIN_OFFSET;
-    if(x<0||y<0||x+GRID.width>m.w||y+GRID.height>m.h)return null;
-    return{x,y,cols:20,rows:11,pitch:37,rowPitch:37,tile:32,width:740,height:407,confidence:1,originOffset:{x:X_ORIGIN_OFFSET,y:Y_ORIGIN_OFFSET}};
+    const m=buildMaps(canvas),xCandidates=peakPositions(m.v,180,Math.max(180,m.w-750),42),yCandidates=peakPositions(m.hm,80,Math.max(80,m.h-410),42);
+    let best=null;
+    // The Stash frame is a fixed-size Tibia window. Prefer a complete outer frame first.
+    for(const lx of xCandidates){
+      for(const rx of xCandidates){
+        const d=rx.p-lx.p;if(d<750||d>810)continue;
+        const score=(m.v[lx.p]+m.v[rx.p])/(1+Math.abs(d-782));
+        if(!best||score>best.frameX)best={frameX:score,left:lx.p,right:rx.p};
+      }
+    }
+    let bestY=null;
+    for(const ty of yCandidates){
+      for(const by of yCandidates){
+        const d=by.p-ty.p;if(d<515||d>565)continue;
+        const score=(m.hm[ty.p]+m.hm[by.p])/(1+Math.abs(d-542));
+        if(!bestY||score>bestY.score)bestY={score,top:ty.p,bottom:by.p};
+      }
+    }
+    if(best&&bestY){
+      const x=best.left+17,y=bestY.top+62;
+      if(x>=0&&y>=0&&x+GRID.width<=m.w&&y+GRID.height<=m.h)return{x,y,cols:20,rows:11,pitch:37,rowPitch:37,tile:32,width:740,height:407,confidence:1,detector:'stash-window-frame'};
+    }
+    // Fallback: search the periodic 37px grid itself. The screenshot's item rows distinguish
+    // the real grid from the HUD's other 37px repetitions.
+    const xs=xCandidates.map(o=>o.p).filter(x=>x+GRID.width<m.w),ys=yCandidates.map(o=>o.p).filter(y=>y+GRID.height<m.h);
+    let fallback=null;
+    for(const y of ys)for(const x of xs){
+      const sx=periodicScore(m.v,x,20),sy=periodicScore(m.hm,y,11);
+      const rowCounts=[];for(let r=0;r<11;r++){let c=0;for(let col=0;col<20;col++){const xx=x+col*37+3,yy=y+r*37+3;if(xx+30>=m.w||yy+30>=m.h)continue;let sum=0,sq=0;for(let py=0;py<24;py+=4)for(let px=0;px<24;px+=4){const i=((yy+py)*m.w+xx+px)*4,l=lum(m._d[i],m._d[i+1],m._d[i+2]);sum+=l;sq+=l*l;}const n=36,mean=sum/n,v=Math.max(0,sq/n-mean*mean);if(v>180)c++;}rowCounts.push(c);}
+      const pattern=rowCounts.reduce((s,c)=>s+(c>=16?2:c<=2?1:-1),0);
+      const score=sx*.38+sy*.42+pattern*800;
+      if(!fallback||score>fallback.score)fallback={score,x,y};
+    }
+    if(fallback)return{x:fallback.x,y:fallback.y,cols:20,rows:11,pitch:37,rowPitch:37,tile:32,width:740,height:407,confidence:.8,detector:'periodic-grid'};
+    return null;
   }
   function panel(){let p=document.getElementById('stashDetector');if(p)return p;p=document.createElement('div');p.id='stashDetector';p.className='panel';p.style.marginTop='14px';result.parentElement.insertBefore(p,result);return p;}
   function renderReport(report,host){host.innerHTML=report.grid?'<strong>Stash localizado</strong><br><span class="stash-note">Grade 20 × 11 identificada.</span>':'<strong>Não foi possível localizar o Stash neste print.</strong>';}
   function unwrapItem(d){return d?.item||d?.data?.item||d?.data||d;}
   function normalizeOffers(item){const buys=item?.bought_by||item?.boughtBy||item?.buy_offers||item?.buyOffers||item?.sell_to||item?.sellTo||[];return Array.isArray(buys)?buys.map(x=>({npc:x.npc_title||x.npcTitle||x.npc_name||x.npcName||x.npc||'NPC',value:Number(x.value??x.price??x.amount??0)||0})).filter(x=>x.value>0):[];}
   async function fetchItem(id,name){const key=id!==null&&id!==undefined&&id!==''?`id:${id}`:`name:${String(name||'').toLowerCase()}`;if(itemCache.has(key))return itemCache.get(key);const promise=(async()=>{for(const q of [id!==null&&id!==undefined&&id!==''?String(id):null,name?encodeURIComponent(name):null].filter(Boolean)){try{const r=await fetch(ITEM_API+q);if(r.ok)return unwrapItem(await r.json());}catch(e){}}return null;})();itemCache.set(key,promise);return promise;}
+
   async function enrichMatches(){
-    setStatus('2/4 · Lendo itens','Reconhecendo os slots.');
-    const matches=await Promise.race([window.StashRecognition?.matchAll?.({limit:3,threshold:18,fastOnly:true})||Promise.resolve([]),new Promise(resolve=>setTimeout(()=>resolve([]),12000))]);
+    setStatus('2/4 · Lendo itens','Reconhecendo os 220 slots.');
+    const loader=window.StashRecognition?.loadSpriteManifest?.();
+    const matches=await Promise.race([
+      (async()=>{await Promise.resolve(loader);return window.StashRecognition?.matchAll?.({limit:3,threshold:32})||[];})(),
+      new Promise(resolve=>setTimeout(()=>resolve([]),30000))
+    ]);
     const valid=matches.filter(m=>m.status!=='unknown'&&m.candidates?.length),unique=new Map();
     valid.filter(m=>m.status!=='ambiguous').forEach(m=>{const c=m.candidates[0],k=c.id!==null&&c.id!==undefined&&c.id!==''?`id:${c.id}`:`name:${String(c.name||'').toLowerCase()}`;if(!unique.has(k))unique.set(k,{id:c.id,name:c.name});});
     setStatus('2/4 · Lendo itens',`Itens identificados: ${valid.length}.`);
     const entries=[...unique.entries()],results=await Promise.allSettled(entries.map(([k,c])=>fetchItem(c.id,c.name))),meta=new Map();results.forEach((r,i)=>meta.set(entries[i][0],r.status==='fulfilled'?r.value:null));
-    return valid.map(m=>{const c=m.candidates[0];if(m.status==='ambiguous')return {...m,itemName:c.name||`ID ${c.id}`,quantity:null,npcOffers:[],ambiguous:true};const k=c.id!==null&&c.id!==undefined&&c.id!==''?`id:${c.id}`:`name:${String(c.name||'').toLowerCase()}`,item=meta.get(k),offers=normalizeOffers(item),npcBest=offers.length?Math.max(...offers.map(x=>x.value)):0;return {...m,itemName:item?.name||c.name||`ID ${c.id}`,itemId:c.id,quantity:null,npcOffers:offers,npcBest,itemUrl:item?.wikiUrl||null};});
+    return valid.map(m=>{const c=m.candidates[0];if(m.status==='ambiguous')return {...m,itemName:c.name||`ID ${c.id}`,quantity:null,npcOffers:[],ambiguous:true};const k=c.id!==null&&c.id!==undefined&&c.id!==''?`id:${c.id}`:`name:${String(c.name||'').toLowerCase()}`,item=meta.get(k),offers=normalizeOffers(item),npcBest=offers.length?Math.max(...offers.map(x=>x.value)):0;return {...m,itemName:item?.name||c.name||`ID ${c.id}`,itemId:c.id,quantity:null,npcOffers:offers,npcBest,itemUrl:item?.wikiUrl||c.wikiUrl||null};});
   }
   function renderResults(rows){table.innerHTML='';let npcTotal=0;rows.forEach(r=>{const qty=r.quantity,npc=r.npcBest||0,sell=qty?npc*qty:0;if(qty)npcTotal+=sell;const locations=r.npcOffers.map(x=>`${esc(x.npc)} (${money(x.value)})`).join('<br>')||'Nenhum NPC identificado';const action=r.ambiguous?'CONFERIR ITEM':r.npcOffers.length?'VENDER NO NPC':'VERIFICAR',cls=r.ambiguous?'action-check':r.npcOffers.length?'action-npc':'action-check',name=r.itemUrl?`<a href="${esc(r.itemUrl)}" target="_blank" rel="noopener"><strong>${esc(r.itemName)}</strong></a>`:`<strong>${esc(r.itemName)}</strong>`;const tr=document.createElement('tr');tr.innerHTML=`<td>${name}<br><span class="stash-note">slot ${r.slot}${r.itemId?' · ID '+esc(r.itemId):''}</span></td><td>${qty??'—'}</td><td>${locations}</td><td><a href="${MARKET_URL}" target="_blank" rel="noopener">Abrir Market</a></td><td>${sell?money(sell):'—'}</td><td><span class="${cls}">${action}</span></td>`;table.appendChild(tr);});tableWrap.hidden=!rows.length;document.getElementById('npcTotal').textContent=npcTotal?money(npcTotal):'—';document.getElementById('marketTotal').textContent='—';document.getElementById('bestTotal').textContent=npcTotal?money(npcTotal):'—';return rows.length?`${rows.length} item${rows.length===1?'':'s'} reconhecido${rows.length===1?'':'s'}.`:'Nenhum item reconhecido.';}
-  async function inspect(f){const img=await loadImage(f),c=document.createElement('canvas');c.width=img.naturalWidth;c.height=img.naturalHeight;c.getContext('2d').drawImage(img,0,0);return{file:f,img,c,grid:locateStashGrid(c)};}
+  async function inspect(f){const img=await loadImage(f),c=document.createElement('canvas');c.width=img.naturalWidth;c.height=img.naturalHeight;const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,0,0);const maps=buildMaps(c);maps._d=ctx.getImageData(0,0,c.width,c.height).data;return{file:f,img,c,grid:locateStashGrid(c)};}
   analyze.addEventListener('click',async()=>{if(!worldValue){alert('Escolha o mundo do personagem primeiro.');return}if(!file){alert('Envie o print do Stash primeiro.');return}analyze.disabled=true;analyze.textContent='Analisando…';step2.scrollIntoView({behavior:'smooth',block:'start'});setStatus('1/4 · Localizando Stash','Preparando o print.');result.textContent='Analisando…';try{const report=await inspect(file),host=panel();renderReport(report,host);if(!report.grid)throw Error('stash-grid-not-found');setStatus('2/4 · Lendo itens','Analisando os 220 slots.');window.__stashReports=[report];const rows=await enrichMatches();setStatus('3/4 · Organizando resultado','Finalizando valores.');const msg=renderResults(rows);setStatus('4/4 · Concluído',msg);result.innerHTML=`<strong>${esc(msg)}</strong>`;}catch(e){console.error(e);setStatus('Análise interrompida','Não foi possível localizar o Stash com segurança neste print.');result.innerHTML='<strong>Não foi possível analisar este print.</strong>';}finally{analyze.disabled=false;analyze.textContent='Analisar Stash';}});
   loadWorlds();
 })();
