@@ -15,6 +15,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Coletar XP real
+        run: python3 atualizar_historico.py
+
       - name: Padronizar menu e rodape em todas as paginas
         run: |
           python3 - <<'PY'
@@ -43,8 +46,6 @@ jobs:
                   continue
 
               text = path.read_text(encoding='utf-8')
-
-              # O menu passa a ter SEMPRE a mesma ordem em todas as páginas.
               menu = '<div class="links">' + nav_html(path.name) + '</div>'
               text, menu_count = re.subn(
                   r'<div class="links">.*?</div>',
@@ -54,7 +55,6 @@ jobs:
                   flags=re.S,
               )
 
-              # Se alguma página não tiver .links, não inventa um segundo menu.
               if menu_count == 0:
                   text = re.sub(
                       r'(<header[^>]*>.*?<div class="nav">.*?</div>)',
@@ -64,7 +64,6 @@ jobs:
                       flags=re.S,
                   )
 
-              # Rodapé usa exatamente a mesma ordem global.
               footer = '<footer>Mal Upados · Jadebra · ' + ' · '.join(
                   f'<a href="{href}">{label}</a>' for href, label in NAV
               ) + '</footer>'
@@ -77,7 +76,6 @@ jobs:
                   flags=re.S,
               )
 
-              # Toda página precisa ter rodapé; se não tiver, coloca antes do body.
               if footer_count == 0:
                   text = text.replace('</body>', footer + '</body>', 1)
 
@@ -88,10 +86,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add '*.html'
+          git add '*.html' historico.json historico_xp.json
           if git diff --cached --quiet; then
-            echo "Menu e rodape ja estao padronizados."
+            echo "Nenhuma alteracao."
           else
-            git commit -m "Padronizar menu e rodape globais [skip ci]"
+            git commit -m "Atualizar historico e padronizar navegacao [skip ci]"
             git push
           fi
