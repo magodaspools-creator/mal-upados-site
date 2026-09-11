@@ -128,4 +128,8 @@ window.arenaShopCombatBonuses=function(){
   return {attack,defense};
 };
 window.shopRender=shopRender;
-window.addEventListener('load',()=>{shopEnsure();shopRender()});
+function initArenaShop(){try{shopEnsure();shopRender()}catch(error){console.error('Arena Shop:',error)}}
+window.addEventListener('DOMContentLoaded',initArenaShop);
+window.addEventListener('load',initArenaShop);
+setTimeout(initArenaShop,500);
+setTimeout(initArenaShop,1500);
