@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
 import io
 import json
+import re
 import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import zipfile
 from pathlib import Path
+from urllib.parse import quote
+import xml.etree.ElementTree as ET
 
 import requests
 from PIL import Image
 
-ITEMS_API = "https://tibiadata.bytewizards.de/api/v1/items"
-SPRITE_BASE = "https://item-images.ots.me/latest_otbr/"
+XML_URL = "https://raw.githubusercontent.com/opentibiabr/canary/main/data/items/items.xml"
+ZIP_URL = "https://downloads.ots.me/data/item-images/latest_otbr.zip"
 OUT = Path("stash-sprites/manifest.json")
-PAGE_SIZE = 100
-MAX_WORKERS = 64
-REQUEST_TIMEOUT = 10
+REQUEST_TIMEOUT = 60
 
 
 def sprite_fingerprint(img):
@@ -22,7 +23,6 @@ def sprite_fingerprint(img):
     payload = bytearray()
     for y in range(32):
         for x in range(32):
-            # Ignore the stash quantity area when the sprite is compared with a stash tile.
             if y >= 25 or x < 2 or x >= 30:
                 payload.extend((0, 0, 0, 0))
                 continue
@@ -60,84 +60,86 @@ def sprite_metrics(img):
     return round(mean, 4), round(max(0, variance), 4), round(edge, 4)
 
 
-def fetch_catalog():
-    session = requests.Session()
-    headers = {"User-Agent": "MalUpados-Stash-Builder/6.0 (+https://mal-upados.com.br)"}
-    first = session.get(ITEMS_API, params={"page": 1, "pageSize": PAGE_SIZE, "sort": "name"}, timeout=REQUEST_TIMEOUT, headers=headers)
-    first.raise_for_status()
-    data = first.json()
-    items = list(data.get("items") or data.get("data", {}).get("items") or [])
-    total = int(data.get("totalCount") or data.get("data", {}).get("totalCount") or len(items))
-    pages = max(1, (total + PAGE_SIZE - 1) // PAGE_SIZE)
-    print(f"Catálogo TibiaData: {total} itens · {pages} páginas")
-
-    def get_page(page):
-        if page == 1:
-            return items
-        r = session.get(ITEMS_API, params={"page": page, "pageSize": PAGE_SIZE, "sort": "name"}, timeout=REQUEST_TIMEOUT, headers=headers)
-        r.raise_for_status()
-        d = r.json()
-        return list(d.get("items") or d.get("data", {}).get("items") or [])
-
-    with ThreadPoolExecutor(max_workers=12) as pool:
-        futures = {pool.submit(get_page, page): page for page in range(2, pages + 1)}
-        for n, future in enumerate(as_completed(futures), 2):
-            page_items = future.result()
-            items.extend(page_items)
-            if n % 10 == 0 or n == pages:
-                print(f"Páginas carregadas: {n}/{pages} · itens: {len(items)}")
-    return items
+def load_item_names(session):
+    print("Baixando catálogo de nomes/IDs do Canary...")
+    r = session.get(XML_URL, timeout=REQUEST_TIMEOUT, headers={"User-Agent": "MalUpados-Stash-Builder/7.0"})
+    r.raise_for_status()
+    root = ET.fromstring(r.content.decode("ISO-8859-1"))
+    names = {}
+    for item in root.findall("item"):
+        name = (item.get("name") or "").strip()
+        if not name or name.upper() == "RESERVED SPRITE":
+            continue
+        if item.get("id") is not None:
+            try:
+                names[int(item.get("id"))] = name
+            except ValueError:
+                pass
+        if item.get("fromid") is not None and item.get("toid") is not None:
+            try:
+                lo, hi = int(item.get("fromid")), int(item.get("toid"))
+                if hi - lo <= 500:
+                    for item_id in range(lo, hi + 1):
+                        names.setdefault(item_id, name)
+            except ValueError:
+                pass
+    print(f"IDs nomeados: {len(names)}")
+    return names
 
 
-def fetch_one(item):
-    item_id = int(item.get("id"))
-    name = item.get("name") or ""
-    url = f"{SPRITE_BASE}{item_id}.png"
-    try:
-        r = requests.get(url, timeout=REQUEST_TIMEOUT, headers={"User-Agent": "MalUpados-Stash-Builder/6.0"})
-        if r.status_code != 200 or not r.content:
-            return None
-        img = Image.open(io.BytesIO(r.content)).convert("RGBA")
-        if img.width < 8 or img.height < 8:
-            return None
-        mean, variance, edge = sprite_metrics(img)
-        return {
-            "id": item_id,
-            "name": name,
-            "src": url,
-            "wikiUrl": item.get("wikiUrl"),
-            "fingerprint": sprite_fingerprint(img),
-            "mean": mean,
-            "variance": variance,
-            "edge": edge,
-            "marketable": True,
-        }
-    except Exception:
-        return None
+def wiki_url(name):
+    return "https://tibia.fandom.com/wiki/" + quote(name.replace(" ", "_"), safe="()_-")
+
+
+def build_manifest(session, names):
+    print("Baixando pacote completo latest_otbr...")
+    r = session.get(ZIP_URL, timeout=REQUEST_TIMEOUT, headers={"User-Agent": "MalUpados-Stash-Builder/7.0"})
+    r.raise_for_status()
+    print(f"Pacote: {len(r.content) / 1024 / 1024:.1f} MB")
+    out = []
+    with zipfile.ZipFile(io.BytesIO(r.content)) as zf:
+        files = [n for n in zf.namelist() if n.lower().endswith(".png")]
+        print(f"Sprites PNG encontrados: {len(files)}")
+        for n, member in enumerate(files, 1):
+            base = Path(member).stem
+            if not re.fullmatch(r"\d+", base):
+                continue
+            item_id = int(base)
+            name = names.get(item_id, f"Item ID {item_id}")
+            try:
+                raw = zf.read(member)
+                img = Image.open(io.BytesIO(raw)).convert("RGBA")
+                if img.width < 8 or img.height < 8:
+                    continue
+                mean, variance, edge = sprite_metrics(img)
+                out.append({
+                    "id": item_id,
+                    "name": name,
+                    "src": f"https://item-images.ots.me/latest_otbr/{item_id}.png",
+                    "wikiUrl": wiki_url(name),
+                    "fingerprint": sprite_fingerprint(img),
+                    "mean": mean,
+                    "variance": variance,
+                    "edge": edge,
+                    "marketable": True,
+                })
+            except Exception:
+                continue
+            if n % 1000 == 0:
+                print(f"Sprites processados: {n}/{len(files)}")
+    by_id = {x["id"]: x for x in out}
+    out = sorted(by_id.values(), key=lambda x: (x["name"].lower(), x["id"]))
+    return out
 
 
 def main():
-    catalog = fetch_catalog()
-    # Deduplicate IDs defensively; the API is the source of names and wiki URLs.
-    by_id = {int(x["id"]): x for x in catalog if x.get("id") is not None}
-    items = list(by_id.values())
-    out = []
-    print(f"Baixando sprites: {len(items)} IDs candidatos")
-    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
-        futures = [pool.submit(fetch_one, item) for item in items]
-        total = len(futures)
-        for n, future in enumerate(as_completed(futures), 1):
-            value = future.result()
-            if value:
-                out.append(value)
-            if n % 500 == 0 or n == total:
-                print(f"Sprites processados: {n}/{total} · válidos: {len(out)}")
-
-    out.sort(key=lambda x: (x["name"].lower(), x["id"]))
+    session = requests.Session()
+    names = load_item_names(session)
+    out = build_manifest(session, names)
     OUT.parent.mkdir(parents=True, exist_ok=True)
     payload = {
-        "version": "2026.09.11-catalog-v3",
-        "source": "TibiaData item catalog + item-images.ots.me/latest_otbr",
+        "version": "2026.09.11-catalog-v4",
+        "source": "Canary items.xml + OTS.ME latest_otbr sprite pack",
         "generatedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "count": len(out),
         "items": out,
