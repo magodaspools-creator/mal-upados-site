@@ -2,7 +2,6 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/jpeg" href="guilda.jpg?v=4-stash">
-
 <title>Stash Analyzer | Mal Upados</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
@@ -20,21 +19,21 @@
 <body>
 <header class="top"><div class="nav"><a class="brand" href="index.html">⛧ MAL UPADOS</a><div class="links"><a href="index.html">Início</a><a href="ranking.html">Ranking</a><a href="guilda.html">Guilda</a><a href="hunting.html">Guia de Hunts</a><a class="active" href="stash.html">Stash</a><a href="arena.html">Arena</a><a href="caos.html">Caos</a></div></div></header>
 <main>
-<div class="hero"><div class="sigil">◈</div><div class="eyebrow">Ferramenta de loot · NPC × Market</div><h1>Stash <span>Analyzer</span></h1><p>Jogue o print do seu Stash aqui e descubra onde cada item tende a valer mais no seu mundo.</p><div class="updated">Primeira versão · reconhecimento e preços serão conectados por etapas</div></div>
+<div class="hero"><div class="sigil">◈</div><div class="eyebrow">Ferramenta de loot · NPC × Market</div><h1>Stash <span>Analyzer</span></h1><p>Jogue o print do seu Stash aqui e descubra onde cada item tende a valer mais no seu mundo.</p><div class="updated">Detector adaptativo · não depende da resolução do monitor</div></div>
 <section>
 <div class="eyebrow">1 · Seu mundo</div><h2>Escolha o servidor</h2>
 <p class="lead">O preço de NPC é fixo. O Market precisa ser consultado para o mundo escolhido.</p>
 <div class="stash-toolbar"><label>Mundo do personagem<select id="stashWorld"><option value="">Carregando mundos…</option></select></label><button class="btn active" id="analyzeBtn">Analisar Stash</button></div>
-<div class="panel"><div class="stash-upload" id="dropzone"><input id="stashFiles" type="file" accept="image/png,image/jpeg,image/webp" multiple><div class="big">Arraste os prints do Stash aqui</div><p>ou clique para selecionar · PNG original do Tibia é o ideal</p><p class="stash-note" style="margin-top:10px">Pode enviar vários prints. Na versão final, prints sobrepostos terão itens repetidos descartados automaticamente.</p></div><div class="stash-files" id="stashFilesPreview"></div></div>
+<div class="panel"><div class="stash-upload" id="dropzone"><input id="stashFiles" type="file" accept="image/png,image/jpeg,image/webp" multiple><div class="big">Arraste os prints do Stash aqui</div><p>ou clique para selecionar · PNG original do Tibia é o ideal</p><p class="stash-note" style="margin-top:10px">Pode enviar vários prints. O detector mede a grade a partir da própria imagem, em vez de assumir uma posição fixa na tela.</p></div><div class="stash-files" id="stashFilesPreview"></div></div>
 </section>
 <section>
 <div class="eyebrow">2 · Resultado</div><h2>NPC ou Market?</h2>
 <div class="stash-summary"><div class="stat"><div class="num" id="npcTotal">—</div><div class="label">TOTAL NO NPC</div></div><div class="stat"><div class="num" id="marketTotal">—</div><div class="label">TOTAL NO MARKET</div></div><div class="stat"><div class="num" id="bestTotal">—</div><div class="label">MELHOR CENÁRIO</div></div></div>
-<div class="panel" style="margin-top:18px"><div class="stash-empty" id="stashResult">Envie um print e clique em <strong>Analisar Stash</strong>. Nesta primeira versão, a interface já está pronta; o motor de reconhecimento de sprites e a consulta de Market entram na próxima etapa.</div><div class="table-wrap" id="stashTableWrap" hidden><table class="stash-table"><thead><tr><th>Item</th><th>Qtd.</th><th>NPC</th><th>Market Buy</th><th>Melhor</th><th>Ação</th></tr></thead><tbody id="stashTable"></tbody></table></div></div>
+<div class="panel" style="margin-top:18px"><div class="stash-empty" id="stashResult">Envie um print e clique em <strong>Analisar Stash</strong>. O primeiro módulo agora detecta a escala da grade diretamente na imagem; o reconhecimento dos sprites e os preços entram em seguida.</div><div class="table-wrap" id="stashTableWrap" hidden><table class="stash-table"><thead><tr><th>Item</th><th>Qtd.</th><th>NPC</th><th>Market Buy</th><th>Melhor</th><th>Ação</th></tr></thead><tbody id="stashTable"></tbody></table></div></div>
 <p class="stash-note">Importante: Market deve ser tratado como preço de compra/oferta ativa, não simplesmente como o menor preço anunciado para venda. Um item pode valer mais no Market no papel e ainda assim não ter comprador imediato.</p>
 </section>
-<section><div class="eyebrow">Como usar</div><h2>Para o scanner acertar</h2><div class="grid"><div class="card"><h3>Print original</h3><p>Não redimensione, comprima ou tire foto da tela. O reconhecimento precisa manter as dimensões originais.</p></div><div class="card"><h3>Ordene o Stash</h3><p>Na versão de reconhecimento, ordenar por nome ou pelo critério indicado pela ferramenta ajuda a manter os sprites previsíveis.</p></div><div class="card"><h3>Conferência</h3><p>Itens com sprites idênticos ou que não forem reconhecidos devem aparecer para conferência, nunca receber um chute.</p></div><div class="card"><h3>Preço real</h3><p>NPC paga na hora. Market depende de oferta de compra ativa e liquidez no seu mundo.</p></div></div></section>
+<section><div class="eyebrow">Como usar</div><h2>Para o scanner acertar</h2><div class="grid"><div class="card"><h3>Print original</h3><p>Não redimensione, comprima ou tire foto da tela. O reconhecimento precisa manter as dimensões originais.</p></div><div class="card"><h3>Escala automática</h3><p>A posição do Stash pode mudar conforme monitor e layout. O detector mede o passo repetitivo da grade na própria imagem.</p></div><div class="card"><h3>Conferência</h3><p>Itens com sprites idênticos ou que não forem reconhecidos devem aparecer para conferência, nunca receber um chute.</p></div><div class="card"><h3>Preço real</h3><p>NPC paga na hora. Market depende de oferta de compra ativa e liquidez no seu mundo.</p></div></div></section>
 </main>
-<footer>Mal Upados · Jadebra · <a href="index.html">Início</a> · <a href="ranking.html">Ranking</a> · <a href="guilda.html">Guilda</a> · <a href="hunting.html">Guia de Hunts</a> · <a href="stash.html">Stash</a> · <a href="arena.html">Arena</a> · <a href="caos.html">Caos</a></footer>
-<script src="stash.js?v=20260911-1"></script>
+<footer>Mal Upados · Jadebra · <a href="index.html">Início</a> · <a href="ranking.html">Ranking</a> · <a href="hunting.html">Guia de Hunts</a> · <a href="stash.html">Stash</a> · <a href="arena.html">Arena</a> · <a href="caos.html">Caos</a></footer>
+<script src="stash.js?v=20260911-2"></script>
 </body></html>
