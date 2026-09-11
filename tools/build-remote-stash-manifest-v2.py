@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import io
 import json
+import re
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
@@ -8,7 +9,7 @@ from pathlib import Path
 import requests
 from PIL import Image
 
-CATALOG_URL = "https://tibiawiki.dev/api/items?expand=true"
+CATALOG_URL = "https://tibia.fandom.com/api.php"
 SPRITE_BASE = "https://item-images.ots.me/latest_otbr/"
 OUT = Path("stash-sprites/manifest.json")
 MAX_WORKERS = 24
@@ -48,41 +49,47 @@ def metrics(img):
     return round(mean, 4), round(variance, 4), round(edge, 4)
 
 
-def extract_items(payload):
-    if isinstance(payload, list):
-        return payload
-    if not isinstance(payload, dict):
-        return []
-    for key in ("items", "data", "results"):
-        value = payload.get(key)
-        if isinstance(value, list):
-            return value
-    return []
-
-
 def load_catalog():
+    params = {
+        "action": "parse",
+        "page": "Item_IDs",
+        "prop": "wikitext",
+        "format": "json",
+        "origin": "*",
+    }
     headers = {
-        "User-Agent": "MalUpados-Stash-Builder/4.0 (+https://mal-upados-site.github.io/)",
+        "User-Agent": "MalUpados-Stash-Builder/5.0 (+https://mal-upados-site.github.io/)",
         "Accept": "application/json",
     }
-    r = requests.get(CATALOG_URL, timeout=90, headers=headers)
+    r = requests.get(CATALOG_URL, params=params, timeout=90, headers=headers)
     r.raise_for_status()
-    batch = extract_items(r.json())
+    payload = r.json()
+    try:
+        text = payload["parse"]["wikitext"]["*"]
+    except (KeyError, TypeError):
+        raise RuntimeError("Fandom MediaWiki API não retornou o wikitext de Item_IDs.")
+
     found = {}
-    for item in batch:
-        if not isinstance(item, dict):
+    # TibiaWiki's Item_IDs table is alphabetic and stores rows as: | Item || ID
+    for row in text.splitlines():
+        row = row.strip()
+        if not row.startswith("|") or "||" not in row:
             continue
-        item_id = item.get("id") or item.get("clientId") or item.get("client_id") or item.get("itemId")
-        name = item.get("name") or item.get("title")
-        try:
-            item_id = int(item_id)
-        except (TypeError, ValueError):
+        parts = row.lstrip("|").split("||", 1)
+        if len(parts) != 2:
             continue
-        if name and 1 <= item_id <= 100000:
-            found[item_id] = str(name)
+        name = re.sub(r"<[^>]+>", "", parts[0]).strip()
+        ids_text = re.sub(r"<[^>]+>", "", parts[1]).strip()
+        if not name or name.lower() in {"item", "name"}:
+            continue
+        for raw_id in re.findall(r"\b\d+\b", ids_text):
+            item_id = int(raw_id)
+            if 1 <= item_id <= 100000:
+                found.setdefault(item_id, name)
+
     if not found:
-        raise RuntimeError("TibiaWikiApi /api/items?expand=true não retornou IDs de itens.")
-    print(f"Catálogo TibiaWikiApi: {len(found)} itens")
+        raise RuntimeError("Fandom Item_IDs não retornou IDs de itens.")
+    print(f"Catálogo Item_IDs: {len(found)} IDs")
     return found
 
 
@@ -90,7 +97,7 @@ def fetch_one(item):
     item_id, name = item
     url = f"{SPRITE_BASE}{item_id}.png"
     try:
-        r = requests.get(url, timeout=20, headers={"User-Agent": "MalUpados-Stash-Builder/4.0"})
+        r = requests.get(url, timeout=20, headers={"User-Agent": "MalUpados-Stash-Builder/5.0"})
         if r.status_code != 200 or not r.content:
             return None
         img = Image.open(io.BytesIO(r.content)).convert("RGBA")
@@ -112,7 +119,7 @@ def fetch_one(item):
 
 
 def main():
-    print("Baixando catálogo estruturado de itens via TibiaWikiApi...")
+    print("Baixando catálogo completo de Item IDs via MediaWiki API...")
     items = load_catalog()
     out = []
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
@@ -128,7 +135,7 @@ def main():
     OUT.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "version": "2026.09.11-remote-15.10+",
-        "source": "TibiaWikiApi + item-images.ots.me",
+        "source": "TibiaWiki Item_IDs via MediaWiki API + item-images.ots.me",
         "baseUrl": SPRITE_BASE,
         "generatedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "items": out,
