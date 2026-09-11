@@ -19,13 +19,12 @@
   function key(zoneIndex){return `boss-${Number(zoneIndex)}`}
   function kills(zoneIndex){ensureState();return Number(game.bossKills[key(zoneIndex)]||0)}
   function cooldownLeft(zoneIndex){ensureState();return Math.max(0,Number(game.bossCooldowns[key(zoneIndex)]||0)-Date.now())}
+  function setCooldown(zoneIndex,b){if(!b||typeof game==='undefined'||!game)return;game.bossCooldowns[key(zoneIndex)]=Date.now()+Number(b.cooldown||0)*1000}
   function fmtTime(ms){let sec=Math.ceil(ms/1000);let m=Math.floor(sec/60);let s=sec%60;return m?`${m}m ${String(s).padStart(2,'0')}s`:`${s}s`}
   function scale(zoneIndex){return 1+Math.min(1,kills(zoneIndex)*.05)}
   function bossTuple(zoneIndex){const b=bossFor(zoneIndex),s=scale(zoneIndex);return [b.name,b.icon,Math.floor(b.hp*s),Math.floor(b.damage*s),Math.floor(b.gold*(1+Math.min(.5,kills(zoneIndex)*.02))),Math.floor(b.xp*s)]}
   function hasAmulet(element){try{const amulet=window.arenaElementalState?.currentAmulet?.();return !!amulet&&amulet.element===element}catch{return false}}
 
-  // Nunca deixamos uma cópia antiga do Boss dentro da lista de criaturas.
-  // Isso impede que cada tentativa crie uma nova "caixinha" reutilizável.
   function cleanupBossEntries(zoneIndex){
     const list=ZONES[zoneIndex]?.monsters;
     const b=bossFor(zoneIndex);
@@ -47,7 +46,6 @@
     originalShowZone(index);
     const area=document.getElementById('battleArea');
     if(!area||typeof game==='undefined'||!game)return;
-    // Remove qualquer card antigo antes de inserir exatamente um card novo.
     area.querySelectorAll('.arena-boss-wrap').forEach(el=>el.remove());
     const old=area.querySelector('.battle-empty');if(!old)return;
     const boss=bossCard(index);if(!boss)return;
@@ -62,7 +60,6 @@
     const left=cooldownLeft(zoneIndex);
     if(left>0){toast(`Boss em cooldown: ${fmtTime(left)}.`);showZone(zoneIndex);return}
     if(!hasAmulet(b.element)){toast(`Você precisa do amuleto de ${b.element} para enfrentar este Boss.`);return}
-    // Limpa resíduos de tentativas anteriores antes de criar a batalha temporária.
     cleanupBossEntries(zoneIndex);
     const tuple=bossTuple(zoneIndex),list=ZONES[zoneIndex].monsters,index=list.length;
     list.push(tuple);
@@ -72,9 +69,7 @@
     renderBossBattle();
   }
 
-  function removeTemporaryBoss(){
-    if(activeBoss){cleanupBossEntries(activeBoss.zoneIndex);activeBoss=null}
-  }
+  function removeTemporaryBoss(){if(activeBoss){cleanupBossEntries(activeBoss.zoneIndex);activeBoss=null}}
 
   function bossSprite(b){const colors={earth:'#7db77b',energy:'#8fa9e8',fire:'#e27b4f',ice:'#86cde5',death:'#a18ac7'},c=colors[b.element]||'#aeb4bd';return `<svg class="arena-boss-sprite" viewBox="0 0 64 64" aria-hidden="true" shape-rendering="crispEdges"><path fill="#111318" d="M14 18h36v8h6v24H8V26h6z"/><path fill="${c}" d="M18 14h28v8h8v24H10V22h8z"/><path fill="#17191d" d="M18 30h8v8h-8zM38 30h8v8h-8z"/><path fill="#e8ebef" d="M20 31h4v4h-4zM40 31h4v4h-4z"/><path fill="#17191d" d="M24 44h16v6H24z"/><path fill="${c}" d="M8 18h8v10H8zM48 18h8v10h-8z"/></svg>`}
 
@@ -86,10 +81,12 @@
     ensureState();
     const zone=battle.zoneIndex,b=bossFor(zone),tokenDrop=b.tokens||(Math.random()<b.tokenChance?1:0),oldKills=kills(zone);
     game.bossKills[key(zone)]=oldKills+1;
-    game.bossCooldowns[key(zone)]=Date.now()+b.cooldown*1000;
     game.bossTokens+=tokenDrop;
     activeBoss={zoneIndex:zone,monsterIndex:battle.monsterIndex,name:b.name,tokenDrop};
+    // Define o cooldown depois da rotina de vitória também, evitando qualquer rotina
+    // de renderização/persistência externa sobrescrever o valor nos bosses finais.
     originalWinBattle();
+    setCooldown(zone,b);
     persist();
     updateTokenBalance();
     removeTemporaryBoss();
@@ -100,13 +97,7 @@
 
   function installStyle(){if(document.getElementById('arena-boss-style'))return;const style=document.createElement('style');style.id='arena-boss-style';style.textContent=`.arena-boss-wrap{margin-top:14px;width:100%}.arena-boss-card{display:flex;align-items:center;gap:12px;padding:13px;border:1px solid #494c52;background:linear-gradient(145deg,#181a1e,#0e1012);box-shadow:inset 0 0 0 1px rgba(255,255,255,.025),0 8px 18px rgba(0,0,0,.22)}.arena-boss-card.boss-ready{border-color:#66542f}.arena-boss-card.boss-needs-amulet{opacity:.72}.arena-boss-card.boss-cooldown{opacity:.72}.boss-card-icon{width:48px;height:48px;display:grid;place-items:center;font-size:28px;border:1px solid #3c4046;background:#101216;flex:0 0 48px}.boss-card-body{flex:1;min-width:0}.boss-card-body h3{margin:2px 0 3px;color:#ddd;font-family:Cinzel,serif}.boss-card-body p{margin:0 0 4px;font-size:.72rem;color:#a5a9b0}.boss-card-body small{color:#777d86;font-size:.61rem}.boss-card-body strong{color:var(--gold2)}.arena-boss-card .btn{white-space:nowrap}.boss-timer{color:var(--gold2)}.boss-battle-warning{margin:8px 0;padding:7px 10px;border:1px solid #3b3e44;background:#131519;color:#c2c6cd;font-size:.66rem;text-align:center}.boss-fighter-icon{display:grid!important;place-items:center}.arena-boss-sprite{width:62px;height:62px;image-rendering:pixelated;filter:drop-shadow(0 3px 3px rgba(0,0,0,.8))}.boss-token-loot{color:var(--gold2)}.boss-token-shop{border-color:#51472f}.token-coming-soon{display:flex;align-items:center;gap:14px;padding:18px;border:1px dashed #51472f;background:linear-gradient(145deg,#171711,#10110e);min-height:74px}.token-coming-icon{width:48px;height:48px;display:grid;place-items:center;border:1px solid #5b4b2b;color:var(--gold2);font-size:25px;background:#15130d}.token-coming-soon strong{display:block;color:#ddd;font-family:Cinzel,serif}.token-coming-soon span{display:block;margin-top:4px;color:#777d86;font-size:.7rem}@media(max-width:620px){.arena-boss-card{align-items:flex-start;flex-wrap:wrap}.boss-card-body{min-width:calc(100% - 64px)}.arena-boss-card .btn{width:100%}.boss-battle-warning{font-size:.6rem}.token-coming-soon{align-items:flex-start}}`;document.head.appendChild(style)}
 
-  function refreshBossTimers(){
-    document.querySelectorAll('.boss-timer').forEach(el=>{
-      const z=Number(el.dataset.bossZone),left=cooldownLeft(z);
-      if(left<=0){showZone(game.zone)}else el.textContent=fmtTime(left)
-    });
-    updateTokenBalance()
-  }
+  function refreshBossTimers(){document.querySelectorAll('.boss-timer').forEach(el=>{const z=Number(el.dataset.bossZone),left=cooldownLeft(z);if(left<=0){showZone(game.zone)}else el.textContent=fmtTime(left)});updateTokenBalance()}
 
   installStyle();
   ensureState();
