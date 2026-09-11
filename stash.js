@@ -3,10 +3,8 @@
   let files=[];
   const esc=v=>String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
   const GRID={cols:20,rows:11,pitch:37,tile:32,width:740,height:407};
-  /* O sintoma informado foi inequívoco: o primeiro item real estava no slot 81.
-     Isso significa que a origem Y detectada estava exatamente 4 linhas acima.
-     4 x 37 = 148 px. Mantemos o pitch nativo e corrigimos somente a origem. */
   const Y_ORIGIN_OFFSET=148;
+  const X_ORIGIN_OFFSET=-37;
 
   async function loadWorlds(){
     try{
@@ -47,12 +45,10 @@
     const m=buildMaps(canvas);let best={score:-Infinity,x:0,y:0};
     for(let y=2;y<=m.h-GRID.height-2;y+=2)for(let x=2;x<=m.w-GRID.width-2;x+=2){const s=score(m,x,y);if(s>best.score)best={score:s,x,y};}
     if(best.score===-Infinity)return null;
-    /* O detector encontra a estrutura de bordas; agora aplicamos a correção
-       conhecida do cabeçalho/margem do print: o primeiro item é o slot 1,
-       não o slot 81. */
+    const x=best.x+X_ORIGIN_OFFSET;
     const y=best.y+Y_ORIGIN_OFFSET;
-    if(y<0||y+GRID.height>m.h)return null;
-    return{x:best.x,y,cols:20,rows:11,pitch:37,rowPitch:37,tile:32,width:740,height:407,confidence:1,originOffset:Y_ORIGIN_OFFSET};
+    if(x<0||y<0||x+GRID.width>m.w||y+GRID.height>m.h)return null;
+    return{x,y,cols:20,rows:11,pitch:37,rowPitch:37,tile:32,width:740,height:407,confidence:1,originOffset:{x:X_ORIGIN_OFFSET,y:Y_ORIGIN_OFFSET}};
   }
   function manualGrid(report,x,y){report.grid={x:Math.round(x),y:Math.round(y),cols:20,rows:11,pitch:37,rowPitch:37,tile:32,width:740,height:407,manual:true,confidence:1};report.manual=true;}
   function makeOverlay(report){
@@ -65,16 +61,16 @@
   function renderReport(report,host,index){
     const block=document.createElement('div');block.style.cssText='margin-top:18px;padding-top:18px;border-top:1px solid var(--line)';const g=report.grid;
     if(!g){block.innerHTML=`<strong>Print ${index+1}</strong><br><span class="stash-note">Não encontrei a grade 20×11.</span>`;host.appendChild(block);return;}
-    block.innerHTML=`<strong>Print ${index+1}</strong><br><span class="stash-note">Grade ${g.manual?'calibrada manualmente':'detectada'} · 20 × 11 · origem ${g.x}, ${g.y} · X 37px · Y 37px · correção Y +${Y_ORIGIN_OFFSET}px.</span>`;
-    const overlay=makeOverlay(report);overlay.style.cssText='display:block;width:min(100%,1100px);height:auto;margin-top:12px;border:1px solid var(--line);border-radius:10px;background:#080a0d;cursor:crosshair';overlay.title='Clique no centro do primeiro slot para recalibrar';
+    block.innerHTML=`<strong>Print ${index+1}</strong><br><span class="stash-note">Grade ${g.manual?'calibrada manualmente':'detectada automaticamente'} · 20 × 11 · origem ${g.x}, ${g.y} · X 37px · Y 37px.</span>`;
+    const overlay=makeOverlay(report);overlay.style.cssText='display:block;width:min(100%,1100px);height:auto;margin-top:12px;border:1px solid var(--line);border-radius:10px;background:#080a0d;cursor:crosshair';overlay.title='Clique no centro do primeiro slot somente se a detecção automática falhar';
     overlay.addEventListener('click',ev=>{const rect=overlay.getBoundingClientRect(),sx=overlay.width/rect.width,sy=overlay.height/rect.height;manualGrid(report,ev.offsetX*sx-16,ev.offsetY*sy-16);renderReport(report,host,index);block.remove();});block.appendChild(overlay);
     const tiles=document.createElement('div');tiles.style.cssText='display:grid;grid-template-columns:repeat(20,32px);gap:3px;margin-top:12px;max-width:100%;overflow:auto;padding:6px;background:#080a0d;border:1px solid var(--line);border-radius:10px';
     for(let n=0;n<220;n++){const col=n%20,row=Math.floor(n/20),sx=Math.round(g.x+col*37+2.5),sy=Math.round(g.y+row*37+2.5),tile=document.createElement('canvas');tile.width=32;tile.height=32;tile.title=`Slot ${n+1} · linha ${row+1} · coluna ${col+1}`;tile.style.cssText='width:32px;height:32px;image-rendering:pixelated;border:1px solid rgba(255,255,255,.08);background:#111';tile.getContext('2d').drawImage(report.c,sx,sy,32,32,0,0,32,32);tiles.appendChild(tile);}block.appendChild(tiles);host.appendChild(block);
   }
   async function inspect(file){const img=await loadImage(file),c=document.createElement('canvas');c.width=img.naturalWidth;c.height=img.naturalHeight;c.getContext('2d').drawImage(img,0,0);return{file,img,c,grid:locateStashGrid(c)};}
   analyze.addEventListener('click',async()=>{
-    if(!world.value){alert('Escolha o mundo do personagem primeiro.');return}if(!files.length){alert('Envie pelo menos um print do Stash.');return}analyze.disabled=true;analyze.textContent='Detectando janela…';result.innerHTML='<strong>Fase 1: detectando a geometria do Stash.</strong><br><span class="stash-note">20 × 11 · 37 px · correção vertical aplicada.</span>';
-    try{const reports=[];for(const file of files){reports.push(await inspect(file));await new Promise(r=>setTimeout(r,0));}const host=panel();host.innerHTML='<div class="eyebrow">Scanner · Fase 1</div><h3 style="margin:4px 0 8px">Diagnóstico da geometria</h3><p class="stash-note">A grade agora usa 20 × 11 slots, 37 px por slot e deslocamento vertical fixo de +148 px. O primeiro item deve ficar no quadrado 1.</p>';reports.forEach((r,i)=>renderReport(r,host,i));window.__stashReports=reports;const good=reports.filter(r=>r.grid).length;result.innerHTML=`<strong>${files.length} print${files.length===1?'':'s'} processado${files.length===1?'':'s'}.</strong><br><span class="stash-note">${good}/${reports.length} grades encontradas. Reconhecimento de itens continua desativado até a geometria estar correta.</span>`;document.getElementById('npcTotal').textContent='—';document.getElementById('marketTotal').textContent='—';document.getElementById('bestTotal').textContent='—';}catch(e){console.error(e);result.innerHTML='<strong>Falha ao analisar a imagem.</strong><br><span class="stash-note">Use o PNG original do Tibia, sem redimensionar ou recomprimir.</span>'}finally{analyze.disabled=false;analyze.textContent='Analisar Stash';}
+    if(!world.value){alert('Escolha o mundo do personagem primeiro.');return}if(!files.length){alert('Envie pelo menos um print do Stash.');return}analyze.disabled=true;analyze.textContent='Detectando janela…';result.innerHTML='<strong>Fase 1: detectando a geometria do Stash.</strong><br><span class="stash-note">20 × 11 · 37 px · detecção automática.</span>';
+    try{const reports=[];for(const file of files){reports.push(await inspect(file));await new Promise(r=>setTimeout(r,0));}const host=panel();host.innerHTML='<div class="eyebrow">Scanner · Fase 1</div><h3 style="margin:4px 0 8px">Diagnóstico automático da geometria</h3><p class="stash-note">A grade é localizada automaticamente usando 20 × 11 slots e passo nativo de 37 px. A calibração manual fica apenas como fallback.</p>';reports.forEach((r,i)=>renderReport(r,host,i));window.__stashReports=reports;const good=reports.filter(r=>r.grid).length;result.innerHTML=`<strong>${files.length} print${files.length===1?'':'s'} processado${files.length===1?'':'s'}.</strong><br><span class="stash-note">${good}/${reports.length} grades encontradas automaticamente.</span>`;document.getElementById('npcTotal').textContent='—';document.getElementById('marketTotal').textContent='—';document.getElementById('bestTotal').textContent='—';}catch(e){console.error(e);result.innerHTML='<strong>Falha ao analisar a imagem.</strong><br><span class="stash-note">Use o PNG original do Tibia, sem redimensionar ou recomprimir.</span>'}finally{analyze.disabled=false;analyze.textContent='Analisar Stash';}
   });
   loadWorlds();
 })();
