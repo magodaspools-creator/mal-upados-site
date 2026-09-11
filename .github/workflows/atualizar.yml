@@ -6,6 +6,7 @@ on:
   push:
     paths:
       - "atualizar_historico.py"
+      - ".github/workflows/atualizar.yml"
 jobs:
   update:
     runs-on: ubuntu-latest
