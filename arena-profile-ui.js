@@ -1,17 +1,107 @@
 // Painel de perfil da Arena: set completo em grade 3x3 + XP total acumulado.
-// Mantido isolado do motor de combate, loja e progressão.
+// Visual do equipamento sincronizado com os itens realmente equipados da loja.
 (()=>{
   const STYLE_ID='arena-profile-ui-style';
   const SET_ID='arenaEquipmentSet';
   const TOTAL_XP_ID='arenaTotalXp';
-  function totalXp(){if(typeof game==='undefined'||!game)return 0;const level=Math.max(1,Number(game.level)||1),current=Math.max(0,Number(game.xp)||0),completed=level-1;return Math.floor(100*completed+65*completed*(completed-1)/2+current)}
-  function itemFor(slot){const id=game?.shopEquipped?.[slot];if(id&&typeof SHOP_ITEMS!=='undefined'){const item=SHOP_ITEMS.find(x=>x.id===id);if(item)return item}const fallback={amulet:{name:'Nenhum',icon:'—',bonus:'',category:'amulets'},helmets:{name:'Nenhum',icon:'—',bonus:'',category:'helmets'},backpack:{name:'Nenhuma',icon:'—',bonus:'',category:'backpack'},weapon:{name:'Espada de Bronze',icon:'⚔️',bonus:'',category:'weapons',id:'base-weapon'},armor:{name:'Leather Armor',icon:'🛡️',bonus:'',category:'armor',id:'base-armor'},shield:{name:'Nenhum',icon:'—',bonus:'',category:'shields'},rings:{name:'Nenhum',icon:'—',bonus:'',category:'rings'},boots:{name:'Nenhuma',icon:'—',bonus:'',category:'boots'},trinket:{name:'Nenhum',icon:'—',bonus:'',category:'trinkets'}};return fallback[slot]||fallback.weapon}
-  function itemSprite(item,slot){const cat=item.category||slot,accent=/Demon|Abyss|Hell/i.test(item.name||'')?'#9f8bc4':/Golden|Celestial|Royal|Crown/i.test(item.name||'')?'#e4bd5d':/Nature|Fabulous|Falcon/i.test(item.name||'')?'#8bc47f':/Wand|Rod|Magic/i.test(item.name||'')?'#9db9e8':'#aeb4bd';let body='';if(cat==='amulets')body=`<path fill="#20242a" d="M12 3l5 6-5 12L7 9z"/><path fill="${accent}" d="M12 5l3 4-3 7-3-7z"/><rect x="10" y="2" width="4" height="2" fill="#d9dde3"/>`;else if(cat==='helmets')body=`<path fill="#1b1e23" d="M4 9h2V5h12v4h2v11H16v-6H8v6H4z"/><path fill="${accent}" d="M7 6h10v6H7z"/><rect x="8" y="12" width="8" height="2" fill="#d6d9df"/>`;else if(cat==='backpack')body=`<path fill="#1d2025" d="M6 7h12v14H6z"/><path fill="${accent}" d="M8 8h8v11H8z"/><path fill="#c3c8cf" d="M9 4h6v5H9z"/><rect x="10" y="12" width="4" height="3" fill="#16181b"/>`;else if(cat==='armor')body=`<path fill="#171a1f" d="M7 4h10l4 5-2 12H5L3 9z"/><path fill="${accent}" d="M8 6h8l3 4-2 8H7l-2-8z"/><rect x="11" y="7" width="2" height="11" fill="#d2d6dd"/>`;else if(cat==='legs')body=`<path fill="#171a1f" d="M7 4h10v8l-2 9h-5l1-9H9l-2 9H3l3-10z"/><path fill="${accent}" d="M8 6h8v5l-2 8h-2l1-9H9l-2 9H5l3-8z"/>`;else if(cat==='boots')body=`<path fill="#171a1f" d="M5 4h7v10l4 2h5v5H3v-5h5V4z"/><path fill="${accent}" d="M7 6h3v9l5 3h3v1H5v-2h5z"/>`;else if(cat==='rings')body=`<circle cx="12" cy="14" r="7" fill="${accent}"/><circle cx="12" cy="14" r="4" fill="#121418"/><path fill="#e7eaee" d="M9 7h6l-1-4h-4z"/>`;else if(cat==='trinkets')body=`<circle cx="12" cy="12" r="7" fill="#20242a"/><path fill="${accent}" d="M12 4l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><rect x="10" y="10" width="4" height="4" fill="#e8ebef"/>`;else if(cat==='wands')body=`<path stroke="#aeb4bd" stroke-width="3" d="M6 20L18 5"/><path fill="${accent}" d="M15 3h6v6h-2V7h-4z"/><rect x="5" y="18" width="4" height="2" fill="#555b65"/>`;else if(cat==='shields')body=`<path fill="#171a1f" d="M12 3l8 3v6c0 5-3 8-8 10-5-2-8-5-8-10V6z"/><path fill="${accent}" d="M12 5l5 2v5c0 3-2 5-5 6-3-1-5-3-5-6V7z"/><path fill="#e0e4e9" d="M11 7h2v9h-2z"/>`;else body=`<path fill="#60666f" d="M11 3h3v18h-3z"/><path fill="${accent}" d="M6 4h10v3h-3v5h4v3H6v-3h4V7H6z"/><rect x="9" y="6" width="6" height="2" fill="#d6d9df"/>`;return `<svg class="arena-item-sprite" viewBox="0 0 24 24" aria-hidden="true" shape-rendering="crispEdges">${body}</svg>`}
-  function renderSet(){const box=document.getElementById(SET_ID);if(!box||typeof game==='undefined'||!game)return;const slots=[['amulet','Amuleto'],['helmets','Helmet'],['backpack','Backpack'],['weapon','Arma'],['armor','Armadura'],['shield','Escudo / Arma'],['rings','Ring'],['boots','Boots'],['trinket','Trinket']];box.innerHTML=`<div class="arena-equipment-stage">${slots.map(([slot,label])=>slotHtml(slot,label)).join('')}</div>`}
-  function slotHtml(slot,label){const item=itemFor(slot),bonus=item.bonus||'';return `<div class="arena-equipment-slot slot-${slot}" title="${esc(item.name)}"><div class="arena-item-icon">${itemSprite(item,slot)}</div><small>${label}</small><strong>${esc(item.name)}</strong>${bonus?`<em>${esc(bonus)}</em>`:''}</div>`}
-  function installStyle(){if(document.getElementById(STYLE_ID))return;const style=document.createElement('style');style.id=STYLE_ID;style.textContent=`.arena-set-details{margin:12px 0 2px;border:1px solid #3b3e43;background:linear-gradient(145deg,#15171a,#0d0f11);box-shadow:inset 0 0 0 1px rgba(255,255,255,.025),0 8px 20px rgba(0,0,0,.22)}.arena-set-details>summary{list-style:none;cursor:pointer;padding:10px 11px;color:var(--gold2);font-size:.64rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid transparent}.arena-set-details>summary::-webkit-details-marker{display:none}.arena-set-details>summary::after{content:'+';float:right;color:var(--muted);font-size:.85rem}.arena-set-details[open]>summary{border-bottom-color:#2b2e33}.arena-set-details[open]>summary::after{content:'−'}.arena-set-grid{padding:14px 10px 13px;background:radial-gradient(circle at 50% 45%,#1b1d20 0,#111315 48%,#0d0f11 100%)}.arena-equipment-stage{position:relative;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,84px);gap:10px;align-items:center;justify-items:center;min-height:272px;padding:3px}.arena-equipment-slot{width:74px;height:76px;box-sizing:border-box;padding:5px 3px;border:2px solid #4b4e53;border-top-color:#666a70;border-left-color:#666a70;background:linear-gradient(145deg,#25282d 0,#17191c 55%,#111316 100%);box-shadow:inset 0 0 0 1px #0a0b0d,0 3px 7px rgba(0,0,0,.4);text-align:center;position:relative}.arena-item-icon{width:42px;height:40px;margin:0 auto 1px;display:grid;place-items:center}.arena-item-sprite{width:38px;height:38px;image-rendering:pixelated;filter:drop-shadow(0 2px 2px rgba(0,0,0,.75))}.arena-equipment-slot small,.arena-equipment-slot strong,.arena-equipment-slot em{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.arena-equipment-slot small{font-size:.4rem;color:#858a92;text-transform:uppercase;letter-spacing:.45px}.arena-equipment-slot strong{font-size:.47rem;color:#d5d7db;margin-top:2px}.arena-equipment-slot em{font-size:.39rem;color:var(--gold2);font-style:normal;margin-top:2px}.slot-amulet{grid-column:1;grid-row:1}.slot-helmets{grid-column:2;grid-row:1}.slot-backpack{grid-column:3;grid-row:1}.slot-weapon{grid-column:1;grid-row:2}.slot-armor{grid-column:2;grid-row:2}.slot-shield{grid-column:3;grid-row:2}.slot-rings{grid-column:1;grid-row:3}.slot-boots{grid-column:2;grid-row:3}.slot-trinket{grid-column:3;grid-row:3}.arena-character-core{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:78px;height:88px;display:none;pointer-events:none}.arena-character-core:before{content:''}.arena-character-glow,.arena-character-avatar,.arena-character-core small{display:none}@media(max-width:620px){.arena-set-grid{padding:14px 6px}.arena-equipment-stage{grid-template-rows:repeat(3,78px);gap:10px;min-height:256px;padding:2px}.arena-equipment-slot{width:70px;height:72px}.arena-item-icon{width:38px;height:37px}.arena-item-sprite{width:34px;height:34px}.arena-character-core{display:none}}`;document.head.appendChild(style)}
-  function installMarkup(){const grid=document.querySelector('.character-panel .stat-grid');if(!grid)return;let details=document.querySelector('.arena-set-details');if(!details){details=document.createElement('details');details.className='arena-set-details';details.innerHTML='<summary>Set equipado</summary><div class="arena-set-grid" id="'+SET_ID+'"></div>';grid.insertAdjacentElement('afterend',details)}installStyle()}
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  function totalXp(){
+    if(typeof game==='undefined'||!game)return 0;
+    const level=Math.max(1,Number(game.level)||1),current=Math.max(0,Number(game.xp)||0),completed=level-1;
+    return Math.floor(100*completed+65*completed*(completed-1)/2+current);
+  }
+
+  function isEmpty(item){return !item||!item.id||item.name==='Nenhum'||item.name==='Nenhuma'}
+
+  function itemFor(slot){
+    const id=game?.shopEquipped?.[slot];
+    if(id&&typeof SHOP_ITEMS!=='undefined'){
+      const item=SHOP_ITEMS.find(x=>x.id===id);
+      if(item)return item;
+    }
+    const fallback={
+      amulet:{name:'Nenhum',icon:'—',bonus:'',category:'amulets'},
+      helmets:{name:'Nenhum',icon:'—',bonus:'',category:'helmets'},
+      backpack:{name:'Nenhuma',icon:'—',bonus:'',category:'backpack'},
+      weapon:{name:'Espada de Bronze',icon:'⚔️',bonus:'',category:'weapons',id:'base-weapon'},
+      armor:{name:'Leather Armor',icon:'🛡️',bonus:'',category:'armor',id:'base-armor'},
+      shield:{name:'Nenhum',icon:'—',bonus:'',category:'shields'},
+      rings:{name:'Nenhum',icon:'—',bonus:'',category:'rings'},
+      boots:{name:'Nenhuma',icon:'—',bonus:'',category:'boots'},
+      trinket:{name:'Nenhum',icon:'—',bonus:'',category:'trinkets'}
+    };
+    return fallback[slot]||fallback.weapon;
+  }
+
+  function itemSprite(item,slot){
+    if(isEmpty(item))return `<svg class="arena-item-sprite arena-empty-sprite" viewBox="0 0 32 32" aria-hidden="true" shape-rendering="crispEdges"><rect x="2" y="2" width="28" height="28" fill="#101216" stroke="#34383e"/><path d="M7 16h18M16 7v18" stroke="#292d33" stroke-width="2"/><rect x="11" y="11" width="10" height="10" fill="none" stroke="#3a3e45"/></svg>`;
+    const id=String(item.id||'').toLowerCase();
+    const name=String(item.name||'').toLowerCase();
+    const accent=/dragon|draken|frost/i.test(name)?'#78b6d9':/demon|abyss|hell/i.test(name)?'#9f78c2':/golden|celestial|royal|crown/i.test(name)?'#e4bd5d':/phoenix|fire|inferno|everblazing/i.test(name)?'#dd754d':/nature|fabulous|falcon|cobra/i.test(name)?'#78b87c':/wand|rod|magic|arcan/i.test(name)?'#91a9d8':'#aeb4bd';
+    let body='';
+    if(id==='dragon-shield')body=`<path fill="#171b20" d="M16 2l11 4v8c0 7-4 12-11 16C9 26 5 21 5 14V6z"/><path fill="#5fa2c3" d="M16 5l8 3v6c0 5-3 9-8 12-5-3-8-7-8-12V8z"/><path fill="#d5e8ef" d="M14 8h4v16h-4z"/><path fill="#77bfd8" d="M9 13h14v4H9z"/>`;
+    else if(id==='fire-sword')body=`<path stroke="#d9dde3" stroke-width="3" d="M20 5L8 21"/><path fill="#df7448" d="M21 3h5v5h-2V6h-3z"/><path fill="#ad733f" d="M5 22h7v3H5z"/><rect x="9" y="18" width="3" height="7" fill="#6c4b35"/>`;
+    else if(id==='spike-sword')body=`<path fill="#c6ccd3" d="M18 3h4v5l-9 13-4-3z"/><path fill="#8e969f" d="M7 18l6 3-3 4H5z"/><path fill="#eef1f4" d="M21 3l3 2-11 15-2-2z"/>`;
+    else if(id==='dragon-lance')body=`<path fill="#65727d" d="M15 7h3v21h-3z"/><path fill="#78b6d9" d="M16 2l4 5-4 4-4-4z"/><path fill="#d7e6ee" d="M18 6l5 2-4 3z"/><rect x="13" y="23" width="7" height="3" fill="#4a5560"/>`;
+    else if(id==='heroic-axe'||id==='demon-wing-axe')body=`<path fill="#68717a" d="M15 4h3v24h-3z"/><path fill="${accent}" d="M10 4h12v4h-3v5h7v5h-7v5h-3v-5H9v-5h7V8h-6z"/>`;
+    else if(id==='avenger'||id==='demon-blade'||id==='arcanum-edge')body=`<path fill="#cbd0d6" d="M18 2h4v7L11 23l-4-3z"/><path fill="${accent}" d="M20 4l3 2L12 23l-3-2z"/><path fill="#855d38" d="M5 23h8v3H5z"/>`;
+    else if(/armor$|armor-|dragon-scale-mail|demon-armor|ornate-chestplate|phoenix-plate/.test(id))body=`<path fill="#16191e" d="M8 3h16l5 7-3 17H6L3 10z"/><path fill="${accent}" d="M10 6h12l4 5-2 11H8L6 11z"/><path fill="#d7dbe0" d="M15 7h2v13h-2z"/>`;
+    else if(id.includes('legs'))body=`<path fill="#171a1f" d="M8 4h16v9l-3 15h-6l2-12h-3l-2 12H6l3-16z"/><path fill="${accent}" d="M10 7h12v5l-3 12h-3l2-12h-6l-2 12H9z"/>`;
+    else if(id.includes('boots')||id==='boh'||slot==='boots')body=`<path fill="#171a1f" d="M7 4h9v13l6 3h7v6H4v-5h5V4z"/><path fill="${accent}" d="M9 6h4v11l7 4h5v2H7v-3h6z"/>`;
+    else if(slot==='helmets')body=`<path fill="#1b1e23" d="M4 10h3V5h18v5h3v16H21v-8H11v8H4z"/><path fill="${accent}" d="M8 7h14v8H8z"/><rect x="10" y="15" width="10" height="3" fill="#d6d9df"/>`;
+    else if(slot==='rings')body=`<circle cx="16" cy="18" r="9" fill="${accent}"/><circle cx="16" cy="18" r="5" fill="#111318"/><path fill="#e7eaee" d="M12 9h8l-1-5h-6z"/>`;
+    else if(slot==='backpack')body=`<path fill="#1d2025" d="M7 8h18v20H7z"/><path fill="${accent}" d="M10 10h12v15H10z"/><path fill="#c3c8cf" d="M12 4h8v7h-8z"/><rect x="13" y="16" width="6" height="4" fill="#16181b"/>`;
+    else if(slot==='amulet')body=`<path fill="#20242a" d="M16 3l7 7-7 15L9 10z"/><path fill="${accent}" d="M16 6l4 4-4 9-4-9z"/><rect x="14" y="2" width="4" height="3" fill="#d9dde3"/>`;
+    else if(slot==='shield')body=`<path fill="#171a1f" d="M16 3l11 4v7c0 7-4 12-11 16C9 26 5 21 5 14V7z"/><path fill="${accent}" d="M16 6l7 3v5c0 5-3 9-7 11-4-2-7-6-7-11V9z"/><path fill="#e0e4e9" d="M14 9h4v14h-4z"/>`;
+    else if(slot==='trinket')body=`<circle cx="16" cy="16" r="9" fill="#20242a"/><path fill="${accent}" d="M16 6l3 7 7 3-7 3-3 7-3-7-7-3 7-3z"/><rect x="14" y="14" width="4" height="4" fill="#e8ebef"/>`;
+    else body=`<path fill="#60666f" d="M14 3h4v25h-4z"/><path fill="${accent}" d="M7 5h14v4h-5v6h6v4H7v-4h5V9H7z"/><rect x="12" y="8" width="7" height="2" fill="#d6d9df"/>`;
+    return `<svg class="arena-item-sprite" viewBox="0 0 32 32" aria-hidden="true" shape-rendering="crispEdges">${body}</svg>`;
+  }
+
+  function renderSet(){
+    const box=document.getElementById(SET_ID);if(!box||typeof game==='undefined'||!game)return;
+    const slots=[['amulet','Amuleto'],['helmets','Helmet'],['backpack','Backpack'],['weapon','Arma'],['armor','Armadura'],['shield','Escudo / Arma'],['rings','Ring'],['boots','Boots'],['trinket','Trinket']];
+    box.innerHTML=`<div class="arena-equipment-stage">${slots.map(([slot,label])=>slotHtml(slot,label)).join('')}</div>`;
+  }
+
+  function slotHtml(slot,label){const item=itemFor(slot),bonus=item.bonus||'';return `<div class="arena-equipment-slot slot-${slot} ${isEmpty(item)?'is-empty':'is-equipped'}" title="${esc(item.name)}"><div class="arena-item-icon">${itemSprite(item,slot)}</div><small>${label}</small><strong>${esc(item.name)}</strong>${bonus?`<em>${esc(bonus)}</em>`:''}</div>`}
+
+  function installStyle(){
+    if(document.getElementById(STYLE_ID))return;
+    const style=document.createElement('style');style.id=STYLE_ID;style.textContent=`
+      .arena-set-details{margin:12px 0 2px;border:1px solid #3b3e43;background:linear-gradient(145deg,#15171a,#0d0f11);box-shadow:inset 0 0 0 1px rgba(255,255,255,.025),0 8px 20px rgba(0,0,0,.22);overflow:hidden}
+      .arena-set-details>summary{list-style:none;cursor:pointer;padding:10px 11px;color:var(--gold2);font-size:.64rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid transparent}
+      .arena-set-details>summary::-webkit-details-marker{display:none}.arena-set-details>summary::after{content:'+';float:right;color:var(--muted);font-size:.85rem}
+      .arena-set-details[open]>summary{border-bottom-color:#2b2e33}.arena-set-details[open]>summary::after{content:'−'}
+      .arena-set-grid{width:100%;max-width:100%;box-sizing:border-box;overflow:hidden;padding:14px 8px 13px;background:radial-gradient(circle at 50% 45%,#1b1d20 0,#111315 48%,#0d0f11 100%)}
+      .arena-equipment-stage{position:relative;width:100%;max-width:100%;box-sizing:border-box;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(3,84px);gap:10px;align-items:center;justify-items:center;min-height:272px;padding:3px}
+      .arena-equipment-slot{width:74px;max-width:100%;height:76px;box-sizing:border-box;padding:5px 3px;border:2px solid #4b4e53;border-top-color:#666a70;border-left-color:#666a70;background:linear-gradient(145deg,#25282d 0,#17191c 55%,#111316 100%);box-shadow:inset 0 0 0 1px #0a0b0d,0 3px 7px rgba(0,0,0,.4);text-align:center;position:relative;overflow:hidden}
+      .arena-equipment-slot.is-empty{opacity:.72;border-color:#363a40;border-top-color:#4a4e54;border-left-color:#4a4e54}
+      .arena-item-icon{width:44px;height:44px;margin:0 auto;display:grid;place-items:center}.arena-item-sprite{width:40px;height:40px;image-rendering:pixelated;filter:drop-shadow(0 2px 2px rgba(0,0,0,.75))}.arena-empty-sprite{width:34px;height:34px;filter:none;opacity:.72}
+      .arena-equipment-slot small,.arena-equipment-slot strong,.arena-equipment-slot em{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.arena-equipment-slot small{font-size:.4rem;color:#858a92;text-transform:uppercase;letter-spacing:.45px}.arena-equipment-slot strong{font-size:.47rem;color:#d5d7db;margin-top:2px}.arena-equipment-slot em{font-size:.39rem;color:var(--gold2);font-style:normal;margin-top:2px}
+      .slot-amulet{grid-column:1;grid-row:1}.slot-helmets{grid-column:2;grid-row:1}.slot-backpack{grid-column:3;grid-row:1}.slot-weapon{grid-column:1;grid-row:2}.slot-armor{grid-column:2;grid-row:2}.slot-shield{grid-column:3;grid-row:2}.slot-rings{grid-column:1;grid-row:3}.slot-boots{grid-column:2;grid-row:3}.slot-trinket{grid-column:3;grid-row:3}
+      .arena-character-core,.arena-character-glow,.arena-character-avatar,.arena-character-core small{display:none!important}
+      @media(max-width:620px){.arena-set-grid{padding:14px 6px}.arena-equipment-stage{grid-template-rows:repeat(3,78px);gap:10px;min-height:256px;padding:2px}.arena-equipment-slot{width:70px;height:72px}.arena-item-icon{width:38px;height:37px}.arena-item-sprite{width:34px;height:34px}.arena-empty-sprite{width:30px;height:30px}}
+    `;document.head.appendChild(style);
+  }
+
+  function installMarkup(){
+    const grid=document.querySelector('.character-panel .stat-grid');if(!grid)return;
+    let details=document.querySelector('.arena-set-details');
+    if(!details){details=document.createElement('details');details.className='arena-set-details';details.innerHTML='<summary>Set equipado</summary><div class="arena-set-grid" id="'+SET_ID+'"></div>';grid.insertAdjacentElement('afterend',details)}
+    installStyle();
+  }
+
   function updateTotalXp(){const el=document.getElementById(TOTAL_XP_ID)||document.getElementById('arenaXp');if(el)el.textContent=fmt(totalXp())}
-  function init(){installMarkup();if(typeof window.renderPlayer==='function'&&!window.__arenaProfileWrapped){const original=window.renderPlayer;window.renderPlayer=function(){original();installMarkup();updateTotalXp();renderSet()};window.__arenaProfileWrapped=true}updateTotalXp();renderSet()}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();setTimeout(init,300);
+
+  function sync(){if(typeof shopEnsure==='function')shopEnsure();installMarkup();updateTotalXp();renderSet()}
+
+  function init(){
+    sync();
+    if(typeof window.renderPlayer==='function'&&!window.__arenaProfileWrapped){const original=window.renderPlayer;window.renderPlayer=function(){original();sync()};window.__arenaProfileWrapped=true}
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+  setTimeout(init,300);setInterval(sync,800);
 })();
