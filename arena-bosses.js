@@ -19,6 +19,12 @@
     if(!game.bossTokens)game.bossTokens=0;
     if(!game.bossKills||typeof game.bossKills!=='object')game.bossKills={};
     if(!game.bossCooldowns||typeof game.bossCooldowns!=='object')game.bossCooldowns={};
+    updateTokenBalance();
+  }
+
+  function updateTokenBalance(){
+    const el=document.getElementById('bossTokenBalance');
+    if(el&&typeof game!=='undefined'&&game)el.textContent=fmt(game.bossTokens||0);
   }
 
   function bossFor(zoneIndex){return BOSSES[Number(zoneIndex)]||null}
@@ -94,6 +100,7 @@
     game.bossTokens+=tokenDrop;
     originalWinBattle();
     persist();
+    updateTokenBalance();
     const result=document.getElementById('battleArea');
     if(result){
       const loot=tokenDrop?`<strong class="boss-token-loot">+${tokenDrop} Boss Token${tokenDrop>1?'s':''}</strong>`:'<span>Token não caiu desta vez.</span>';
@@ -101,8 +108,6 @@
       document.getElementById('againBtn').onclick=()=>showZone(game.zone);
     }
     activeBoss=null;
-    renderAll();
-    showZone(game.zone);
   };
 
   function installStyle(){
@@ -111,11 +116,12 @@
       .arena-boss-wrap{margin-top:14px;width:100%}.arena-boss-card{display:flex;align-items:center;gap:12px;padding:13px;border:1px solid #494c52;background:linear-gradient(145deg,#181a1e,#0e1012);box-shadow:inset 0 0 0 1px rgba(255,255,255,.025),0 8px 18px rgba(0,0,0,.22)}
       .arena-boss-card.boss-ready{border-color:#66542f}.arena-boss-card.boss-needs-amulet{opacity:.72}.arena-boss-card.boss-cooldown{opacity:.72}.boss-card-icon{width:48px;height:48px;display:grid;place-items:center;font-size:28px;border:1px solid #3c4046;background:#101216;flex:0 0 48px}.boss-card-body{flex:1;min-width:0}.boss-card-body h3{margin:2px 0 3px;color:#ddd;font-family:Cinzel,serif}.boss-card-body p{margin:0 0 4px;font-size:.72rem;color:#a5a9b0}.boss-card-body small{color:#777d86;font-size:.61rem}.boss-card-body strong{color:var(--gold2)}.arena-boss-card .btn{white-space:nowrap}.boss-timer{color:var(--gold2)}
       .boss-battle-warning{margin:8px 0;padding:7px 10px;border:1px solid #3b3e44;background:#131519;color:#c2c6cd;font-size:.66rem;text-align:center}.boss-fighter-icon{display:grid!important;place-items:center}.arena-boss-sprite{width:62px;height:62px;image-rendering:pixelated;filter:drop-shadow(0 3px 3px rgba(0,0,0,.8))}.boss-token-loot{color:var(--gold2)}
-      @media(max-width:620px){.arena-boss-card{align-items:flex-start;flex-wrap:wrap}.boss-card-body{min-width:calc(100% - 64px)}.arena-boss-card .btn{width:100%}.boss-battle-warning{font-size:.6rem}}
+      .boss-token-shop{border-color:#51472f}.token-coming-soon{display:flex;align-items:center;gap:14px;padding:18px;border:1px dashed #51472f;background:linear-gradient(145deg,#171711,#10110e);min-height:74px}.token-coming-icon{width:48px;height:48px;display:grid;place-items:center;border:1px solid #5b4b2b;color:var(--gold2);font-size:25px;background:#15130d}.token-coming-soon strong{display:block;color:#ddd;font-family:Cinzel,serif}.token-coming-soon span{display:block;margin-top:4px;color:#777d86;font-size:.7rem}
+      @media(max-width:620px){.arena-boss-card{align-items:flex-start;flex-wrap:wrap}.boss-card-body{min-width:calc(100% - 64px)}.arena-boss-card .btn{width:100%}.boss-battle-warning{font-size:.6rem}.token-coming-soon{align-items:flex-start}}
     `;document.head.appendChild(style);
   }
 
-  function refreshBossTimers(){document.querySelectorAll('.boss-timer').forEach(el=>{const z=Number(el.dataset.bossZone),left=cooldownLeft(z);if(left<=0){showZone(game.zone)}else el.textContent=fmtTime(left)})}
+  function refreshBossTimers(){document.querySelectorAll('.boss-timer').forEach(el=>{const z=Number(el.dataset.bossZone),left=cooldownLeft(z);if(left<=0){showZone(game.zone)}else el.textContent=fmtTime(left)});updateTokenBalance()}
   installStyle();ensureState();
   window.arenaBosses={BOSSES,cooldownLeft,kills};
   setInterval(refreshBossTimers,1000);
