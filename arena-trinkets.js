@@ -55,8 +55,6 @@
     if(typeof shopRender==='function')shopRender();
   }
 
-  // O slot físico continua sendo a categoria Trinkets para manter a capacidade da Backpack.
-  // A lista interna permite 1 Loot + 1 Crit + 1 Lifesteal equipados ao mesmo tempo.
   const previousSlotFor=typeof slotFor==='function'?slotFor:null;
   if(previousSlotFor){window.slotFor=function(item){if(item?.category==='trinkets')return 'trinkets';return previousSlotFor(item)}}
 
@@ -80,6 +78,29 @@
     window.__arenaTrinketShopWrapped=true;
   }
 
+  function showCritAnimation(){
+    const area=document.getElementById('battleArea');
+    if(!area)return;
+    area.querySelector('.arena-crit-pop')?.remove();
+    const el=document.createElement('div');
+    el.className='arena-crit-pop';
+    el.textContent='CRIT!';
+    area.appendChild(el);
+    setTimeout(()=>el.remove(),850);
+  }
+
+  function installCritStyle(){
+    if(document.getElementById('arena-crit-style'))return;
+    const s=document.createElement('style');
+    s.id='arena-crit-style';
+    s.textContent=`
+      #battleArea{position:relative}
+      .arena-crit-pop{position:absolute;left:50%;top:50%;z-index:50;pointer-events:none;transform:translate(-50%,-50%) scale(.55) rotate(-4deg);font-family:Cinzel,serif;font-size:clamp(2rem,7vw,4rem);font-weight:900;letter-spacing:2px;color:#e33434;text-shadow:0 3px 0 #620909,0 0 16px rgba(255,40,40,.8),2px 2px 0 #120000;animation:arenaCritPop .8s cubic-bezier(.2,.85,.25,1) forwards}
+      @keyframes arenaCritPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.35) rotate(-8deg)}22%{opacity:1;transform:translate(-50%,-50%) scale(1.18) rotate(3deg)}55%{opacity:1;transform:translate(-50%,-56%) scale(1) rotate(-2deg)}100%{opacity:0;transform:translate(-50%,-72%) scale(1.08) rotate(2deg)}}
+    `;
+    document.head.appendChild(s);
+  }
+
   function combatWrap(){
     if(typeof attack!=='function'||window.__arenaTrinketAttackWrapped)return;
     const originalAttack=attack;
@@ -93,7 +114,10 @@
       originalAttack();
       const dealt=beforeHp-(battle?.hp??0);
       battle.attack=baseAttack;
-      if(critical&&dealt>0){battleLog(`<span class="loot">CRÍTICO! x2 dano · +${b.crit}% chance</span>`)}
+      if(critical&&dealt>0){
+        battleLog(`<span class="loot">CRÍTICO! x2 dano · +${b.crit}% chance</span>`);
+        showCritAnimation();
+      }
       if(b.lifesteal>0&&dealt>0&&battle){
         const healed=Math.max(1,Math.floor(dealt*b.lifesteal/100));
         battle.playerHp=Math.min(battle.playerMax,battle.playerHp+healed);
@@ -118,6 +142,7 @@
 
   function install(){
     ensure();
+    installCritStyle();
     combatWrap();
     winWrap();
   }
