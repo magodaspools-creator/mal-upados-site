@@ -117,6 +117,10 @@
       const pool=itemLossPool();
       if(!pool.length){
         result.type='gold';
+        const lost=Math.max(10,Math.floor(game.gold*(0.08+Math.random()*0.08)));
+        game.gold=Math.max(0,game.gold-lost);
+        result.lost=lost;
+        result.message=`Você perdeu ${fmt(lost)} gold.`;
       }else{
         const item=pool[Math.floor(Math.random()*pool.length)];
         const bless=consumeBless();
@@ -156,6 +160,33 @@
     return result;
   }
 
+  function showDeathPopup(result){
+    document.getElementById('arenaDeathPopup')?.remove();
+    const labels={
+      item:{icon:'⚠️',title:'VOCÊ MORREU',headline:'ITEM PERDIDO',className:'danger'},
+      protected:{icon:'🛡️',title:'VOCÊ MORREU',headline:'ITEM PROTEGIDO',className:'protected'},
+      gold:{icon:'💰',title:'VOCÊ MORREU',headline:'GOLD PERDIDO',className:'warning'},
+      xp:{icon:'💀',title:'VOCÊ MORREU',headline:'XP PERDIDO',className:'danger'}
+    };
+    const cfg=labels[result.type]||labels.gold;
+    let detail=result.message;
+    if(result.type==='item')detail=`Você perdeu o item <strong>${esc(result.item?.name||'do equipamento')}</strong>.`;
+    if(result.type==='protected')detail=`A <strong>${esc(result.bless?.name||'Bless')}</strong> protegeu o item <strong>${esc(result.item?.name||'do equipamento')}</strong>.`;
+    if(result.type==='gold')detail=`Você perdeu <strong>${fmt(result.lost||0)} gold</strong>.`;
+    if(result.type==='xp')detail=`Você perdeu <strong>${fmt(result.lost||0)} XP</strong>.`;
+    const el=document.createElement('div');
+    el.id='arenaDeathPopup';
+    el.className=`arena-death-overlay ${cfg.className}`;
+    el.innerHTML=`<div class="arena-death-modal" role="dialog" aria-modal="true" aria-labelledby="arenaDeathTitle"><button class="arena-death-close" aria-label="Fechar">×</button><div class="arena-death-icon">${cfg.icon}</div><div class="arena-death-kicker">${cfg.title}</div><h2 id="arenaDeathTitle">${cfg.headline}</h2><p class="arena-death-detail">${detail}</p><p class="arena-death-note">A Backpack está sempre protegida.</p><button class="btn active arena-death-ok">ENTENDI</button></div></div>`;
+    document.body.appendChild(el);
+    const close=()=>el.remove();
+    el.querySelector('.arena-death-close').onclick=close;
+    el.querySelector('.arena-death-ok').onclick=close;
+    el.addEventListener('click',e=>{if(e.target===el)close()});
+    const escClose=e=>{if(e.key==='Escape'){close();document.removeEventListener('keydown',escClose)}};
+    document.addEventListener('keydown',escClose);
+  }
+
   function installDeath(){
     if(typeof loseBattle!=='function'||window.__arenaBlessDeathInstalled)return;
     window.__arenaBlessDeathInstalled=true;
@@ -166,15 +197,17 @@
       persist();
       original();
       const resultBox=document.querySelector('#battleArea .battle-empty.result');
-      if(!resultBox)return;
-      const p=resultBox.querySelector('p');
-      if(p)p.innerHTML=`<strong class="death-penalty">${esc(result.message)}</strong><br><span>Seu equipamento e progresso podem sofrer consequências. A Backpack está protegida.</span>`;
-      const title=resultBox.querySelector('h3');
-      if(title)title.textContent=result.type==='protected'?'Você caiu, mas a Bless protegeu seu set.':'Você caiu.';
-      const icon=resultBox.querySelector('.battle-icon');
-      if(icon)icon.textContent=result.type==='protected'?'🛡️':'💀';
+      if(resultBox){
+        const p=resultBox.querySelector('p');
+        if(p)p.innerHTML=`<strong class="death-penalty">${esc(result.message)}</strong><br><span>Seu equipamento e progresso podem sofrer consequências. A Backpack está protegida.</span>`;
+        const title=resultBox.querySelector('h3');
+        if(title)title.textContent=result.type==='protected'?'Você caiu, mas a Bless protegeu seu set.':'Você caiu.';
+        const icon=resultBox.querySelector('.battle-icon');
+        if(icon)icon.textContent=result.type==='protected'?'🛡️':'💀';
+      }
       if(typeof shopRender==='function')shopRender();
       if(typeof renderAll==='function')renderAll();
+      showDeathPopup(result);
     };
   }
 
