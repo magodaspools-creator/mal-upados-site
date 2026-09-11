@@ -28,8 +28,8 @@
     const m=buildMaps(canvas),xs=peakPositions(m.v,0,m.w-1,64).map(o=>o.p).filter(x=>x+GRID.width<m.w),ys=peakPositions(m.hm,80,m.h-GRID.height-1,64).map(o=>o.p).filter(y=>y+GRID.height+GRID.pitch<m.h);let best=null;
     for(const y of ys)for(const x of xs){
       let periodicX=0,periodicY=0;for(let c=0;c<=GRID.cols;c++)periodicX+=m.v[x+c*GRID.pitch]||0;for(let r=0;r<=GRID.rows;r++)periodicY+=m.hm[y+r*GRID.pitch]||0;
-      const below=regionNoise(m,x,y+GRID.height,GRID.width,GRID.pitch),right=regionNoise(m,x+GRID.width,y,GRID.pitch,GRID.height);
-      const score=(periodicX/(GRID.cols+1))*.42+(periodicY/(GRID.rows+1))*.42-Math.min(below,5000)*.004-Math.min(right,5000)*.004;
+      const below=regionNoise(m,x,y+GRID.height,GRID.width,GRID.pitch),right=regionNoise(m,x+GRID.width,y,GRID.pitch,GRID.height),left=regionNoise(m,x-GRID.pitch,y,GRID.pitch,GRID.height);
+      const score=(periodicX/(GRID.cols+1))*.42+(periodicY/(GRID.rows+1))*.42-Math.min(below,5000)*.004-Math.min(right,5000)*.008-Math.min(left,5000)*.008;
       if(!best||score>best.score)best={score,x,y};
     }
     return best?{...best,cols:GRID.cols,rows:GRID.rows,pitch:GRID.pitch,rowPitch:GRID.pitch,tile:GRID.tile,width:GRID.width,height:GRID.height,confidence:1,detector:'stash-20x8'}:null;
