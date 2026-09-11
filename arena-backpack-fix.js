@@ -1,12 +1,12 @@
-// Sistema de Backpacks: capacidade real para Amuletos + futuros Trinkets.
+// Sistema de Backpacks: capacidade real para Amuletos + Trinkets.
 // Isolado da loja e do combate para preservar o restante da Arena.
 (()=>{
   const BACKPACKS=[
-    {id:'small-backpack',name:'Small Backpack',icon:'🎒',category:'backpacks',price:750,attack:0,defense:0,minLevel:1,slots:3,bonus:'3 slots · Amuletos + Trinkets'},
-    {id:'adventurer-backpack',name:"Adventurer's Backpack",icon:'🎒',category:'backpacks',price:3500,attack:0,defense:0,minLevel:5,slots:4,bonus:'4 slots · Amuletos + Trinkets'},
-    {id:'dragon-backpack',name:'Dragon Backpack',icon:'🎒',category:'backpacks',price:9000,attack:0,defense:0,minLevel:12,slots:5,bonus:'5 slots · Amuletos + Trinkets'},
-    {id:'demon-backpack',name:'Demon Backpack',icon:'🎒',category:'backpacks',price:18000,attack:0,defense:0,minLevel:20,slots:6,bonus:'6 slots · Amuletos + Trinkets'},
-    {id:'infernal-backpack',name:'Infernal Backpack',icon:'🎒',category:'backpacks',price:35000,attack:0,defense:0,minLevel:35,slots:7,bonus:'7 slots · Amuletos + Trinkets'}
+    {id:'small-backpack',name:'Small Backpack',icon:'🎒',category:'backpacks',price:750,attack:0,defense:0,minLevel:1,slots:4,bonus:'4 slots · Amuletos + Trinkets'},
+    {id:'adventurer-backpack',name:"Adventurer's Backpack",icon:'🎒',category:'backpacks',price:3500,attack:0,defense:0,minLevel:5,slots:5,bonus:'5 slots · Amuletos + Trinkets'},
+    {id:'dragon-backpack',name:'Dragon Backpack',icon:'🎒',category:'backpacks',price:9000,attack:0,defense:0,minLevel:12,slots:6,bonus:'6 slots · Amuletos + Trinkets'},
+    {id:'demon-backpack',name:'Demon Backpack',icon:'🎒',category:'backpacks',price:18000,attack:0,defense:0,minLevel:20,slots:7,bonus:'7 slots · Amuletos + Trinkets'},
+    {id:'infernal-backpack',name:'Infernal Backpack',icon:'🎒',category:'backpacks',price:35000,attack:0,defense:0,minLevel:35,slots:8,bonus:'8 slots · Amuletos + Trinkets'}
   ];
   if(typeof SHOP_CATEGORIES!=='undefined'&&!SHOP_CATEGORIES.some(x=>x.id==='backpacks'))SHOP_CATEGORIES.push({id:'backpacks',label:'Backpacks'});
   if(typeof SHOP_ITEMS!=='undefined')BACKPACKS.forEach(item=>{if(!SHOP_ITEMS.some(x=>x.id===item.id))SHOP_ITEMS.push(item)});
@@ -25,7 +25,7 @@
   function capacity(){return current()?.slots||0}
 
   // Cada Amuleto/Trinket comprado ocupa 1 slot físico da Backpack.
-  // O jogador pode possuir vários Amuletos, mas continua equipando apenas 1 por vez.
+  // O jogador pode possuir vários Amuletos e Trinkets, mas continua equipando conforme as regras de cada tipo.
   function specialItems(){
     if(typeof SHOP_ITEMS==='undefined')return [];
     ensure();
@@ -62,14 +62,12 @@
       const isBuy=!game.shopOwned.includes(item.id);
       const isEquip=game.shopOwned.includes(item.id)&&action.includes('equipar');
 
-      // Compra: Backpack é obrigatória e cada Amuleto/Trinket ocupa 1 slot.
       if(isSpecial&&isBuy&&!canCarrySpecial(item)){
         e.preventDefault();
         e.stopImmediatePropagation();
         if(typeof toast==='function')toast(blockedMessage(item));
         return;
       }
-      // Equipar: não deixa usar Amuleto/Trinket sem Backpack.
       if(isSpecial&&isEquip&&capacity()<1){
         e.preventDefault();
         e.stopImmediatePropagation();
