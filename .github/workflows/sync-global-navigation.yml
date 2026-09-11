@@ -15,35 +15,72 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Garantir Stash em todas as paginas
+      - name: Padronizar menu e rodape em todas as paginas
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import re
 
+          NAV = [
+              ('index.html', 'Início'),
+              ('ranking.html', 'Ranking'),
+              ('guilda.html', 'Guilda'),
+              ('stash.html', 'Stash'),
+              ('hunting.html', 'Guia de Hunts'),
+              ('arena.html', 'Arena'),
+              ('caos.html', 'Caos'),
+          ]
+
+          def nav_html(current, active=True):
+              items = []
+              for href, label in NAV:
+                  cls = ' class="active"' if active and href == current else ''
+                  items.append(f'<a{cls} href="{href}">{label}</a>')
+              return ''.join(items)
+
           for path in sorted(Path('.').glob('*.html')):
               if path.name.startswith('_'):
                   continue
+
               text = path.read_text(encoding='utf-8')
 
-              # Menu global: garante o link Stash sem duplicar.
-              def sync_menu(m):
-                  links = m.group(1)
-                  if re.search(r'href=["\']stash\.html["\']', links):
-                      return m.group(0)
-                  anchor = '<a href="stash.html">Stash</a>'
-                  return '<div class="links">' + links + anchor + '</div>'
+              # O menu passa a ter SEMPRE a mesma ordem em todas as páginas.
+              menu = '<div class="links">' + nav_html(path.name) + '</div>'
+              text, menu_count = re.subn(
+                  r'<div class="links">.*?</div>',
+                  menu,
+                  text,
+                  count=1,
+                  flags=re.S,
+              )
 
-              text = re.sub(r'<div class="links">(.*?)</div>', sync_menu, text, count=1, flags=re.S)
+              # Se alguma página não tiver .links, não inventa um segundo menu.
+              if menu_count == 0:
+                  text = re.sub(
+                      r'(<header[^>]*>.*?<div class="nav">.*?</div>)',
+                      lambda m: m.group(1).replace('</div>', menu + '</div>', 1),
+                      text,
+                      count=1,
+                      flags=re.S,
+                  )
 
-              # Rodape global: garante o link Stash sem duplicar.
-              def sync_footer(m):
-                  body = m.group(1)
-                  if re.search(r'href=["\']stash\.html["\']', body):
-                      return m.group(0)
-                  return '<footer>' + body.rstrip() + ' · <a href="stash.html">Stash</a></footer>'
+              # Rodapé usa exatamente a mesma ordem global.
+              footer = '<footer>Mal Upados · Jadebra · ' + ' · '.join(
+                  f'<a href="{href}">{label}</a>' for href, label in NAV
+              ) + '</footer>'
 
-              text = re.sub(r'<footer>(.*?)</footer>', sync_footer, text, count=1, flags=re.S)
+              text, footer_count = re.subn(
+                  r'<footer>.*?</footer>',
+                  footer,
+                  text,
+                  count=1,
+                  flags=re.S,
+              )
+
+              # Toda página precisa ter rodapé; se não tiver, coloca antes do body.
+              if footer_count == 0:
+                  text = text.replace('</body>', footer + '</body>', 1)
+
               path.write_text(text, encoding='utf-8')
           PY
 
@@ -53,8 +90,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add '*.html'
           if git diff --cached --quiet; then
-            echo "Menu e rodape ja estao sincronizados."
+            echo "Menu e rodape ja estao padronizados."
           else
-            git commit -m "Sincronizar menu e rodape globais [skip ci]"
+            git commit -m "Padronizar menu e rodape globais [skip ci]"
             git push
           fi
