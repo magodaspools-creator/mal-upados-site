@@ -1,25 +1,25 @@
 // Sistema elemental isolado do motor base da Arena.
-// Cada zona usa um elemento. O amuleto correspondente reduz fortemente o dano.
+// Cada zona usa um elemento. O amuleto correspondente reduz parte do dano.
 (()=>{
   const ELEMENTS={
-    earth:{name:'Terra',icon:'🌿',resistance:0.85,color:'#8bc47f'},
-    fire:{name:'Fogo',icon:'🔥',resistance:0.85,color:'#e58b5b'},
-    energy:{name:'Energy',icon:'⚡',resistance:0.85,color:'#9db9e8'},
-    ice:{name:'Gelo',icon:'❄️',resistance:0.85,color:'#8ccfe8'},
-    death:{name:'Death',icon:'💀',resistance:0.85,color:'#9f8bc4'}
+    earth:{name:'Terra',icon:'🌿',resistance:0.10,color:'#8bc47f'},
+    fire:{name:'Fogo',icon:'🔥',resistance:0.10,color:'#e58b5b'},
+    energy:{name:'Energy',icon:'⚡',resistance:0.10,color:'#9db9e8'},
+    ice:{name:'Gelo',icon:'❄️',resistance:0.10,color:'#8ccfe8'},
+    death:{name:'Death',icon:'💀',resistance:0.10,color:'#9f8bc4'}
   };
   const ZONE_ELEMENTS=['earth','fire','energy','ice','death'];
 
   const AMULETS=[
-    {id:'earthguard-amulet',name:'Earthguard Amulet',icon:'🌿',category:'amulet',price:5500,attack:0,defense:0,minLevel:1,bonus:'85% resistência a Terra',element:'earth',elementalResistance:0.85},
-    {id:'fireheart-amulet',name:'Fireheart Amulet',icon:'🔥',category:'amulet',price:7500,attack:0,defense:0,minLevel:5,bonus:'85% resistência a Fogo',element:'fire',elementalResistance:0.85},
-    {id:'energy-prism-amulet',name:'Energy Prism Amulet',icon:'⚡',category:'amulet',price:9500,attack:0,defense:0,minLevel:12,bonus:'85% resistência a Energy',element:'energy',elementalResistance:0.85},
-    {id:'frost-amulet',name:'Frost Amulet',icon:'❄️',category:'amulet',price:12000,attack:0,defense:0,minLevel:20,bonus:'85% resistência a Gelo',element:'ice',elementalResistance:0.85},
-    {id:'death-amulet',name:'Death Amulet',icon:'💀',category:'amulet',price:15000,attack:0,defense:0,minLevel:35,bonus:'85% resistência a Death',element:'death',elementalResistance:0.85}
+    {id:'earthguard-amulet',name:'Earthguard Amulet',icon:'🌿',category:'amulets',price:5500,attack:0,defense:0,minLevel:1,bonus:'10% resistência a Terra',element:'earth',elementalResistance:0.10},
+    {id:'fireheart-amulet',name:'Fireheart Amulet',icon:'🔥',category:'amulets',price:7500,attack:0,defense:0,minLevel:5,bonus:'10% resistência a Fogo',element:'fire',elementalResistance:0.10},
+    {id:'energy-prism-amulet',name:'Energy Prism Amulet',icon:'⚡',category:'amulets',price:9500,attack:0,defense:0,minLevel:12,bonus:'10% resistência a Energy',element:'energy',elementalResistance:0.10},
+    {id:'frost-amulet',name:'Frost Amulet',icon:'❄️',category:'amulets',price:12000,attack:0,defense:0,minLevel:20,bonus:'10% resistência a Gelo',element:'ice',elementalResistance:0.10},
+    {id:'death-amulet',name:'Death Amulet',icon:'💀',category:'amulets',price:15000,attack:0,defense:0,minLevel:35,bonus:'10% resistência a Death',element:'death',elementalResistance:0.10}
   ];
 
-  if(typeof SHOP_CATEGORIES!=='undefined'&&!SHOP_CATEGORIES.some(x=>x.id==='amulet')){
-    SHOP_CATEGORIES.push({id:'amulet',label:'Amuletos'});
+  if(typeof SHOP_CATEGORIES!=='undefined'&&!SHOP_CATEGORIES.some(x=>x.id==='amulets')){
+    SHOP_CATEGORIES.push({id:'amulets',label:'Amuletos'});
   }
   if(typeof SHOP_ITEMS!=='undefined')AMULETS.forEach(item=>{if(!SHOP_ITEMS.some(x=>x.id===item.id))SHOP_ITEMS.push(item)});
 
@@ -37,7 +37,7 @@
 
   if(typeof slotFor==='function'){
     slotFor=function(item){
-      if(item?.category==='amulet')return 'amulet';
+      if(item?.category==='amulets')return 'amulet';
       return item?.category==='weapons'||item?.category==='wands'?'weapon':item?.category;
     };
   }
@@ -75,6 +75,7 @@
         attack:15+game.level*4+attackBonus*3,
         enemyDelay:0,log:[]
       };
+      renderBattle();
       battleLog(`<span style="color:${elemental.color}">${elementLabel(battle.element)} · ataque elemental ativo</span>`);
       renderBattle();
     };
