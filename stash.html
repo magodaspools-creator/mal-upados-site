@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="styles.css">
 <style>
 .stash-upload{border:1px dashed rgba(240,196,92,.45);border-radius:18px;padding:34px;text-align:center;background:linear-gradient(180deg,rgba(240,196,92,.07),rgba(255,255,255,.02));cursor:pointer;transition:.2s}.stash-upload:hover,.stash-upload.drag{border-color:#f0c45c;background:rgba(240,196,92,.11)}.stash-upload .big{font-family:Cinzel,serif;font-size:1.35rem;color:#f0c45c;margin-bottom:8px}.stash-upload p{margin:0}.stash-upload input{display:none}.stash-toolbar{display:grid;grid-template-columns:minmax(220px,1fr) auto;gap:14px;align-items:end;margin-bottom:18px}.stash-toolbar label{display:flex;flex-direction:column;gap:7px;font-size:.82rem;font-weight:700;color:var(--muted)}.stash-toolbar select{width:100%;box-sizing:border-box;padding:12px;border:1px solid var(--line);border-radius:10px;background:#101216;color:inherit;font:inherit}.stash-files{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:18px}.stash-thumb{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#0d0f12}.stash-thumb img{width:100%;height:110px;object-fit:cover;display:block}.stash-thumb span{display:block;padding:7px;font-size:.72rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.stash-thumb button{position:absolute;right:6px;top:6px;border:0;border-radius:50%;width:26px;height:26px;background:#111;color:#fff;cursor:pointer}.stash-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.stash-summary .stat{min-height:110px}.stash-table td,.stash-table th{vertical-align:middle}.action-market{color:#7ee2a8;font-weight:800}.action-npc{color:#f0c45c;font-weight:800}.action-check{color:#ffb86b;font-weight:800}.stash-note{font-size:.8rem;color:var(--muted);line-height:1.6}.stash-empty{text-align:center;padding:28px;color:var(--muted)}
+.stash-y-controls{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-top:12px;padding:10px;border:1px solid var(--line);border-radius:10px;background:#0b0d10}.stash-y-controls button{border:1px solid var(--line);background:#15181d;color:inherit;border-radius:7px;padding:7px 10px;cursor:pointer;font:inherit}.stash-y-controls button:hover{border-color:#f0c45c}.stash-y-value{min-width:90px;text-align:center;font-weight:800;color:#f0c45c}
 @media(max-width:700px){.stash-toolbar{grid-template-columns:1fr}.stash-summary{grid-template-columns:1fr}.stash-upload{padding:24px 16px}}
 </style>
 </head>
@@ -31,4 +32,27 @@
 <footer>Mal Upados · Jadebra · <a href="index.html">Início</a> · <a href="ranking.html">Ranking</a> · <a href="guilda.html">Guilda</a> · <a href="stash.html">Stash</a> · <a href="hunting.html">Guia de Hunts</a> · <a href="arena.html">Arena</a> · <a href="caos.html">Caos</a></footer>
 <script src="stash.js?v=20260911-6"></script>
 <script src="stash-recognition.js?v=20260911-3"></script>
+<script>
+(function(){
+  function draw(report,block){
+    const g=report.grid,c=report.c;if(!g)return;
+    const overlay=block.querySelector('canvas');if(!overlay)return;
+    const ctx=overlay.getContext('2d');ctx.clearRect(0,0,overlay.width,overlay.height);ctx.drawImage(c,0,0);
+    ctx.save();ctx.strokeStyle='rgba(240,196,92,.98)';ctx.lineWidth=2;ctx.strokeRect(g.x,g.y,g.width,g.height);ctx.font='bold 13px Inter,Arial';ctx.textBaseline='top';
+    for(let r=0;r<g.rows;r++)for(let col=0;col<g.cols;col++){const x=g.x+col*g.pitch,y=g.y+r*g.pitch;ctx.strokeRect(x,y,g.pitch,g.pitch);ctx.fillStyle='rgba(0,0,0,.72)';ctx.fillRect(x+1,y+1,22,15);ctx.fillStyle='#fff';ctx.fillText(String(r*g.cols+col+1),x+3,y+2)}
+    ctx.restore();
+    const tiles=block.querySelectorAll('div canvas');let i=0;
+    for(const tile of tiles){const col=i%20,row=Math.floor(i/20),sx=Math.round(g.x+col*g.pitch+2.5),sy=Math.round(g.y+row*g.pitch+2.5);tile.getContext('2d').clearRect(0,0,32,32);tile.getContext('2d').drawImage(c,sx,sy,32,32,0,0,32,32);i++}
+    const value=block.querySelector('.stash-y-value');if(value)value.textContent=`Y ${g.y}px`;
+  }
+  function addControls(report,block){
+    if(block.querySelector('.stash-y-controls')||!report.grid)return;
+    const controls=document.createElement('div');controls.className='stash-y-controls';controls.innerHTML='<strong>Ajuste fino da altura:</strong><button data-d="-37">−37</button><button data-d="-5">−5</button><button data-d="-1">−1</button><span class="stash-y-value">Y '+report.grid.y+'px</span><button data-d="1">+1</button><button data-d="5">+5</button><button data-d="37">+37</button><button data-d="0">Reset</button>';
+    controls.querySelectorAll('button').forEach(b=>b.onclick=()=>{const d=Number(b.dataset.d);if(d===0)report.grid.y=report.grid.autoY;else report.grid.y+=d;draw(report,block)});
+    block.appendChild(controls);report.grid.autoY=report.grid.y;
+  }
+  const obs=new MutationObserver(()=>{const reports=window.__stashReports;if(!reports)return;const host=document.getElementById('stashDetector');if(!host)return;[...host.children].forEach((block,i)=>{if(reports[i])addControls(reports[i],block)})});
+  obs.observe(document.body,{childList:true,subtree:true});
+})();
+</script>
 </body></html>
