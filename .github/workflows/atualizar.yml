@@ -1,17 +1,20 @@
 name: Atualizar historico
 on:
   schedule:
-    - cron: "0 6 * * *"
+    # Jadebra server save: 05:00 BRT / 08:00 UTC. Coleta depois do save.
+    - cron: "30 8 * * *"
   workflow_dispatch:
 jobs:
   update:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - run: python atualizar_historico.py
       - run: |
           git config user.name "bot"
           git config user.email "bot@users.noreply.github.com"
-          git add historico.json
-          git commit -m "atualiza historico" || echo "nada novo"
+          git add historico.json historico_xp.json
+          git commit -m "atualiza historico de level e XP" || echo "nada novo"
           git push
