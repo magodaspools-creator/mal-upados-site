@@ -13,7 +13,7 @@
 <body>
 <header class="top"><div class="nav"><a class="brand" href="index.html">⛧ MAL UPADOS</a><div class="links"><a href="index.html">Início</a><a href="ranking.html">Ranking</a><a href="guilda.html">Guilda</a><a class="active" href="stash.html">Stash</a><a href="hunting.html">Guia de Hunts</a><a href="arena.html">Arena</a><a href="caos.html">Caos</a></div></div></header>
 <main>
-<div class="hero"><div class="sigil">◈</div><div class="eyebrow">Ferramenta de loot · NPC × Market</div><h1>Stash <span>Analyzer</span></h1><p>Jogue o print do seu Stash aqui e descubra o valor e a melhor ação para cada item.</p><div class="updated">Scanner de imagem · detecção automática · reconhecimento sem chute</div></div>
+<div class="hero"><div class="sigil">◈</div><div class="eyebrow">Ferramenta de loot · NPC × Market</div><h1>Stash <span>Analyzer</span></h1><p>Jogue o print do seu Stash aqui e descubra o valor e a melhor ação para cada item.</p><div class="updated">Scanner de imagem · detecção automática · reconhecimento determinístico</div></div>
 <section>
 <div class="eyebrow">1 · Seu mundo</div><h2>Escolha o servidor</h2>
 <p class="lead">O preço de NPC é fixo. O Market será consultado para o mundo escolhido quando o item for reconhecido.</p>
@@ -24,11 +24,11 @@
 <div class="eyebrow">2 · Resultado</div><h2>NPC ou Market?</h2>
 <div class="stash-summary"><div class="stat"><div class="num" id="npcTotal">—</div><div class="label">TOTAL NO NPC</div></div><div class="stat"><div class="num" id="marketTotal">—</div><div class="label">TOTAL NO MARKET</div></div><div class="stat"><div class="num" id="bestTotal">—</div><div class="label">MELHOR CENÁRIO</div></div></div>
 <div class="panel" style="margin-top:18px"><div class="stash-empty" id="stashResult">Envie um print e clique em <strong>Analisar Stash</strong>. A posição do Stash será encontrada automaticamente.</div><div class="table-wrap" id="stashTableWrap" hidden><table class="stash-table"><thead><tr><th>Item</th><th>Qtd.</th><th>NPC</th><th>Market Buy</th><th>Melhor</th><th>Ação</th></tr></thead><tbody id="stashTable"></tbody></table></div></div>
-<p class="stash-note">A grade é localizada automaticamente. O próximo passo é carregar a base de sprites e fazer o casamento determinístico dos recortes.</p>
+<p class="stash-note">A grade 20 × 11 já está cravada. O matcher agora procura automaticamente a base em <code>stash-sprites/manifest.json</code>; quando ela existir, os recortes serão comparados por pixels e nomes não serão inventados.</p>
 </section>
-<section><div class="eyebrow">Como usar</div><h2>Para o scanner acertar</h2><div class="grid"><div class="card"><h3>Print original</h3><p>Use o screenshot do próprio Tibia. Não redimensione, comprima ou tire foto da tela.</p></div><div class="card"><h3>Ordenação</h3><p>Ordenar o Stash por nome ajuda o reconhecimento e a conferência.</p></div><div class="card"><h3>Sprites</h3><p>O recorte de cada slot será comparado com uma base real de sprites. Se houver sprites idênticos, o scanner deve mostrar os candidatos.</p></div><div class="card"><h3>Preço real</h3><p>NPC paga na hora. Market depende de oferta de compra ativa e liquidez no seu mundo.</p></div></div></section>
+<section><div class="eyebrow">Como usar</div><h2>Para o scanner acertar</h2><div class="grid"><div class="card"><h3>Print original</h3><p>Use o screenshot do próprio Tibia. Não redimensione, comprima ou tire foto da tela.</p></div><div class="card"><h3>Ordenação</h3><p>Ordenar o Stash por nome ajuda o reconhecimento e a conferência.</p></div><div class="card"><h3>Sprites</h3><p>A base é gerada a partir dos assets do cliente e carregada automaticamente pelo site. Sprites visualmente idênticos continuam aparecendo como candidatos.</p></div><div class="card"><h3>Preço real</h3><p>NPC paga na hora. Market depende de oferta de compra ativa e liquidez no seu mundo.</p></div></div></section>
 </main>
 <footer>Mal Upados · Jadebra · <a href="index.html">Início</a> · <a href="ranking.html">Ranking</a> · <a href="guilda.html">Guilda</a> · <a href="stash.html">Stash</a> · <a href="hunting.html">Guia de Hunts</a> · <a href="arena.html">Arena</a> · <a href="caos.html">Caos</a></footer>
 <script src="stash.js?v=20260911-8"></script>
-<script src="stash-recognition.js?v=20260911-5"></script>
+<script src="stash-recognition.js?v=20260911-6"></script>
 </body></html>
