@@ -2,9 +2,9 @@
   "2026-09-11": {
     "Chines Protetor": {
       "level": 498,
-      "experience": null,
-      "experience_exact": false,
-      "experience_vocation": null
+      "experience": 2034668988,
+      "experience_exact": true,
+      "experience_vocation": "TibiaData/highscores"
     },
     "Bella Longuinho": {
       "level": 142,
@@ -50,9 +50,9 @@
     },
     "Ezra Gladius": {
       "level": 487,
-      "experience": null,
-      "experience_exact": false,
-      "experience_vocation": null
+      "experience": 1904160149,
+      "experience_exact": true,
+      "experience_vocation": "TibiaData/highscores"
     },
     "Lordebumbumole": {
       "level": 185,
