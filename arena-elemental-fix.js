@@ -15,7 +15,7 @@
     {id:'fireheart-amulet',name:'Fireheart Amulet',icon:'🔥',category:'amulets',price:7500,attack:0,defense:0,minLevel:5,bonus:'10% resistência a Fogo',element:'fire',elementalResistance:0.10},
     {id:'energy-prism-amulet',name:'Energy Prism Amulet',icon:'⚡',category:'amulets',price:9500,attack:0,defense:0,minLevel:12,bonus:'10% resistência a Energy',element:'energy',elementalResistance:0.10},
     {id:'frost-amulet',name:'Frost Amulet',icon:'❄️',category:'amulets',price:12000,attack:0,defense:0,minLevel:20,bonus:'10% resistência a Gelo',element:'ice',elementalResistance:0.10},
-    {id:'death-amulet',name:'Death Amulet',icon:'💀',category:'amulets',price:15000,attack:0,defense:0,minLevel:35,bonus:'10% resistência a Death',element:'death',elementalResistance:0.10}
+    {id:'death-amulet',name:'Death Amulet',icon:'💀',category:'amulets',price:22000,attack:0,defense:0,minLevel:35,bonus:'10% resistência a Death',element:'death',elementalResistance:0.10}
   ];
 
   if(typeof SHOP_CATEGORIES!=='undefined'&&!SHOP_CATEGORIES.some(x=>x.id==='amulets')){
