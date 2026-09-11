@@ -29,7 +29,7 @@
     };
 
     btn.onclick=e=>{e.stopPropagation();const open=wrap.classList.toggle('open');btn.setAttribute('aria-expanded',String(open));};
-    document.addEventListener('click',()=>{wrap.classList.remove('open');btn.setAttribute('aria-expanded','false');},{capture:true});
+    document.addEventListener('click',e=>{if(!wrap.contains(e.target)){wrap.classList.remove('open');btn.setAttribute('aria-expanded','false')}});
     draw();
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
