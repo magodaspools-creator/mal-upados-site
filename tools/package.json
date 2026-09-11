@@ -1,0 +1,11 @@
+{
+  "name": "mal-upados-stash-tools",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build-stash-base": "node build-stash-sprite-base.mjs"
+  },
+  "dependencies": {
+    "tibia-assets": "latest"
+  }
+}
