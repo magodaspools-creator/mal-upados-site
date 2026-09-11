@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/jpeg" href="guilda.jpg?v=4-arena">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/jpeg" href="guilda.jpg?v=arena-rpg">
 <title>Arena | Mal Upados</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="arena.css">
@@ -11,55 +11,17 @@
 <main>
 <div class="hero arena-hero"><div class="sigil">⚔</div><div class="eyebrow">Mini RPG · Progressão · Tibia</div><h1>Arena <span>Mal Upados</span></h1><p>Escolha um personagem, enfrente criaturas, junte ouro e desbloqueie novas áreas.</p></div>
 <section class="game-shell">
-  <div class="game-topbar">
-    <div><div class="eyebrow">Seu aventureiro</div><h2 id="playerName">Carregando...</h2></div>
-    <div class="save-note" id="saveNote">Progresso salvo neste navegador</div>
-  </div>
+  <div class="game-topbar"><div><div class="eyebrow">Seu aventureiro</div><h2 id="playerName">Carregando...</h2></div><div class="save-note" id="saveNote">Progresso salvo neste navegador</div></div>
   <div class="game-grid">
-    <aside class="character-panel panel">
-      <div class="avatar" id="avatar">⚔</div>
-      <select id="characterSelect" aria-label="Escolher personagem"></select>
-      <div class="class-line" id="classLine">Aventureiro</div>
-      <div class="stat-grid">
-        <div><span>LEVEL</span><strong id="arenaLevel">1</strong></div>
-        <div><span>XP</span><strong id="arenaXp">0</strong></div>
-        <div><span>OURO</span><strong id="gold">0</strong></div>
-        <div><span>VITÓRIAS</span><strong id="wins">0</strong></div>
-      </div>
-      <div class="xp-wrap"><div class="xp-label"><span>Próximo level</span><span id="xpText">0 / 100</span></div><div class="xp-track"><i id="xpBar"></i></div></div>
-      <div class="equipment"><div class="eyebrow">Equipamento</div><div class="equip-item"><span>Arma</span><strong id="weapon">Espada de Bronze</strong></div><div class="equip-item"><span>Armadura</span><strong id="armor">Leather Armor</strong></div></div>
-      <button class="reset-btn" id="resetBtn">Recomeçar personagem</button>
-    </aside>
-    <div class="adventure-panel">
-      <div class="section-head"><div><div class="eyebrow">Mapa da Arena</div><h2>Escolha seu destino</h2></div><div class="zone-count" id="zoneCount">1 área desbloqueada</div></div>
-      <div class="map" id="map"></div>
-      <div class="battle-area" id="battleArea">
-        <div class="battle-empty"><div class="battle-icon">⚔</div><h3>Pronto para a hunt?</h3><p>Escolha uma área e enfrente uma criatura para começar sua progressão.</p></div>
-      </div>
-    </div>
+    <aside class="character-panel panel"><div class="avatar" id="avatar">⚔</div><select id="characterSelect" aria-label="Escolher personagem"></select><div class="class-line" id="classLine">Aventureiro</div><div class="stat-grid"><div><span>LEVEL</span><strong id="arenaLevel">1</strong></div><div><span>XP</span><strong id="arenaXp">0</strong></div><div><span>OURO</span><strong id="gold">0</strong></div><div><span>VITÓRIAS</span><strong id="wins">0</strong></div></div><div class="xp-wrap"><div class="xp-label"><span>Próximo level</span><span id="xpText">0 / 100</span></div><div class="xp-track"><i id="xpBar"></i></div></div><div class="equipment"><div class="eyebrow">Equipamento</div><div class="equip-item"><span>Arma</span><strong id="weapon">Espada de Bronze</strong></div><div class="equip-item"><span>Armadura</span><strong id="armor">Leather Armor</strong></div></div><button class="reset-btn" id="resetBtn">Recomeçar personagem</button></aside>
+    <div class="adventure-panel"><div class="section-head"><div><div class="eyebrow">Mapa da Arena</div><h2>Escolha seu destino</h2></div><div class="map-controls"><div class="zone-count" id="zoneCount">1 de 5 áreas selecionadas</div><button class="btn next-zone" id="nextZoneBtn" disabled>Próxima área bloqueada</button></div></div><div class="map" id="map"></div><div class="battle-area" id="battleArea"><div class="battle-empty"><div class="battle-icon">⚔</div><h3>Pronto para a hunt?</h3><p>Escolha uma área e enfrente uma criatura para começar sua progressão.</p></div></div></div>
   </div>
 </section>
-<section class="shop-section">
-  <div class="section-head"><div><div class="eyebrow">Mercador da Arena</div><h2>Loja de Equipamentos</h2></div><div class="shop-balance">Seu ouro: <strong id="shopGold">0</strong></div></div>
-  <p class="lead">Use o ouro das batalhas para comprar equipamentos melhores. Itens comprados ficam desbloqueados para este personagem.</p>
-  <div class="shop-grid" id="shopItems"></div>
-</section>
-<section class="activities">
-  <div class="activity-grid">
-    <article class="activity-card roulette-card"><div class="eyebrow">Caos controlado</div><h2>Roleta de Hunt</h2><p>Não sabe onde caçar? Deixa a Arena decidir.</p><div class="roulette-display" id="rouletteResult">?</div><button class="btn active big" id="spinBtn">Girar roleta</button><div class="small" id="rouletteMeta">Uma hunt aleatória com dificuldade compatível.</div></article>
-    <article class="activity-card challenge-card"><div class="eyebrow">Volte amanhã</div><h2>Desafio Diário</h2><div id="dailyChallenge"></div><button class="btn big" id="challengeBtn">Marcar desafio como concluído</button><div class="small" id="challengeStatus"></div></article>
-  </div>
-</section>
-<section class="progress-section">
-  <div class="section-head"><div><div class="eyebrow">Longa jornada</div><h2>Progressão da Arena</h2></div></div>
-  <div class="milestones" id="milestones"></div>
-</section>
-<section class="arena-ranking">
-  <div class="section-head"><div><div class="eyebrow">Competição</div><h2>Recordes neste navegador</h2></div><div class="small">O ranking global entra na próxima fase, com contas.</div></div>
-  <div class="record-grid" id="records"></div>
-</section>
+<section class="shop-section"><div class="section-head"><div><div class="eyebrow">Mercador da Arena</div><h2>Loja de Equipamentos</h2></div><div class="shop-balance">Seu gold: <strong id="shopGold">0</strong></div></div><p class="lead">Use o ouro das batalhas para comprar equipamentos melhores. Itens comprados ficam desbloqueados para este personagem.</p><div class="shop-filters" id="shopFilters"></div><div class="shop-grid" id="shopItems"></div></section>
+<section class="activities"><div class="activity-grid"><article class="activity-card roulette-card"><div class="eyebrow">Caos controlado</div><h2>Roleta de Hunt</h2><p>Não sabe onde caçar? Deixa a Arena decidir.</p><div class="roulette-display" id="rouletteResult">?</div><button class="btn active big" id="spinBtn">Girar roleta</button><div class="small" id="rouletteMeta">Uma hunt aleatória com dificuldade compatível.</div></article><article class="activity-card challenge-card"><div class="eyebrow">Volte amanhã</div><h2>Desafio Diário</h2><div id="dailyChallenge"></div><button class="btn big" id="challengeBtn">Marcar desafio como concluído</button><div class="small" id="challengeStatus"></div></article></div></section>
+<section class="progress-section"><div class="section-head"><div><div class="eyebrow">Longa jornada</div><h2>Progressão da Arena</h2></div></div><div class="milestones" id="milestones"></div></section>
+<section class="arena-ranking"><div class="section-head"><div><div class="eyebrow">Competição</div><h2>Recordes neste navegador</h2></div><div class="small">O ranking global entra na próxima fase, com contas.</div></div><div class="record-grid" id="records"></div></section>
 </main>
 <footer>Mal Upados · Jadebra · <a href="index.html">Início</a> · <a href="ranking.html">Ranking</a> · <a href="guilda.html">Guilda</a> · <a href="stash.html">Stash</a> · <a href="hunting.html">Guia de Hunts</a> · <a href="arena.html">Arena</a> · <a href="caos.html">Caos</a></footer>
-<script src="arena.js"></script>
-<script src="arena-shop.js"></script>
+<script src="arena.js"></script><script src="arena-shop.js"></script>
 </body></html>
