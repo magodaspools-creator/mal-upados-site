@@ -1,0 +1,34 @@
+/* UI do combate: não altera dano, XP, ouro ou qualquer regra da Arena. */
+.battle-card{min-height:0}
+.battle-log{
+  height:72px;
+  min-height:72px;
+  max-height:72px;
+  box-sizing:border-box;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:9px 12px;
+  line-height:1.45;
+  white-space:normal;
+  word-break:break-word;
+  scrollbar-width:thin;
+}
+.battle-log br{
+  display:block;
+  content:"";
+  margin-bottom:5px;
+}
+.battle-actions{
+  min-height:48px;
+  align-items:center;
+}
+@media(max-width:620px){
+  .battle-log{
+    height:76px;
+    min-height:76px;
+    max-height:76px;
+    padding:8px 10px;
+    font-size:.68rem;
+  }
+  .battle-actions{min-height:46px}
+}
