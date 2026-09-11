@@ -1,4 +1,4 @@
-name: Build Stash Sprite Manifest v3
+name: Build Stash Sprite Manifest v4
 
 on:
   push:
@@ -15,6 +15,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
