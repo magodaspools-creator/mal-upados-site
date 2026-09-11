@@ -6,8 +6,9 @@
     const legacy=document.getElementById('characterSelect');
     if(!wrap||!btn||!menu)return;
 
+    let rendered=false;
     const draw=()=>{
-      if(typeof members==='undefined'||!Array.isArray(members))return;
+      if(typeof members==='undefined'||!Array.isArray(members)||members.length===0)return false;
       menu.innerHTML=members.map(m=>{
         const selected=game&&m.name===game.character;
         return `<button type="button" class="character-option ${selected?'selected':''}" data-name="${esc(m.name)}" role="option"><span>${VOC_ICONS[m.vocation]||'⚔'}</span><span>${esc(m.name)}</span><small>${esc(m.vocation||'Aventureiro')}</small></button>`;
@@ -26,11 +27,20 @@
         btn.setAttribute('aria-expanded','false');
         draw();
       }));
+      rendered=true;
+      return true;
     };
 
     btn.onclick=e=>{e.stopPropagation();const open=wrap.classList.toggle('open');btn.setAttribute('aria-expanded',String(open));};
     document.addEventListener('click',e=>{if(!wrap.contains(e.target)){wrap.classList.remove('open');btn.setAttribute('aria-expanded','false')}});
-    draw();
+
+    // arena.js carrega os membros da guilda de forma assíncrona.
+    // Tentamos novamente até a lista existir, evitando o picker ficar vazio.
+    const timer=setInterval(()=>{
+      if(draw())clearInterval(timer);
+    },250);
+    if(draw())clearInterval(timer);
+    setTimeout(()=>clearInterval(timer),15000);
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
