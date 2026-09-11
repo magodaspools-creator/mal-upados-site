@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/jpeg" href="guilda.jpg?v=4-arena">
-
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/jpeg" href="guilda.jpg?v=arena-rpg">
 <title>Arena | Mal Upados</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="arena.css">
@@ -10,14 +9,51 @@
 <body>
 <header class="top"><div class="nav"><a class="brand" href="index.html">⛧ MAL UPADOS</a><div class="links"><a href="index.html">Início</a><a href="ranking.html">Ranking</a><a href="guilda.html">Guilda</a><a href="stash.html">Stash</a><a href="hunting.html">Guia de Hunts</a><a class="active" href="arena.html">Arena</a><a href="caos.html">Caos</a></div></div></header>
 <main>
-<div class="hero"><div class="sigil">⚔</div><div class="eyebrow">Engajamento · utilidade · resenha</div><h1>Arena <span>Mal Upados</span></h1><p>Conquistas, competição, perfis e a parte científica de descobrir quem fez a maior cagada.</p><div class="updated" id="updated">Atualizando dados…</div></div>
-<section><div class="eyebrow">Conquistas automáticas</div><h2>Marcos da guilda</h2><p class="lead">Os títulos são calculados a partir do histórico de level e das mortes que a TibiaData retorna.</p><div class="grid" id="achievements"></div></section>
-<section><div class="eyebrow">Vergonha pública</div><h2>Quedas mais burras</h2><p class="lead">Ranking humorístico baseado em level, causa e força aproximada da criatura. Não é ciência. É resenha.</p><div class="table-wrap"><table><thead><tr><th>#</th><th>Jogador</th><th>Level</th><th>Queda</th><th>Data</th></tr></thead><tbody id="falls"></tbody></table></div></section>
-<section><div class="eyebrow">Corrida semanal</div><h2>Quem sobe primeiro?</h2><p class="lead" id="racePeriod">Calculando…</p><div class="grid" id="race"></div></section>
-<section><div class="eyebrow">Evolução lado a lado</div><h2>Comparador de XP</h2><p class="lead">Escolha até quatro membros. O gráfico usa os snapshots diários de <code>historico.json</code>.</p><div class="pickers" id="pickers"></div><div class="panel compare-panel"><canvas id="compareChart" height="300"></canvas><div id="compareEmpty" class="small">Selecione pelo menos dois membros.</div></div></section>
-<section><div class="eyebrow">Perfis</div><h2>Ficha dos jogadores</h2><p class="lead">Clique em um membro para ver level atual, evolução, conquistas e mortes.</p><div class="profile-grid" id="profiles"></div></section>
-<section><div class="eyebrow">Fica pela resenha</div><h2>Mural da guilda</h2><p class="lead">Este mural funciona localmente neste navegador. Assim ninguém precisa expor login ou senha para postar.</p><div class="resenha-form"><input id="resenhaNome" placeholder="Seu nome"><input id="resenhaTexto" maxlength="280" placeholder="Conta aí o que aconteceu na hunt…"><button class="btn active" id="postResenha">Publicar</button></div><div id="mural"></div></section>
+<div class="hero arena-hero"><div class="sigil">⚔</div><div class="eyebrow">Mini RPG · Progressão · Tibia</div><h1>Arena <span>Mal Upados</span></h1><p>Escolha um personagem, enfrente criaturas, junte ouro e desbloqueie novas áreas.</p></div>
+<section class="game-shell">
+  <div class="game-topbar">
+    <div><div class="eyebrow">Seu aventureiro</div><h2 id="playerName">Carregando...</h2></div>
+    <div class="save-note" id="saveNote">Progresso salvo neste navegador</div>
+  </div>
+  <div class="game-grid">
+    <aside class="character-panel panel">
+      <div class="avatar" id="avatar">⚔</div>
+      <select id="characterSelect" aria-label="Escolher personagem"></select>
+      <div class="class-line" id="classLine">Aventureiro</div>
+      <div class="stat-grid">
+        <div><span>LEVEL</span><strong id="arenaLevel">1</strong></div>
+        <div><span>XP</span><strong id="arenaXp">0</strong></div>
+        <div><span>OURO</span><strong id="gold">0</strong></div>
+        <div><span>VITÓRIAS</span><strong id="wins">0</strong></div>
+      </div>
+      <div class="xp-wrap"><div class="xp-label"><span>Próximo level</span><span id="xpText">0 / 100</span></div><div class="xp-track"><i id="xpBar"></i></div></div>
+      <div class="equipment"><div class="eyebrow">Equipamento</div><div class="equip-item"><span>Arma</span><strong id="weapon">Espada de Bronze</strong></div><div class="equip-item"><span>Armadura</span><strong id="armor">Leather Armor</strong></div></div>
+      <button class="reset-btn" id="resetBtn">Recomeçar personagem</button>
+    </aside>
+    <div class="adventure-panel">
+      <div class="section-head"><div><div class="eyebrow">Mapa da Arena</div><h2>Escolha seu destino</h2></div><div class="zone-count" id="zoneCount">1 área desbloqueada</div></div>
+      <div class="map" id="map"></div>
+      <div class="battle-area" id="battleArea">
+        <div class="battle-empty"><div class="battle-icon">⚔</div><h3>Pronto para a hunt?</h3><p>Escolha uma área e enfrente uma criatura para começar sua progressão.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="activities">
+  <div class="activity-grid">
+    <article class="activity-card roulette-card"><div class="eyebrow">Caos controlado</div><h2>Roleta de Hunt</h2><p>Não sabe onde caçar? Deixa a Arena decidir.</p><div class="roulette-display" id="rouletteResult">?</div><button class="btn active big" id="spinBtn">Girar roleta</button><div class="small" id="rouletteMeta">Uma hunt aleatória com dificuldade compatível.</div></article>
+    <article class="activity-card challenge-card"><div class="eyebrow">Volte amanhã</div><h2>Desafio Diário</h2><div id="dailyChallenge"></div><button class="btn big" id="challengeBtn">Marcar desafio como concluído</button><div class="small" id="challengeStatus"></div></article>
+  </div>
+</section>
+<section class="progress-section">
+  <div class="section-head"><div><div class="eyebrow">Longa jornada</div><h2>Progressão da Arena</h2></div></div>
+  <div class="milestones" id="milestones"></div>
+</section>
+<section class="arena-ranking">
+  <div class="section-head"><div><div class="eyebrow">Competição</div><h2>Recordes neste navegador</h2></div><div class="small">O ranking global entra na próxima fase, com contas.</div></div>
+  <div class="record-grid" id="records"></div>
+</section>
 </main>
 <footer>Mal Upados · Jadebra · <a href="index.html">Início</a> · <a href="ranking.html">Ranking</a> · <a href="guilda.html">Guilda</a> · <a href="stash.html">Stash</a> · <a href="hunting.html">Guia de Hunts</a> · <a href="arena.html">Arena</a> · <a href="caos.html">Caos</a></footer>
-<script src="arena.js"></script><script src="arena-profile.js"></script>
+<script src="arena.js"></script>
 </body></html>
