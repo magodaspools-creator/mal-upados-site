@@ -44,90 +44,129 @@
   function loadImage(file){return new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=URL.createObjectURL(file);});}
   function lum(r,g,b){return .2126*r+.7152*g+.0722*b;}
 
-  // Fast pitch detector. The previous version called getImageData hundreds of times
-  // for every candidate grid position, which could freeze the browser on large PNGs.
-  // Here we downsample once and correlate one-dimensional edge profiles.
-  function estimatePitch(canvas){
-    const maxW=1000;
+  /*
+   * IMPORTANTE:
+   * Não procuramos mais uma grade começando no canto da imagem.
+   * O Tibia usa uma grade nativa de 37 px por slot. O reconhecimento correto
+   * precisa primeiro localizar a JANELA do Stash e só depois recortar os slots.
+   *
+   * O detector abaixo procura a assinatura repetitiva das bordas dos slots:
+   * 10 colunas x 22 linhas, passo nativo 37 px, com os tiles de item dentro.
+   * A imagem é reduzida apenas durante a busca; os recortes finais continuam
+   * sendo feitos no PNG original.
+   */
+  function locateStashGrid(canvas){
+    const maxW=960;
     const scale=Math.min(1,maxW/canvas.width);
     const w=Math.max(1,Math.round(canvas.width*scale));
     const h=Math.max(1,Math.round(canvas.height*scale));
-    const small=document.createElement('canvas');small.width=w;small.height=h;
+    const small=document.createElement('canvas');
+    small.width=w;small.height=h;
     const sctx=small.getContext('2d',{willReadFrequently:true});
     sctx.drawImage(canvas,0,0,w,h);
     const data=sctx.getImageData(0,0,w,h).data;
-    const col=new Float32Array(w),row=new Float32Array(h);
-    for(let y=1;y<h-1;y++){
-      let sum=0;
-      for(let x=1;x<w;x++){
-        const i=(y*w+x)*4,j=i-4;
-        sum+=Math.abs(lum(data[i],data[i+1],data[i+2])-lum(data[j],data[j+1],data[j+2]));
-      }
-      row[y]=sum/(w-1);
-    }
-    for(let x=1;x<w-1;x++){
-      let sum=0;
-      for(let y=1;y<h;y++){
-        const i=(y*w+x)*4,j=i-w*4;
-        sum+=Math.abs(lum(data[i],data[i+1],data[i+2])-lum(data[j],data[j+1],data[j+2]));
-      }
-      col[x]=sum/(h-1);
-    }
-    function corr(a,p){
-      let ma=0,mb=0,n=a.length-p;
-      if(n<20)return 0;
-      for(let i=p;i<a.length;i++){ma+=a[i];mb+=a[i-p];}
-      ma/=n;mb/=n;
-      let num=0,da=0,db=0;
-      for(let i=p;i<a.length;i++){const x=a[i]-ma,y=a[i-p]-mb;num+=x*y;da+=x*x;db+=y*y;}
-      return num/Math.sqrt((da||1)*(db||1));
-    }
-    let best={p:37,score:-1};
-    for(let p=20;p<=60;p++){
-      const score=(corr(col,p)+corr(row,p))/2;
-      if(score>best.score)best={p,score};
-    }
-    const confidence=Math.max(0,Math.min(1,(best.score-.08)/.55));
-    return {pitch:best.p/scale,rawPitch:best.p,scale:best.p/37,confidence};
-  }
 
-  function findGrid(canvas,pitch){
-    const ctx=canvas.getContext('2d',{willReadFrequently:true});
-    const slot=Math.max(12,Math.round(pitch*.86));
-    const configs=[{cols:10,rows:22},{cols:11,rows:20}];
+    const pitch=37*scale;
+    const cols=10;
+    const rows=22;
+    const gridW=cols*pitch;
+    const gridH=rows*pitch;
+
+    function px(x,y){
+      x=Math.max(0,Math.min(w-1,x));
+      y=Math.max(0,Math.min(h-1,y));
+      const i=(y*w+x)*4;
+      return lum(data[i],data[i+1],data[i+2]);
+    }
+    function edgeV(x,y){return Math.abs(px(x-1,y)-px(x+1,y));}
+    function edgeH(x,y){return Math.abs(px(x,y-1)-px(x,y+1));}
+
     let best=null;
-    for(const cfg of configs){
-      const gw=cfg.cols*pitch,gh=cfg.rows*pitch;
-      if(gw>canvas.width||gh>canvas.height)continue;
-      const step=Math.max(8,Math.round(pitch/2));
-      // Sample only a small number of positions. The old implementation evaluated
-      // every pixel-scale offset and became prohibitively expensive.
-      for(let y=0;y+gh<=canvas.height;y+=step){
-        for(let x=0;x+gw<=canvas.width;x+=step){
-          let total=0,active=0;
-          for(let r=0;r<cfg.rows;r+=2){
-            for(let c=0;c<cfg.cols;c+=2){
-              const sx=Math.round(x+c*pitch+(pitch-slot)/2);
-              const sy=Math.round(y+r*pitch+(pitch-slot)/2);
-              const d=ctx.getImageData(sx,sy,slot,slot).data;
-              let sum=0,sum2=0,n=d.length/4;
-              for(let i=0;i<d.length;i+=4){const v=lum(d[i],d[i+1],d[i+2]);sum+=v;sum2+=v*v;}
-              const sd=Math.sqrt(Math.max(0,sum2/n-(sum/n)*(sum/n)));
-              total+=sd;if(sd>18)active++;
-            }
+    const step=3;
+
+    for(let y=45*scale;y+gridH<=h-8*scale;y+=step){
+      for(let x=8*scale;x+gridW<=w-8*scale;x+=step){
+        let border=0, samples=0, active=0;
+
+        // Vertical slot borders. Sample the middle of every other row.
+        for(let c=0;c<=cols;c++){
+          const bx=x+c*pitch;
+          for(let r=1;r<rows;r+=2){
+            const by=y+r*pitch-pitch*.5;
+            border+=edgeV(bx,by);samples++;
           }
-          const samples=Math.ceil(cfg.rows/2)*Math.ceil(cfg.cols/2);
-          const density=active/samples;
-          if(density<.03||density>.99)continue;
-          const score=total/samples+density*35;
-          if(!best||score>best.score)best={...cfg,x,y,pitch,score,density};
+        }
+
+        // Horizontal slot borders. Sample the middle of every other column.
+        for(let r=0;r<=rows;r++){
+          const by=y+r*pitch;
+          for(let c=1;c<cols;c+=2){
+            const bx=x+c*pitch-pitch*.5;
+            border+=edgeH(bx,by);samples++;
+          }
+        }
+
+        // Item activity: real stash slots contain sprites, while the empty panel
+        // around the stash is mostly uniform. We sample the center of each slot.
+        for(let r=0;r<rows;r+=2){
+          for(let c=0;c<cols;c+=2){
+            const cx=Math.round(x+c*pitch+pitch*.5);
+            const cy=Math.round(y+r*pitch+pitch*.5);
+            let sum=0,sum2=0,n=0;
+            for(let yy=-5;yy<=5;yy+=2){
+              for(let xx=-5;xx<=5;xx+=2){
+                const v=px(cx+xx,cy+yy);sum+=v;sum2+=v*v;n++;
+              }
+            }
+            const mean=sum/n;
+            const sd=Math.sqrt(Math.max(0,sum2/n-mean*mean));
+            if(sd>12)active++;
+          }
+        }
+
+        const borderScore=border/(samples||1);
+        const density=active/Math.ceil(rows/2)/Math.ceil(cols/2);
+
+        // The first item row sits well below the Stash title/filter area.
+        // Penalize impossible starts near the image edge instead of assuming (0,0).
+        const marginPenalty=(x<15*scale?8:0)+(y<55*scale?8:0);
+        const score=borderScore+density*18-marginPenalty;
+
+        if(!best||score>best.score){
+          best={x,y,pitch,cols,rows,score,borderScore,density,scale};
         }
       }
     }
-    return best;
+
+    if(!best)return null;
+
+    // Refine around the best coarse candidate at 1-pixel native resolution.
+    const bx=Math.round(best.x/scale),by=Math.round(best.y/scale);
+    const refine=5;
+    let refined=best;
+    for(let oy=-refine;oy<=refine;oy++){
+      for(let ox=-refine;ox<=refine;ox++){
+        const x=bx+ox,y=by+oy;
+        if(x<8||y<45||x+370>canvas.width||y+814>canvas.height)continue;
+        let s=0,n=0;
+        for(let c=0;c<=10;c++){
+          const xx=x+c*37;
+          for(let r=1;r<22;r+=2){
+            const yy=y+r*37-18;
+            const a=canvas.getContext('2d').getImageData(Math.max(0,xx-1),Math.max(0,yy),3,1).data;
+            if(a.length>=12){
+              s+=Math.abs(lum(a[0],a[1],a[2])-lum(a[8],a[9],a[10]));n++;
+            }
+          }
+        }
+        const score=s/(n||1);
+        if(score>(refined.refineScore||-1))refined={...best,x,y,pitch:37,refineScore:score};
+      }
+    }
+    return refined;
   }
 
-  function makePanel(id,title){
+  function makePanel(id){
     let p=document.getElementById(id);
     if(p)return p;
     p=document.createElement('div');p.id=id;p.className='panel';p.style.marginTop='14px';
@@ -138,49 +177,69 @@
     const img=await loadImage(file);
     const c=document.createElement('canvas');c.width=img.naturalWidth;c.height=img.naturalHeight;
     c.getContext('2d').drawImage(img,0,0);
-    const d=estimatePitch(c);
-    const g=findGrid(c,d.pitch);
-    return {file,img,c,d,g};
+    const grid=locateStashGrid(c);
+    return {file,img,c,grid};
   }
 
   function drawGrid(report,panel,index){
-    const g=report.g;
+    const g=report.grid;
     const block=document.createElement('div');
     block.style.cssText='margin-top:14px;padding-top:14px;border-top:1px solid var(--line)';
-    if(!g){block.innerHTML=`<strong>Print ${index+1}</strong><br><span class="stash-note">Não encontrei uma grade confiável nesta imagem.</span>`;panel.appendChild(block);return;}
-    block.innerHTML=`<strong>Print ${index+1}</strong><br><span class="stash-note">${g.cols}×${g.rows} slots · passo ${Math.round(g.pitch)}px · confiança da grade ${Math.round(report.d.confidence*100)}%</span>`;
+    if(!g){
+      block.innerHTML=`<strong>Print ${index+1}</strong><br><span class="stash-note">Não encontrei a janela do Stash. O scanner não vai inventar uma grade em outra parte do print.</span>`;
+      panel.appendChild(block);return;
+    }
+
+    block.innerHTML=`<strong>Print ${index+1}</strong><br><span class="stash-note">Stash localizado · início da grade: ${Math.round(g.x)}, ${Math.round(g.y)} · passo: 37px · 10×22 slots</span>`;
+
     const grid=document.createElement('div');
-    grid.style.cssText=`display:grid;grid-template-columns:repeat(${g.cols},32px);gap:3px;margin-top:10px;max-height:360px;overflow:auto;padding:6px;background:#080a0d;border:1px solid var(--line);border-radius:10px`;
+    grid.style.cssText='display:grid;grid-template-columns:repeat(10,32px);gap:3px;margin-top:10px;max-height:360px;overflow:auto;padding:6px;background:#080a0d;border:1px solid var(--line);border-radius:10px';
     const ctx=report.c.getContext('2d');
-    for(let n=0;n<g.cols*g.rows;n++){
-      const col=n%g.cols,row=Math.floor(n/g.cols);
-      const sx=Math.round(g.x+col*g.pitch+(g.pitch-g.pitch*.86)/2);
-      const sy=Math.round(g.y+row*g.pitch+(g.pitch-g.pitch*.86)/2);
-      const tile=document.createElement('canvas');tile.width=32;tile.height=32;tile.title=`Slot ${n+1}`;
+
+    for(let n=0;n<220;n++){
+      const col=n%10,row=Math.floor(n/10);
+      const sx=Math.round(g.x+col*37+2);
+      const sy=Math.round(g.y+row*37+2);
+      const tile=document.createElement('canvas');
+      tile.width=32;tile.height=32;tile.title=`Slot ${n+1}`;
       tile.style.cssText='width:32px;height:32px;image-rendering:pixelated;border:1px solid rgba(255,255,255,.08);background:#111';
-      tile.getContext('2d').drawImage(report.c,sx,sy,Math.round(g.pitch*.86),Math.round(g.pitch*.86),0,0,32,32);
+      tile.getContext('2d').drawImage(report.c,sx,sy,32,32,0,0,32,32);
       grid.appendChild(tile);
     }
     block.appendChild(grid);panel.appendChild(block);
   }
 
   analyze.addEventListener('click',async()=>{
-    if(!world.value){alert('Escolha o mundo do personagem primeiro.');return;}
-    if(!files.length){alert('Envie pelo menos um print do Stash.');return;}
-    analyze.disabled=true;analyze.textContent='Analisando…';
-    result.innerHTML='<strong>Lendo o print…</strong><br><span class="stash-note">Detectando a grade sem travar a página.</span>';
+    if(!world.value){alert('Escolha o mundo do personagem primeiro.');return}
+    if(!files.length){alert('Envie pelo menos um print do Stash.');return}
+
+    analyze.disabled=true;analyze.textContent='Localizando Stash…';
+    result.innerHTML='<strong>Localizando a janela do Stash…</strong><br><span class="stash-note">Não vou usar o canto da imagem como início da grade.</span>';
+
     try{
       const reports=[];
-      for(const file of files){reports.push(await inspect(file));await new Promise(r=>setTimeout(r,0));}
+      for(const file of files){
+        reports.push(await inspect(file));
+        await new Promise(r=>setTimeout(r,0));
+      }
+
       const detector=makePanel('stashDetector');
-      detector.innerHTML='<div class="eyebrow">Scanner</div><h3 style="margin:4px 0 8px">Grade do Stash detectada</h3><p class="stash-note">A grade é localizada pela própria imagem. Os recortes abaixo são a entrada do reconhecimento de sprites.</p>';
+      detector.innerHTML='<div class="eyebrow">Scanner</div><h3 style="margin:4px 0 8px">Janela do Stash localizada</h3><p class="stash-note">Usando a grade nativa de 37 px do Tibia. Só depois de localizar a grade os slots são recortados.</p>';
       reports.forEach((r,i)=>drawGrid(r,detector,i));
+
       window.__stashReports=reports;
-      const good=reports.filter(r=>r.g).length;
-      result.innerHTML=`<strong>${files.length} print${files.length===1?'':'s'} processado${files.length===1?'':'s'}.</strong><br><span class="stash-note">Mundo: ${esc(world.value)} · ${good}/${reports.length} grades localizadas.</span><br><span class="stash-note">A próxima camada deve comparar cada recorte com sprites reais, exatamente no modelo usado pelo TibiaCardinal/Tibia do Zero: sem chute quando houver ambiguidade.</span>`;
-      document.getElementById('npcTotal').textContent='—';document.getElementById('marketTotal').textContent='—';document.getElementById('bestTotal').textContent='—';
-    }catch(e){console.error(e);result.innerHTML='<strong>Falha ao analisar a imagem.</strong><br><span class="stash-note">Use o PNG original do Tibia, sem redimensionar.</span>'}
-    finally{analyze.disabled=false;analyze.textContent='Analisar Stash';}
+      const good=reports.filter(r=>r.grid).length;
+      result.innerHTML=`<strong>${files.length} print${files.length===1?'':'s'} processado${files.length===1?'':'s'}.</strong><br><span class="stash-note">Mundo: ${esc(world.value)} · ${good}/${reports.length} janelas do Stash localizadas.</span><br><span class="stash-note">Próxima camada: comparar os 32×32 recortes com sprites reais. Se houver sprite ambígua, o resultado será ambíguo — nunca um chute.</span>`;
+      document.getElementById('npcTotal').textContent='—';
+      document.getElementById('marketTotal').textContent='—';
+      document.getElementById('bestTotal').textContent='—';
+    }catch(e){
+      console.error(e);
+      result.innerHTML='<strong>Falha ao analisar a imagem.</strong><br><span class="stash-note">Use o PNG original do Tibia, sem redimensionar.</span>';
+    }finally{
+      analyze.disabled=false;analyze.textContent='Analisar Stash';
+    }
   });
+
   loadWorlds();
 })();
