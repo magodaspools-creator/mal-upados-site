@@ -11,6 +11,7 @@ const SHOP_ARMORS=[
   {name:'Phoenix Plate',icon:'🔥',kind:'armor',index:4,price:2200,bonus:'+38 defesa'}
 ];
 function shopNormalize(){
+  if(!game)return;
   game.ownedWeapons=Array.isArray(game.ownedWeapons)?game.ownedWeapons:[0];
   game.ownedArmors=Array.isArray(game.ownedArmors)?game.ownedArmors:[0];
   if(!game.ownedWeapons.includes(0))game.ownedWeapons.unshift(0);
@@ -19,7 +20,9 @@ function shopNormalize(){
 function shopRender(){
   shopNormalize();
   const box=document.getElementById('shopItems');
-  if(!box)return;
+  const balance=document.getElementById('shopGold');
+  if(!box||!game)return;
+  if(balance)balance.textContent=fmt(game.gold);
   const cards=[...SHOP_WEAPONS,...SHOP_ARMORS];
   box.innerHTML=cards.map(item=>{
     const owned=item.kind==='weapon'?game.ownedWeapons.includes(item.index):game.ownedArmors.includes(item.index);
@@ -57,9 +60,7 @@ function shopAction(kind,index){
 function shopInit(){
   shopNormalize();
   shopRender();
-  const oldRenderAll=window.renderAll;
-  if(typeof oldRenderAll==='function'){
-    window.renderAll=function(){oldRenderAll();shopRender();};
-  }
+  const select=document.getElementById('characterSelect');
+  if(select)select.addEventListener('change',()=>setTimeout(shopRender,0));
 }
 window.addEventListener('load',shopInit);
