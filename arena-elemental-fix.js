@@ -8,7 +8,9 @@
     ice:{name:'Gelo',icon:'❄️',resistance:0.10,color:'#8ccfe8'},
     death:{name:'Death',icon:'💀',resistance:0.10,color:'#9f8bc4'}
   };
-  const ZONE_ELEMENTS=['earth','fire','energy','ice','death'];
+
+  // Arena 1 = Terra | Arena 2 = Energy | Arena 3 = Fogo | Arena 4 = Gelo | Arena 5 = Death.
+  const ZONE_ELEMENTS=['earth','energy','fire','ice','death'];
 
   const AMULETS=[
     {id:'earthguard-amulet',name:'Earthguard Amulet',icon:'🌿',category:'amulets',price:5500,attack:0,defense:0,minLevel:1,bonus:'10% resistência a Terra',element:'earth',elementalResistance:0.10},
