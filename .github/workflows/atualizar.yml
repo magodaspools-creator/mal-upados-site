@@ -1,9 +1,11 @@
 name: Atualizar historico
 on:
   schedule:
-    # Jadebra server save: 05:00 BRT / 08:00 UTC. Coleta depois do save.
     - cron: "30 8 * * *"
   workflow_dispatch:
+  push:
+    paths:
+      - "atualizar_historico.py"
 jobs:
   update:
     runs-on: ubuntu-latest
