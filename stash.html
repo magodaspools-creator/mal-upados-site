@@ -18,28 +18,14 @@
 <section class="stash-stage" id="stashStep2"><div class="eyebrow">2 · Análise</div><h2>Analisando seu Stash</h2><div class="stash-analysis-status" id="stashAnalysisStatus"><div class="title">Aguardando análise</div><div class="stash-note">Envie o print e clique em <strong>Analisar Stash</strong>.</div></div><div class="stash-summary"><div class="stat"><div class="num" id="npcTotal">—</div><div class="label">TOTAL NO NPC</div></div><div class="stat"><div class="num" id="marketTotal">—</div><div class="label">TOTAL NO MARKET</div></div><div class="stat"><div class="num" id="bestTotal">—</div><div class="label">MELHOR CENÁRIO</div></div></div><div class="panel" style="margin-top:18px"><div class="stash-empty" id="stashResult">A análise aparecerá aqui.</div><div class="table-wrap" id="stashTableWrap" hidden><table class="stash-table"><thead><tr><th>Item</th><th>Qtd.</th><th>NPCs que compram</th><th>Market</th><th>Total NPC</th><th>Ação</th></tr></thead><tbody id="stashTable"></tbody></table></div></div></section>
 <section><div class="eyebrow">Reconhecimento</div><h2>Como a análise funciona</h2><div class="grid"><div class="card"><h3>Imagem</h3><p>A grade do Stash é localizada automaticamente no print.</p></div><div class="card"><h3>Itens</h3><p>Cada slot é comparado com a base de sprites. Quando não há correspondência segura, o item não é inventado.</p></div><div class="card"><h3>Valores</h3><p>Os dados de NPC são consultados depois do reconhecimento. O Market depende do mundo escolhido.</p></div></div></section>
 </main><footer>Mal Upados · Jadebra · <a href="index.html">Início</a> · <a href="ranking.html">Ranking</a> · <a href="guilda.html">Guilda</a> · <a href="stash.html">Stash</a> · <a href="hunting.html">Guia de Hunts</a> · <a href="arena.html">Arena</a> · <a href="caos.html">Caos</a></footer>
-<script src="stash-quantity.js?v=20260911-1"></script><script src="stash.js?v=20260911-14"></script><script src="stash-recognition.js?v=20260911-10"></script>
+<script src="stash-quantity.js?v=20260911-1"></script><script src="stash.js?v=20260911-15"></script><script src="stash-recognition.js?v=20260911-11"></script>
 <script>
 (function(){
   const select=document.getElementById('stashWorldSelect'),picker=document.getElementById('stashWorldPicker'),button=document.getElementById('stashWorldButton'),options=document.getElementById('stashWorldOptions');
   if(!select||!picker||!button||!options)return;
-  function sync(){
-    options.innerHTML='';
-    [...select.options].filter(o=>o.value).forEach(o=>{
-      const b=document.createElement('button');b.type='button';b.textContent=o.textContent;b.dataset.value=o.value;
-      b.addEventListener('click',()=>{select.value=o.value;select.dispatchEvent(new Event('change',{bubbles:true}));button.textContent=o.textContent;picker.open=false;});
-      options.appendChild(b);
-    });
-    select.style.display='none';
-    button.textContent=select.value||'Selecione seu mundo';
-  }
+  function sync(){options.innerHTML='';[...select.options].filter(o=>o.value).forEach(o=>{const b=document.createElement('button');b.type='button';b.textContent=o.textContent;b.dataset.value=o.value;b.addEventListener('click',()=>{select.value=o.value;select.dispatchEvent(new Event('change',{bubbles:true}));button.textContent=o.textContent;picker.open=false;});options.appendChild(b);});select.style.display='none';button.textContent=select.value||'Selecione seu mundo';}
   const observer=new MutationObserver(sync);observer.observe(select,{childList:true});sync();
-  button.addEventListener('keydown',e=>{
-    if(e.key.length===1&&/[a-z0-9]/i.test(e.key)){
-      const target=[...select.options].find(o=>o.value&&o.textContent.toLocaleLowerCase().startsWith(e.key.toLocaleLowerCase()));
-      if(target){select.value=target.value;select.dispatchEvent(new Event('change',{bubbles:true}));button.textContent=target.textContent;}
-    }
-  });
+  button.addEventListener('keydown',e=>{if(e.key.length===1&&/[a-z0-9]/i.test(e.key)){const target=[...select.options].find(o=>o.value&&o.textContent.toLocaleLowerCase().startsWith(e.key.toLocaleLowerCase()));if(target){select.value=target.value;select.dispatchEvent(new Event('change',{bubbles:true}));button.textContent=target.textContent;}}});
 })();
 </script>
 </body></html>
