@@ -5,6 +5,7 @@
     if(v.includes('sorcerer')||v.includes('master sorcerer')) return '🔥';
     if(v.includes('druid')) return '❄️';
     if(v.includes('knight')) return '⚔️';
+    if(v.includes('paladin')) return '🏹';
     if(v.includes('monk')) return '🖐️';
     return '⚔';
   }
