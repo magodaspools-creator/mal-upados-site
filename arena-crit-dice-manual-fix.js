@@ -35,7 +35,7 @@
   }
 
   function openDice(baseAttack,critBonus,innerAttack){
-    const area=document.getElementById('battleArea');if(!area)return;
+    const area=document.getElementById('battleArea');if(!area){window.__arenaCritRolling=false;return;}
     area.querySelector('.arena-manual-crit-overlay')?.remove();
     const el=document.createElement('div');el.className='arena-manual-crit-overlay';
     el.innerHTML=`<div class="arena-manual-crit-modal"><div class="arena-manual-crit-title">CRÍTICO!</div><div class="arena-manual-crit-sub">Sua Critical Eye ativou!<br>Você decide quando rolar o D6.</div><div class="arena-manual-d6-wrap">${face(1)}</div><div class="arena-manual-result">?</div><div class="arena-manual-mult">Quanto maior o número, maior o dano.</div><button type="button" class="arena-manual-roll-btn">🎲 ROLAR O D6</button></div>`;
@@ -51,11 +51,12 @@
           clearInterval(timer);wrap.innerHTML=face(roll);result.textContent=roll;mult.textContent=`DANO CRÍTICO: x${multiplier.toFixed(2)}`;el.classList.remove('rolling');el.classList.add('resolved');
           setTimeout(()=>{
             el.remove();
-            if(!battle)return;
+            if(!battle){window.__arenaCritRolling=false;return;}
             const oldAttack=battle.attack;battle.attack=Math.floor(baseAttack*multiplier);
             let firstRandom=true;const oldRandom=Math.random;
             Math.random=()=>{if(firstRandom){firstRandom=false;return .999999}return oldRandom()};
-            try{innerAttack()}finally{Math.random=oldRandom;battle.attack=oldAttack}
+            window.__arenaCritRolling=false;
+            try{innerAttack()}finally{Math.random=oldRandom;battle.attack=oldAttack;window.__arenaCritRolling=false}
             battleLog(`<span class="loot">CRÍTICO! D6 = ${roll} · x${multiplier.toFixed(2)} dano</span>`);
           },900);
         }
