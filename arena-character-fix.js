@@ -46,15 +46,28 @@
 })();
 
 // Carregador isolado dos sistemas extras da Arena.
-// Não altera loja, armas, personagens ou combate.
+// Espera o personagem/jogo existir antes de carregar Timer e Bestiário.
+// Isso evita que os módulos iniciem antes de arena.js terminar o loadGame().
 (()=>{
-  const load=(src)=>{
+  const files=[
+    'arena-campaign-timer.js?v=timer-20260912b',
+    'arena-bestiary.js?v=bestiary-20260912b'
+  ];
+  const load=()=>files.forEach(src=>{
     if(document.querySelector(`script[data-arena-feature="${src}"]`))return;
     const s=document.createElement('script');
     s.src=src;
     s.dataset.arenaFeature=src;
     document.body.appendChild(s);
+  });
+  const ready=()=>{
+    try{return !!window.game&&typeof window.game==='object'&&!!window.game.character}catch{return false}
   };
-  load('arena-campaign-timer.js?v=timer-20260912');
-  load('arena-bestiary.js?v=bestiary-20260912');
+  if(ready())load();
+  else{
+    const wait=setInterval(()=>{
+      if(ready()){clearInterval(wait);load();}
+    },100);
+    setTimeout(()=>clearInterval(wait),20000);
+  }
 })();
