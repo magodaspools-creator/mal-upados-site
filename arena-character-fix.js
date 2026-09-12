@@ -44,3 +44,17 @@
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
+
+// Carregador isolado dos sistemas extras da Arena.
+// Não altera loja, armas, personagens ou combate.
+(()=>{
+  const load=(src)=>{
+    if(document.querySelector(`script[data-arena-feature="${src}"]`))return;
+    const s=document.createElement('script');
+    s.src=src;
+    s.dataset.arenaFeature=src;
+    document.body.appendChild(s);
+  };
+  load('arena-campaign-timer.js?v=timer-20260912');
+  load('arena-bestiary.js?v=bestiary-20260912');
+})();
