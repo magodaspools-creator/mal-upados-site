@@ -1,0 +1,5 @@
+A4 v2 (Packaging-Runde 07.08.): Ersatz fuer die v1-Pfadkacheln aus create_path_tiles
+(die waren gerahmte Seitenansicht-Strips, als Topdown-Autotiles unbrauchbar; Original
+in raw\A4_path_cobblestone_v1_strips). Neues 16-Tile-Wang-Set, create_topdown_tileset
+pro 64px, id e8d3cca9-6e10-4d7d-9103-aee450b51b72, Gras per PIL-Affine auf A1-Palette
+remapped (Anker 46,174,4 -> 50,203,27).

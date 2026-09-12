@@ -1,0 +1,15 @@
+AI DISCLOSURE
+Overworld Biomes - Free Starter v1.2
+
+The pixel art in this pack was generated with PixelLab, an AI tool for
+pixel art, and then worked on by hand: tiles were selected, rejected and
+regenerated against a written style guide, seams and palettes were
+corrected, the Wang sheets were assembled and verified, and everything was
+used in a shipped game before it was offered here.
+
+Some buyers do not want AI-generated art, and some storefronts require the
+disclosure. Both are legitimate. You should know before you download, not
+after. This pack is labelled as AI-generated on every store we publish on.
+
+Some game jams and communities have their own rules about AI-generated
+content - check the rules of any place you intend to publish.
