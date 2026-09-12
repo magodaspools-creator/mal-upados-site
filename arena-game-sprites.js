@@ -6,22 +6,22 @@
  const RAW='https://raw.githubusercontent.com/LiquidGalaxyLAB/lg-rpg/main/lg_rpg_server/public/assets/enemies/';
  const HIDDEN='https://www.hiddenone-sprites.com/uploads/7/1/8/7/71878507/published/';
  const MONSTERS={
-  rat:{src:'https://www.hiddenone-sprites.com/uploads/7/1/8/7/71878507/published/rat-grey-sv_2.png?1550287821=',frames:1,w:96,h:96,rate:1,size:96},
+  rat:{src:HIDDEN+'rat-grey-sv_2.png?1550287821=',frames:9,w:64,h:64,rate:8,size:96,row:0},
   goblin:{src:RAW+'goblin/idle.png',frames:4,w:150,h:150,rate:6,size:96},
   skeleton:{src:RAW+'skeleton/idle.png',frames:4,w:150,h:150,rate:6,size:96},
-  slime:{src:RAW+'slime/idle.png',frames:14,w:156,h:156,rate:8,size:96},
-  bat:{src:RAW+'bat/fly.png',frames:11,w:87,h:87,rate:12,size:96},
   dragon:{src:RAW+'boss/dragon_idle.png',frames:6,w:70,h:73,rate:8,size:112},
-  cockatrice:{src:HIDDEN+'cockatrice-sv_2.png',frames:1,w:96,h:96,rate:1,size:96},
-  plant:{src:HIDDEN+'plant-sv_2.png',frames:1,w:96,h:96,rate:1,size:96},
-  spider:{src:HIDDEN+'spider-sv_2.png',frames:1,w:96,h:96,rate:1,size:96},
-  snake:{src:HIDDEN+'snake-sv_2.png',frames:1,w:96,h:96,rate:1,size:96},
-  hornet:{src:HIDDEN+'hornet-sv_2.png',frames:1,w:96,h:96,rate:1,size:96},
-  sahuagin:{src:HIDDEN+'sahuagin-sv_2.png',frames:1,w:96,h:96,rate:1,size:96},
-  ghost:{src:HIDDEN+'ghost-sv_2.png',frames:1,w:96,h:96,rate:1,size:96},
-  imp:{src:HIDDEN+'imp-sv_2.png',frames:1,w:96,h:96,rate:1,size:96},
-  gazer:{src:HIDDEN+'gazer-sv_2.png',frames:1,w:96,h:96,rate:1,size:96},
-  mimic:{src:HIDDEN+'mimic-sv_2.png',frames:1,w:96,h:96,rate:1,size:96}
+  sahuagin:{src:HIDDEN+'sahuagin-default_2.png?1550287917=',frames:9,w:64,h:64,rate:8,size:96,row:0},
+  imp:{src:HIDDEN+'imp-dark-default_2.png?1550287170=',frames:9,w:64,h:64,rate:8,size:96,row:0},
+  cockatrice:{src:HIDDEN+'cockatrice-default_2.png?1550201742=',frames:9,w:64,h:64,rate:8,size:96,row:0},
+  gazer:{src:HIDDEN+'gazer-default_2.png?1550286768=',frames:9,w:64,h:64,rate:8,size:96,row:0},
+  scorpion:{src:HIDDEN+'scorpion-default_4.png?1550288043=',frames:9,w:64,h:64,rate:8,size:96,row:0},
+  plant:{src:HIDDEN+'plant-wilted_2.png?1550287615=',frames:9,w:64,h:64,rate:8,size:96,row:0},
+  snake:{src:HIDDEN+'snake-hornless_2.png?1550288470=',frames:9,w:64,h:64,rate:8,size:96,row:0},
+  puppet:{src:HIDDEN+'puppet-default_2.png?1550287709=',frames:9,w:64,h:64,rate:8,size:96,row:0},
+  drone:{src:HIDDEN+'drone-default_2.png?1550286560=',frames:9,w:64,h:64,rate:8,size:96,row:0},
+  spider:{src:HIDDEN+'spider-sv_4.png?1550288631=',frames:9,w:64,h:64,rate:8,size:96,row:0},
+  willoWisp:{src:HIDDEN+'willowisp-default_2.png?1550289032=',frames:9,w:64,h:64,rate:8,size:96,row:0},
+  sufferingSoul:{src:HIDDEN+'suffering-soul-default_2.png?1550288890=',frames:9,w:64,h:64,rate:8,size:96,row:0}
  };
  const HERO_FRAMES=7,HERO_SIZE=96;
  let timer=null,animFrame=0,attacking=false,lastEnemyHp=null;
@@ -69,12 +69,14 @@
   if(n.includes('rider'))return'cockatrice';
   if(n.includes('cyclops'))return'gazer';
   if(n.includes('scorpion'))return'scorpion';
-  if(n.includes('scarab'))return'mimic';
-  if(n.includes('dragon hatchling'))return'hornet';
-  if(n==='dragon'||n.includes('dragon lord')||n.includes('frost dragon'))return'dragon';
+  if(n.includes('scarab'))return'plant';
+  if(n.includes('dragon hatchling'))return'snake';
+  if(n==='dragon')return'dragon';
+  if(n.includes('dragon lord'))return'puppet';
+  if(n.includes('frost dragon'))return'drone';
   if(n.includes('demon skeleton'))return'skeleton';
   if(n.includes('hellhound'))return'spider';
-  if(n==='demon')return'ghost';
+  if(n==='demon')return'willoWisp';
   if(n.includes('deathbringer'))return'sufferingSoul';
   return null;
  }
