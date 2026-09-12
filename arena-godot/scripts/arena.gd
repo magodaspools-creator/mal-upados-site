@@ -2,6 +2,7 @@ extends Node2D
 
 const START_WAVE := 1
 const MAX_WAVE := 20
+const LOOT_ROOT := "res://assets-importados/16x16 Weapons RPG Icons/"
 
 var wave := START_WAVE
 var player_hp := 100
@@ -17,6 +18,9 @@ var weapon_damage := 18
 var potion_count := 2
 var last_loot := "Nenhum"
 var _player_origin := Vector2.ZERO
+var _loot_item: Node2D = null
+var _loot_kind := ""
+var _loot_value := 0
 
 @onready var status: Label = $HUD/Status
 @onready var stats: Label = $HUD/Stats
@@ -32,6 +36,9 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
     if Input.is_action_just_pressed("attack"):
         attack()
+    if _loot_item != null and is_instance_valid(_loot_item):
+        if player.position.distance_to(_loot_item.position) < 58.0:
+            _collect_loot()
 
 func start_wave(next_wave: int = wave) -> void:
     if player_hp <= 0:
@@ -108,14 +115,69 @@ func _win_wave() -> void:
     gold += reward
     arena_xp += xp_reward
     in_combat = false
-    last_loot = _roll_loot()
+    _spawn_loot()
+    _refresh_ui("VITÓRIA! +%d Gold +%d XP — Loot apareceu no chão" % [reward, xp_reward])
 
-    if wave >= MAX_WAVE:
-        _refresh_ui("ARENA CONCLUÍDA! +%d Gold +%d XP — Loot: %s" % [reward, xp_reward, last_loot])
+func _spawn_loot() -> void:
+    if _loot_item != null and is_instance_valid(_loot_item):
+        _loot_item.queue_free()
+
+    var item := Node2D.new()
+    item.position = enemy.position + Vector2(0, 28)
+    item.z_index = 5
+    add_child(item)
+    _loot_item = item
+
+    var icon := Sprite2D.new()
+    icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+    icon.texture = _load_loot_icon()
+    icon.scale = Vector2(2.0, 2.0)
+    item.add_child(icon)
+
+    var label := Label.new()
+    label.text = _loot_kind
+    label.position = Vector2(-55, 16)
+    label.add_theme_font_size_override("font_size", 14)
+    item.add_child(label)
+
+    var tween := create_tween()
+    tween.set_loops()
+    tween.tween_property(item, "position:y", item.position.y - 7.0, 0.45).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+    tween.tween_property(item, "position:y", item.position.y, 0.45).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+func _load_loot_icon() -> Texture2D:
+    var files := [
+        LOOT_ROOT + "Sword.png",
+        LOOT_ROOT + "sword.png",
+        LOOT_ROOT + "weapon_sword.png"
+    ]
+    for path in files:
+        var texture := load(path) as Texture2D
+        if texture != null:
+            return texture
+    return null
+
+func _collect_loot() -> void:
+    if _loot_item == null or not is_instance_valid(_loot_item):
         return
 
-    wave += 1
-    _refresh_ui("VITÓRIA! +%d Gold +%d XP — Loot: %s — Espaço: próxima onda" % [reward, xp_reward, last_loot])
+    _loot_item.queue_free()
+    _loot_item = null
+
+    if _loot_kind == "Poção":
+        potion_count += 1
+        last_loot = "Poção (+1)"
+    elif _loot_kind == "Cristal de Arena":
+        arena_xp += _loot_value
+        last_loot = "Cristal de Arena (+%d XP)" % _loot_value
+    elif _loot_kind == "Lâmina Sombria":
+        weapon_damage += _loot_value
+        last_loot = "Lâmina Sombria (+%d dano)" % _loot_value
+    else:
+        gold += _loot_value
+        last_loot = "%s (+%d Gold)" % [_loot_kind, _loot_value]
+
+    _refresh_ui("LOOT COLETADO: %s" % last_loot)
 
 func _use_potion() -> void:
     if potion_count <= 0 or player_hp >= player_max_hp:
@@ -137,6 +199,14 @@ func _upgrade_weapon() -> void:
 func _roll_loot() -> String:
     var drops := ["Poção", "Cristal de Arena", "Lâmina Sombria", "Moeda Antiga", "Amuleto do Caçador"]
     return drops[randi_range(0, drops.size() - 1)]
+
+func _setup_loot_reward() -> void:
+    _loot_kind = _roll_loot()
+    _loot_value = randi_range(15, 45)
+    if _loot_kind == "Cristal de Arena":
+        _loot_value = 50 + wave * 5
+    elif _loot_kind == "Lâmina Sombria":
+        _loot_value = 2 + int(wave / 5)
 
 func _unhandled_input(event: InputEvent) -> void:
     if event is InputEventKey and event.pressed and not event.echo:
