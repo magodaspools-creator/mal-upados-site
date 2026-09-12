@@ -112,7 +112,6 @@
     const roll=Math.random();
     let result={type:'gold',message:'',protected:false,bless:null};
 
-    // 45% item do set, 40% gold, 15% XP/nível. A Backpack nunca entra no sorteio.
     if(roll<0.45){
       const pool=itemLossPool();
       if(!pool.length){
@@ -145,18 +144,13 @@
       result.message=`Você perdeu ${fmt(lost)} gold.`;
     }else{
       const lostXP=Math.max(10,Math.floor((100+((game.level-1)*65))*0.20));
-      if(game.xp>=lostXP){
-        game.xp-=lostXP;
-      }else if(game.level>1){
-        game.level--;
-        game.xp=0;
-      }else{
-        game.xp=0;
-      }
+      if(game.xp>=lostXP)game.xp-=lostXP;
+      else if(game.level>1){game.level--;game.xp=0}
+      else game.xp=0;
       result.type='xp';
+      result.lost=lostXP;
       result.message=game.level>1?`Você perdeu ${fmt(lostXP)} XP.`:`Você perdeu ${fmt(lostXP)} XP. O Level não pode cair abaixo de 1.`;
     }
-
     return result;
   }
 
@@ -208,27 +202,40 @@
       if(typeof shopRender==='function')shopRender();
       if(typeof renderAll==='function')renderAll();
       showDeathPopup(result);
+      renderProtectionStatus();
     };
   }
 
+  function renderProtectionStatus(){
+    const wrap=document.getElementById('arenaBlessStatus');
+    if(!wrap||typeof game==='undefined')return;
+    ensure();
+    const active=BLESS_ITEMS.filter(x=>game.blesses[x.id]>0);
+    const parts=active.map(x=>`${x.name}: ${game.blesses[x.id]}`).join(' · ');
+    const pct=protectionPercent();
+    wrap.innerHTML=`<div><strong>Proteção de morte</strong><span>${parts||'Nenhuma Bless ativa'}</span></div><b>${pct}%</b>`;
+  }
+
   function addDeathPanel(){
-    if(document.getElementById('arenaBlessStatus')||typeof game==='undefined')return;
+    if(typeof game==='undefined')return;
     const panel=document.querySelector('.character-panel');
     if(!panel)return;
-    const wrap=document.createElement('div');
-    wrap.id='arenaBlessStatus';
-    wrap.className='arena-bless-status';
-    panel.appendChild(wrap);
-    function render(){
-      ensure();
-      const parts=BLESS_ITEMS.filter(x=>game.blesses[x.id]>0).map(x=>`${x.name}: ${game.blesses[x.id]}`).join(' · ');
-      wrap.innerHTML=`<div><strong>Proteção de morte</strong><span>${parts||'Nenhuma Bless ativa'}</span></div><b>${protectionPercent()}%</b>`;
+    let wrap=document.getElementById('arenaBlessStatus');
+    if(!wrap){
+      wrap=document.createElement('div');
+      wrap.id='arenaBlessStatus';
+      wrap.className='arena-bless-status';
+      panel.appendChild(wrap);
+    }else if(wrap.parentElement!==panel){
+      panel.appendChild(wrap);
     }
-    render();
-    setInterval(render,500);
+    renderProtectionStatus();
   }
 
   window.arenaDeathBless={BLESS_ITEMS,ensure,totalBlesses,protectionPercent,deathPenalty};
-  document.addEventListener('DOMContentLoaded',()=>{ensure();addCatalog();installShop();installDeath();addDeathPanel()});
-  window.addEventListener('load',()=>{ensure();addCatalog();installShop();installDeath();addDeathPanel()});
+  function boot(){ensure();addCatalog();installShop();installDeath();addDeathPanel();}
+  document.addEventListener('DOMContentLoaded',boot);
+  window.addEventListener('load',boot);
+  setInterval(addDeathPanel,800);
+  setInterval(renderProtectionStatus,500);
 })();
