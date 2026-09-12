@@ -34,7 +34,7 @@
    }
    #arenaGameMode .arena-fighter,#arenaGameMode .arena-vs{z-index:3}
    #arenaGameMode .arena-fighter-icon{color:transparent!important;text-shadow:none!important}
-   #arenaGameMode .arena-fighter-icon{background-repeat:no-repeat!important;background-position:center!important;}
+   #arenaGameMode .arena-fighter-icon{background-repeat:no-repeat!important;background-position:center;}
    #arenaGameMode .arena-fighter.enemy .arena-fighter-icon{background-color:transparent!important;}
   `;
   document.head.appendChild(s);
