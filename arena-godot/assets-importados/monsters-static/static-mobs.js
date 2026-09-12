@@ -1,0 +1,1 @@
+// Static mob assets are selected by arena-game-static-mobs.js
