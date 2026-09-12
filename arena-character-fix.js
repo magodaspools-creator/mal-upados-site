@@ -45,7 +45,8 @@
     'arena-campaign-timer-fix.js?v=timer-fix-20260912c',
     'arena-bestiary-fix.js?v=bestiary-fix-20260912d',
     'arena-combat-final-fix.js?v=combat-fix-20260912',
-    'arena-flee-fix.js?v=flee-fix-20260912'
+    'arena-flee-fix.js?v=flee-fix-20260912',
+    'arena-gold-universal.js?v=gold-universal-20260912'
   ];
   const load=()=>files.forEach(src=>{
     if(document.querySelector(`script[data-arena-feature="${src}"]`))return;
