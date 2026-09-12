@@ -1,5 +1,5 @@
 (()=>{
-  // Correção isolada das Wands do Sorcerer: exatamente 17 armas.
+  // Correção isolada das Wands do Sorcerer: exatamente 14 armas.
   const SORCERER_WANDS=[
     {id:'wand-of-vortex',name:'Wand of Vortex',icon:'🪄',category:'wands',vocation:'Sorcerer',class:'Sorcerer',hands:1,price:180,attack:10,minLevel:1,bonus:'+10 ataque · Sorcerer'},
     {id:'wand-of-dragonbreath',name:'Wand of Dragonbreath',icon:'🐉',category:'wands',vocation:'Sorcerer',class:'Sorcerer',hands:1,price:320,attack:14,minLevel:7,bonus:'+14 ataque · Sorcerer'},
@@ -14,10 +14,7 @@
     {id:'arcanist-wand',name:'Arcanist Wand',icon:'🔮',category:'wands',vocation:'Sorcerer',class:'Sorcerer',hands:1,price:3150,attack:52,minLevel:90,bonus:'+52 ataque · Sorcerer'},
     {id:'infernal-wand',name:'Infernal Wand',icon:'🔥',category:'wands',vocation:'Sorcerer',class:'Sorcerer',hands:1,price:3600,attack:56,minLevel:100,bonus:'+56 ataque · Sorcerer'},
     {id:'void-wand',name:'Void Wand',icon:'🌀',category:'wands',vocation:'Sorcerer',class:'Sorcerer',hands:1,price:4100,attack:60,minLevel:110,bonus:'+60 ataque · Sorcerer'},
-    {id:'archmage-wand',name:'Archmage Wand',icon:'🧙',category:'wands',vocation:'Sorcerer',class:'Sorcerer',hands:1,price:4700,attack:64,minLevel:120,bonus:'+64 ataque · Sorcerer'},
-    {id:'eldritch-wand',name:'Eldritch Wand',icon:'👁️',category:'wands',vocation:'Sorcerer',class:'Sorcerer',hands:1,price:5400,attack:68,minLevel:130,bonus:'+68 ataque · Sorcerer'},
-    {id:'sanguine-wand',name:'Sanguine Wand',icon:'🩸',category:'wands',vocation:'Sorcerer',class:'Sorcerer',hands:1,price:6200,attack:72,minLevel:140,bonus:'+72 ataque · Sorcerer'},
-    {id:'soulhexer',name:'Soulhexer',icon:'👻',category:'wands',vocation:'Sorcerer',class:'Sorcerer',hands:1,price:7200,attack:78,minLevel:150,bonus:'+78 ataque · Sorcerer'}
+    {id:'eldritch-wand',name:'Eldritch Wand',icon:'👁️',category:'wands',vocation:'Sorcerer',class:'Sorcerer',hands:1,price:5400,attack:68,minLevel:130,bonus:'+68 ataque · Sorcerer'}
   ];
   const IDS=new Set(SORCERER_WANDS.map(x=>x.id));
 
