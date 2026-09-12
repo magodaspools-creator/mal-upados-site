@@ -12,18 +12,26 @@
     {id:'void-fists',name:'Void Fists',icon:'🌀',category:'weapons',vocation:'Monk',class:'Monk',hands:2,price:7000,attack:70,defense:0,minLevel:58,bonus:'+70 ataque · 2 mãos · Monk'}
   ];
 
-  if(typeof SHOP_ITEMS==='undefined')return;
-  MONK_WEAPONS.forEach(item=>{
-    const existing=SHOP_ITEMS.find(x=>x.id===item.id);
-    if(existing)Object.assign(existing,item);
-    else SHOP_ITEMS.push({...item});
-  });
-
-  if(typeof shopRender==='function')shopRender();
-
-  // Carrega o módulo de campanha depois de todos os módulos da Arena.
-  const src='arena-demon-final-fix.js?v=final-boss-20260912';
-  if(!document.querySelector(`script[src^="arena-demon-final-fix.js"]`)){
-    const s=document.createElement('script');s.src=src;document.body.appendChild(s);
+  if(typeof SHOP_ITEMS!=='undefined'){
+    MONK_WEAPONS.forEach(item=>{
+      const existing=SHOP_ITEMS.find(x=>x.id===item.id);
+      if(existing)Object.assign(existing,item);
+      else SHOP_ITEMS.push({...item});
+    });
+    if(typeof shopRender==='function')shopRender();
   }
+
+  // Carrega os módulos de campanha independentemente da loja.
+  const modules=[
+    'arena-demon-final-fix.js?v=final-boss-20260912b',
+    'arena-campaign-timer.js?v=campaign-timer-20260912c',
+    'arena-bestiary.js?v=bestiary-20260912c'
+  ];
+  modules.forEach(src=>{
+    const base=src.split('?')[0];
+    if(document.querySelector(`script[src^="${base}"]`))return;
+    const s=document.createElement('script');
+    s.src=src;
+    document.body.appendChild(s);
+  });
 })();
