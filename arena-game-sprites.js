@@ -1,27 +1,27 @@
 // Waves pixel-art renderer for the website.
-// Enemy art: CC0 monster assets from LiquidGalaxyLAB/lg-rpg (LuizMelo) + unique free battlers from hiddenone's Resource Warehouse.
+// Enemy art: each Waves mob is shown as ONE static frame. Rat remains animated.
 (()=>{
  const ROOT='arena-godot/assets-importados/';
  const HERO_ROOT={knight:'knight-hero-128/knight-hero-128',mage:'mage-hero-128/mage-hero-128',archer:'archer-hero-128/archer-hero-128',rogue:'rogue-hero-128/rogue-hero-128'};
  const RAW='https://raw.githubusercontent.com/LiquidGalaxyLAB/lg-rpg/main/lg_rpg_server/public/assets/enemies/';
  const HIDDEN='https://www.hiddenone-sprites.com/uploads/7/1/8/7/71878507/published/';
  const MONSTERS={
-  rat:{src:HIDDEN+'rat-grey-sv_2.png?1550287821=',frames:9,w:64,h:64,rate:8,size:96,row:0},
-  goblin:{src:RAW+'goblin/idle.png',frames:4,w:150,h:150,rate:6,size:96},
-  skeleton:{src:RAW+'skeleton/idle.png',frames:4,w:150,h:150,rate:6,size:96},
-  dragon:{src:RAW+'boss/dragon_idle.png',frames:6,w:70,h:73,rate:8,size:112},
-  sahuagin:{src:HIDDEN+'sahuagin-default_2.png?1550287917=',frames:9,w:64,h:64,rate:8,size:96,row:0},
-  imp:{src:HIDDEN+'imp-dark-default_2.png?1550287170=',frames:9,w:64,h:64,rate:8,size:96,row:0},
-  cockatrice:{src:HIDDEN+'cockatrice-default_2.png?1550201742=',frames:9,w:64,h:64,rate:8,size:96,row:0},
-  gazer:{src:HIDDEN+'gazer-default_2.png?1550286768=',frames:9,w:64,h:64,rate:8,size:96,row:0},
-  scorpion:{src:HIDDEN+'scorpion-default_4.png?1550288043=',frames:9,w:64,h:64,rate:8,size:96,row:0},
-  plant:{src:HIDDEN+'plant-wilted_2.png?1550287615=',frames:9,w:64,h:64,rate:8,size:96,row:0},
-  snake:{src:HIDDEN+'snake-hornless_2.png?1550288470=',frames:9,w:64,h:64,rate:8,size:96,row:0},
-  puppet:{src:HIDDEN+'puppet-default_2.png?1550287709=',frames:9,w:64,h:64,rate:8,size:96,row:0},
-  drone:{src:HIDDEN+'drone-default_2.png?1550286560=',frames:9,w:64,h:64,rate:8,size:96,row:0},
-  spider:{src:HIDDEN+'spider-sv_4.png?1550288631=',frames:9,w:64,h:64,rate:8,size:96,row:0},
-  willoWisp:{src:HIDDEN+'willowisp-default_2.png?1550289032=',frames:9,w:64,h:64,rate:8,size:96,row:0},
-  sufferingSoul:{src:HIDDEN+'suffering-soul-default_2.png?1550288890=',frames:9,w:64,h:64,rate:8,size:96,row:0}
+  rat:{src:HIDDEN+'rat-grey-sv_2.png?1550287821=',frames:9,w:64,h:64,rate:8,size:96,row:0,animated:true},
+  goblin:{src:RAW+'goblin/idle.png',frames:4,w:150,h:150,rate:1,size:112,static:true},
+  skeleton:{src:RAW+'skeleton/idle.png',frames:4,w:150,h:150,rate:1,size:112,static:true},
+  dragon:{src:RAW+'boss/dragon_idle.png',frames:6,w:70,h:73,rate:1,size:128,static:true},
+  sahuagin:{src:HIDDEN+'sahuagin-default_2.png?1550287917=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true},
+  imp:{src:HIDDEN+'imp-dark-default_2.png?1550287170=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true},
+  cockatrice:{src:HIDDEN+'cockatrice-default_2.png?1550201742=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true},
+  gazer:{src:HIDDEN+'gazer-default_2.png?1550286768=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true},
+  scorpion:{src:HIDDEN+'scorpion-default_4.png?1550288043=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true},
+  plant:{src:HIDDEN+'plant-wilted_2.png?1550287615=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true},
+  snake:{src:HIDDEN+'snake-hornless_2.png?1550288470=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true},
+  puppet:{src:HIDDEN+'puppet-default_2.png?1550287709=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true},
+  drone:{src:HIDDEN+'drone-default_2.png?1550286560=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true},
+  spider:{src:HIDDEN+'spider-sv_4.png?1550288631=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true},
+  willoWisp:{src:HIDDEN+'willowisp-default_2.png?1550289032=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true},
+  sufferingSoul:{src:HIDDEN+'suffering-soul-default_2.png?1550288890=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true}
  };
  const HERO_FRAMES=7,HERO_SIZE=96;
  let timer=null,animFrame=0,attacking=false,lastEnemyHp=null;
@@ -35,7 +35,7 @@
    #arenaGameMode .arena-fighter:first-child{left:9%;top:50%;transform:translateY(-50%)}
    #arenaGameMode .arena-fighter.enemy{right:9%;top:50%;transform:translateY(-50%)}
    #arenaGameMode .arena-vs{position:absolute!important;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;padding:8px 12px;background:rgba(7,9,12,.72);border:1px solid rgba(190,151,78,.4);border-radius:3px;box-shadow:0 5px 18px rgba(0,0,0,.45)}
-   #arenaGameMode .arena-fighter-icon{height:${HERO_SIZE}px;width:${HERO_SIZE}px;margin:auto;display:flex;align-items:center;justify-content:center;font-size:3.6rem;line-height:1;filter:drop-shadow(0 7px 7px rgba(0,0,0,.68));position:relative;overflow:hidden;background-repeat:no-repeat;background-position:center;background-color:transparent!important;image-rendering:pixelated;color:transparent!important;text-shadow:none!important}
+   #arenaGameMode .arena-fighter-icon{height:${HERO_SIZE}px;width:${HERO_SIZE}px;margin:auto;display:flex;align-items:center;justify-content:center;font-size:3.6rem;line-height:1;filter:drop-shadow(0 7px 7px rgba(0,0,0,.68));position:relative;overflow:hidden;background-repeat:no-repeat;background-position:left center;background-color:transparent!important;image-rendering:pixelated;color:transparent!important;text-shadow:none!important}
    #arenaGameMode .arena-fighter-name{display:inline-block;margin-top:0;padding:4px 8px;background:rgba(6,8,11,.82);border:1px solid rgba(190,151,78,.25);text-shadow:0 2px 3px #000}
    #arenaGameMode .arena-fighter-meta{display:inline-block;padding:2px 7px;background:rgba(6,8,11,.68);text-shadow:0 2px 3px #000}
    #arenaGameMode .arena-hp{max-width:180px;margin:7px auto 0;border:1px solid rgba(0,0,0,.7)}
@@ -84,7 +84,7 @@
   const p=playerEl(),e=enemyEl();if(!p||!e)return;
   const v=playerVocation();paint(p,heroIdle(v,animFrame%HERO_FRAMES),HERO_SIZE);p.textContent='';e.textContent='';
   const kind=enemyKind(),m=MONSTERS[kind];
-  if(m)paintSheet(e,m,animFrame%m.frames);else e.style.backgroundImage='';
+  if(m)paintSheet(e,m,m.animated?animFrame%m.frames:0);else e.style.backgroundImage='';
  }
  function startAttack(){if(attacking)return;attacking=true;const p=playerEl();if(p){p.classList.remove('waves-attack');void p.offsetWidth;p.classList.add('waves-attack');setTimeout(()=>p.classList.remove('waves-attack'),300)}setTimeout(()=>{attacking=false;draw()},310)}
  function idleAnimation(){if(attacking)return;animFrame++;draw()}
