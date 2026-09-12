@@ -8,7 +8,6 @@
     {id:'blessed-shield',name:'Blessed Shield',icon:'✨',category:'shields',class:'Knight',price:4200,attack:0,defense:42,minLevel:38,bonus:'+42 defesa · Knight'}
   ];
 
-  // 6 armas Knight de 1 mão + 6 de 2 mãos.
   const KNIGHT_WEAPONS=[
     {id:'fire-sword',name:'Fire Sword',hands:1},
     {id:'spike-sword',name:'Spike Sword',hands:1},
@@ -24,7 +23,6 @@
     {id:'knight-demon',name:'Demon Crusher',icon:'💀',category:'weapons',vocation:'Knight',class:'Knight',hands:2,price:1900,attack:38,defense:0,minLevel:27,bonus:'+38 ataque · 2 mãos · Knight'}
   ];
 
-  // 6 armas Paladin de 1 mão (spears/stars) + 6 de 2 mãos (bows/crossbows).
   const PALADIN_WEAPONS=[
     {id:'royal-spear',name:'Royal Spear',icon:'🔱',category:'weapons',class:'Paladin',vocation:'Paladin',hands:1,price:220,attack:10,defense:0,minLevel:3,bonus:'+10 ataque · 1 mão · Paladin'},
     {id:'enchanted-spear',name:'Enchanted Spear',icon:'🔱',category:'weapons',class:'Paladin',vocation:'Paladin',hands:1,price:520,attack:17,defense:0,minLevel:8,bonus:'+17 ataque · 1 mão · Paladin'},
@@ -42,8 +40,8 @@
 
   const VOCATION_RANGED=[
     {id:'wand-of-inferno',name:'Wand of Inferno',icon:'🔥',category:'wands',vocation:'Sorcerer',class:'Sorcerer',price:180,attack:8,defense:0,minLevel:1,bonus:'+8 ataque · Sorcerer'},
-    {id:'wand-of-everblazing',name:'Wand of Everblazing',icon:'🔥',category:'wands',vocation:'Sorcerer',class:'Sorcerer',price:360,attack:12,defense:0,minLevel:5,bonus:'+12 ataque · Sorcerer'},
-    {id:'wand-of-destruction',name:'Wand of Destruction',icon:'💥',category:'wands',vocation:'Sorcerer',class:'Sorcerer',price:650,attack:17,defense:0,minLevel:10,bonus:'+17 ataque · Sorcerer'},
+    {id:'wand-of-everblazing',name:'Wand of Everblazing',icon:'🔥',category:'wands',vocation:'Sorcerer',price:360,attack:12,defense:0,minLevel:5,bonus:'+12 ataque · Sorcerer'},
+    {id:'wand-of-destruction',name:'Wand of Destruction',icon:'💥',category:'wands',vocation:'Sorcerer',price:650,attack:17,defense:0,minLevel:10,bonus:'+17 ataque · Sorcerer'},
     {id:'wand-of-defiance',name:'Wand of Defiance',icon:'🪄',category:'wands',vocation:'Sorcerer',price:900,attack:20,defense:2,minLevel:14,bonus:'+20 ataque · +2 defesa · Sorcerer'},
     {id:'wand-of-vortex',name:'Wand of Vortex',icon:'🌪️',category:'wands',vocation:'Sorcerer',price:1250,attack:24,defense:0,minLevel:18,bonus:'+24 ataque · Sorcerer'},
     {id:'wand-of-starfall',name:'Wand of Starfall',icon:'🌠',category:'wands',vocation:'Sorcerer',price:1750,attack:29,defense:1,minLevel:23,bonus:'+29 ataque · +1 defesa · Sorcerer'},
@@ -80,7 +78,6 @@
       if(existing)Object.assign(existing,item);
       else SHOP_ITEMS.push(item);
     });
-    // Wands/Rods são exclusivamente das respectivas vocações.
     SHOP_ITEMS.forEach(item=>{
       if(item.category==='wands')item.vocation='Sorcerer';
       if(item.category==='rods')item.vocation='Druid';
@@ -197,6 +194,7 @@
       <button type="button" class="shop-filter weapon-subfilter ${weaponVocationFilter==='all'?'active':''}" data-weapon-vocation="all">Todas</button>
       <button type="button" class="shop-filter weapon-subfilter ${weaponVocationFilter==='Knight'?'active':''}" data-weapon-vocation="Knight">Knight</button>
       <button type="button" class="shop-filter weapon-subfilter ${weaponVocationFilter==='Paladin'?'active':''}" data-weapon-vocation="Paladin">Paladin</button>
+      <button type="button" class="shop-filter weapon-subfilter ${weaponVocationFilter==='Monk'?'active':''}" data-weapon-vocation="Monk">Monk</button>
       <span class="weapon-subfilter-label">Mãos</span>
       <button type="button" class="shop-filter weapon-subfilter ${weaponHandsFilter==='all'?'active':''}" data-weapon-hands="all">Todas</button>
       <button type="button" class="shop-filter weapon-subfilter ${weaponHandsFilter==='1'?'active':''}" data-weapon-hands="1">1 mão</button>
@@ -218,46 +216,11 @@
   }
 
   const originalBonus=window.arenaWeaponBonus;
-  window.arenaKnightLoadout=function(){
-    if(typeof game==='undefined'||!game)return {attack:0,defense:0,hands:0,shield:null};
-    const weapon=equippedWeapon();
-    const twoHanded=isKnight()&&isTwoHanded(weapon);
-    const shieldId=game.shopEquipped?.shield;
-    const shield=typeof SHOP_ITEMS!=='undefined'&&shieldId?SHOP_ITEMS.find(x=>x.id===shieldId):null;
-    return {attack:twoHanded?Number(weapon?.attack)||0:0,defense:twoHanded?(Number(weapon?.defensePenalty)||0):(Number(shield?.defense)||0),hands:twoHanded?2:1,shield:shield?.id||null};
+  window.arenaWeaponBonus=function(item){
+    let text=typeof originalBonus==='function'?originalBonus(item):'';
+    if(item?.vocation==='Knight'&&item?.hands===2)text=`+${item.attack} ataque · 2 mãos · -8 defesa`;
+    return text||item?.bonus||'';
   };
 
-  if(typeof arenaWeaponBonus==='function'&&!window.__arenaKnightBonusWrapped){
-    const baseBonus=arenaWeaponBonus;
-    window.__arenaKnightBonusWrapped=true;
-    window.arenaWeaponBonus=function(){
-      const base=baseBonus()||{attack:0,defense:0};
-      if(!isKnight())return base;
-      const loadout=window.arenaKnightLoadout();
-      const weapon=equippedWeapon();
-      const shieldDefense=loadout.shield&&!isTwoHanded(weapon)?Number((SHOP_ITEMS.find(x=>x.id===loadout.shield)||{}).defense)||0:0;
-      return {attack:base.attack,defense:base.defense+(isTwoHanded(weapon)?loadout.defense:shieldDefense)};
-    };
-    arenaWeaponBonus=window.arenaWeaponBonus;
-  }
-
-  const currentRender=window.shopRender||shopRender;
-  if(typeof currentRender==='function'&&!window.__arenaKnightRenderWrapped){
-    const baseRender=currentRender;
-    window.__arenaKnightRenderWrapped=true;
-    window.shopRender=function(){
-      ensureLoadout();
-      baseRender();
-      const box=document.getElementById('shopItems');
-      if(!box)return;
-      box.querySelectorAll('.shop-item').forEach(card=>{
-        const name=card.querySelector('.shop-info strong')?.textContent||'';
-        const item=typeof SHOP_ITEMS!=='undefined'?SHOP_ITEMS.find(x=>x.name===name):null;
-        if(!item||item.category!=='weapons'||!isKnight())return;
-        const old=card.querySelector('.shop-info small');
-        if(old)old.textContent=`Level ${item.minLevel}+ · ${item.price.toLocaleString('pt-BR')} gold · ${item.hands===2?'2 mãos':'1 mão'}`;
-      });
-    };
-    shopRender=window.shopRender;
-  }
+  if(typeof shopRender==='function')shopRender();
 })();
