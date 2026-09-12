@@ -48,7 +48,8 @@
 (()=>{
   const files=[
     'arena-campaign-timer-fix.js?v=timer-fix-20260912c',
-    'arena-bestiary-fix.js?v=bestiary-fix-20260912c'
+    'arena-bestiary-fix.js?v=bestiary-fix-20260912c',
+    'arena-combat-final-fix.js?v=combat-fix-20260912'
   ];
   const load=()=>files.forEach(src=>{
     if(document.querySelector(`script[data-arena-feature="${src}"]`))return;
