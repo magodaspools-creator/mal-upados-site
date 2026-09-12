@@ -1,13 +1,14 @@
 // Waves pixel-art renderer for the website.
 // Enemy art: CC0 monster assets from LiquidGalaxyLAB/lg-rpg (LuizMelo).
+// Rat: Animated Rat and Bat by Calciumtrice, CC-BY 3.0.
 (()=>{
  const ROOT='arena-godot/assets-importados/';
  const HERO_ROOT={knight:'knight-hero-128/knight-hero-128',mage:'mage-hero-128/mage-hero-128',archer:'archer-hero-128/archer-hero-128',rogue:'rogue-hero-128/rogue-hero-128'};
- const MONSTER_ROOT=ROOT+'monsters-lg-rpg/';
  const RAW='https://raw.githubusercontent.com/LiquidGalaxyLAB/lg-rpg/main/lg_rpg_server/public/assets/enemies/';
- const RAT_RAW='https://raw.githubusercontent.com/AntumDeluge/game-resources/master/sprite/animal/rodent/PNG/64x64_scale/rat.png';
+ const RAT_RAW='https://opengameart.org/sites/default/files/rat%20and%20bat%20spritesheet%20calciumtrice.png';
  const MONSTERS={
-  rat:{src:RAT_RAW,frames:1,w:64,h:64,rate:1,size:96},
+  // 320x320 sheet = 10 columns x 8 rows at 32x32. First 4 rows are the Rat animations.
+  rat:{src:RAT_RAW,frames:10,w:32,h:32,rate:8,size:96,row:0},
   goblin:{src:RAW+'goblin/idle.png',frames:4,w:150,h:150,rate:6,size:96},
   skeleton:{src:RAW+'skeleton/idle.png',frames:4,w:150,h:150,rate:6,size:96},
   slime:{src:RAW+'slime/idle.png',frames:14,w:156,h:156,rate:8,size:96},
@@ -31,7 +32,7 @@
    #arenaGameMode .arena-fighter-meta{display:inline-block;padding:2px 7px;background:rgba(6,8,11,.68);text-shadow:0 2px 3px #000}
    #arenaGameMode .arena-hp{max-width:180px;margin:7px auto 0;border:1px solid rgba(0,0,0,.7)}
    #arenaGameMode .arena-hp-text{display:inline-block;padding:2px 6px;background:rgba(6,8,11,.72);text-shadow:0 2px 3px #000}
-   #arenaGameMode .waves-attack{animation:wavesAttack .28s ease-out}.arena-game .waves-damage{animation:wavesDamage .22s ease-out}
+   .waves-attack{animation:wavesAttack .28s ease-out}.arena-game .waves-damage{animation:wavesDamage .22s ease-out}
    @keyframes wavesAttack{0%{transform:translateX(0) scale(1)}35%{transform:translateX(10px) scale(1.04)}65%{transform:translateX(6px) scale(1.02)}100%{transform:translateX(0) scale(1)}}
    @keyframes wavesDamage{0%{transform:translateX(0)}25%{transform:translateX(-6px) scale(1.02);filter:drop-shadow(0 0 10px rgba(255,65,55,.95))}50%{transform:translateX(6px);filter:drop-shadow(0 0 8px rgba(255,65,55,.75))}100%{transform:translateX(0);filter:drop-shadow(0 7px 7px rgba(0,0,0,.68))}}
    @media(max-width:650px){#arenaGameMode .arena-game-battle{min-height:330px}#arenaGameMode .arena-fighter{width:145px}#arenaGameMode .arena-fighter:first-child{left:1%}#arenaGameMode .arena-fighter.enemy{right:1%}#arenaGameMode .arena-fighter-icon{width:72px;height:72px;font-size:2.7rem} }
@@ -39,13 +40,13 @@
  }
  function playerVocation(){const n=String(document.getElementById('arenaPlayerName')?.textContent||'').toLowerCase();if(n.includes('mage')||n.includes('mago'))return'mage';if(n.includes('archer')||n.includes('paladin')||n.includes('paladino'))return'archer';if(n.includes('rogue')||n.includes('monk')||n.includes('monge'))return'rogue';return'knight'}
  function heroIdle(v,n){return ROOT+HERO_ROOT[v]+'/idle_south/'+String(n).padStart(2,'0')+'.png'}
- function paint(el,src,size){if(!el)return;el.style.backgroundImage=src?`url("${src}")`:'';el.style.backgroundSize=size+'px '+size+'px';el.style.backgroundPosition='center'}
+ function paint(el,src,size){if(!el)return;el.style.backgroundImage=src?`url(\"${src}\")`:'';el.style.backgroundSize=size+'px '+size+'px';el.style.backgroundPosition='center'}
  function paintSheet(el,m,frame){
   if(!el||!m)return;
   const targetH=m.size,targetW=targetH*(m.w/m.h);
-  el.style.backgroundImage=`url("${m.src}")`;
-  el.style.backgroundSize=`${targetW*m.frames}px ${targetH}px`;
-  el.style.backgroundPosition=`${-(frame*targetW)}px center`;
+  el.style.backgroundImage=`url(\"${m.src}\")`;
+  el.style.backgroundSize=`${targetW*m.frames}px ${targetH*(m.rows||1)}px`;
+  el.style.backgroundPosition=`${-(frame*targetW)}px ${-((m.row||0)*targetH)}px`;
   el.style.backgroundRepeat='no-repeat';
  }
  function playerEl(){return document.querySelector('#arenaPlayerName')?.closest('.arena-fighter')?.querySelector('.arena-fighter-icon')}
