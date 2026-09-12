@@ -59,4 +59,10 @@
     if(document.getElementById('arena-demon-final-style'))return;
     const s=document.createElement('style');s.id='arena-demon-final-style';s.textContent=`#demonCampaignPopup{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;padding:20px}.demon-popup-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(5px)}.demon-popup{position:relative;width:min(520px,100%);padding:30px 26px 24px;text-align:center;border:1px solid #6b2020;background:radial-gradient(circle at 50% 0,#321617 0,#171315 45%,#0c0d0f 100%);box-shadow:0 24px 80px rgba(0,0,0,.65),inset 0 0 50px rgba(130,20,20,.08);animation:demonPopupIn .22s ease-out}.demon-popup-art{width:86px;height:86px;margin:0 auto 12px;display:grid;place-items:center;font-size:54px;border:1px solid #713030;background:#120d0e;box-shadow:0 0 30px rgba(180,30,30,.22)}.demon-popup h2{margin:5px 0 10px;color:#eee;font-family:Cinzel,serif;font-size:1.65rem;letter-spacing:.04em}.demon-popup p{margin:0 auto 16px;max-width:410px;color:#aeb2b9;font-size:.78rem;line-height:1.6}.demon-popup-divider{height:1px;background:linear-gradient(90deg,transparent,#623030,transparent);margin:16px 0}.demon-popup-next{padding:13px 12px;margin-bottom:18px;border:1px solid #443b2a;background:#12110e}.demon-popup-next span{display:block;color:#777d86;font-size:.58rem;letter-spacing:.13em}.demon-popup-next strong{display:block;margin:5px 0;color:#e2d2a4;font-family:Cinzel,serif;font-size:1.08rem}.demon-popup-next small{color:#8f949b;font-size:.67rem}.demon-popup-skip{display:block;margin:10px auto 0;border:0;background:none;color:#737981;font-size:.65rem;cursor:pointer}.demon-popup-skip:hover{color:#bbb}@keyframes demonPopupIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}`;document.head.appendChild(s)}
   style();
+
+  // O timer entra por último para conseguir observar a vitória do Boss Final.
+  const timerSrc='arena-campaign-timer.js?v=campaign-timer-20260912';
+  if(!document.querySelector(`script[src^="arena-campaign-timer.js"]`)){
+    const s=document.createElement('script');s.src=timerSrc;document.body.appendChild(s);
+  }
 })();
