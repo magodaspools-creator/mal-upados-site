@@ -1,4 +1,4 @@
-// Trinkets da Arena — versão limpa, sem sistema de D6.
+// Trinkets da Arena — sistema único de Trinkets + upgrades.
 (()=>{
   const TRINKETS=[
     {id:'trinket-loot-1',name:'Lucky Charm',icon:'✦',category:'trinkets',type:'loot',level:1,price:1200,minLevel:5,loot:10,bonus:'+10% loot'},
@@ -14,7 +14,8 @@
   const TYPES=['loot','crit','lifesteal'];
 
   if(typeof SHOP_CATEGORIES!=='undefined'&&!SHOP_CATEGORIES.some(x=>x.id==='trinkets'))SHOP_CATEGORIES.push({id:'trinkets',label:'Trinkets'});
-  if(typeof SHOP_ITEMS!=='undefined')TRINKETS.forEach(item=>{if(!SHOP_ITEMS.some(x=>x.id===item.id))SHOP_ITEMS.push(item)});
+  // A loja mostra somente o card-base. Os níveis 2/3 aparecem exclusivamente como Upgrade.
+  if(typeof SHOP_ITEMS!=='undefined')TRINKETS.filter(item=>item.level===1).forEach(item=>{if(!SHOP_ITEMS.some(x=>x.id===item.id))SHOP_ITEMS.push(item)});
 
   const find=(type,level)=>TRINKETS.find(x=>x.type===type&&x.level===level)||null;
   const highestOwned=type=>typeof game==='undefined'||!game?null:TRINKETS.filter(x=>x.type===type&&game.shopOwned?.includes(x.id)).sort((a,b)=>b.level-a.level)[0]||null;
@@ -123,8 +124,7 @@
       const b=bonuses();
       const critical=b.crit>0&&Math.random()*100<b.crit;
       if(critical&&typeof window.__arenaRollCrit3D==='function'){
-        window.__arenaRollCrit3D(battle.attack,b,originalAttack);
-        return;
+        window.__arenaRollCrit3D(battle.attack,b,originalAttack);return;
       }
       const beforeHp=battle.hp;originalAttack();
       const dealt=Math.max(0,beforeHp-(battle?.hp??0));
