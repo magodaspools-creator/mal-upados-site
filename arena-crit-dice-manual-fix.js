@@ -3,7 +3,7 @@
   if(window.__arenaManualCritInstalled)return;
   window.__arenaManualCritInstalled=true;
 
-  const FACES={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8] ,6:[0,2,3,5,6,8]};
+  const FACES={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
   const face=(n)=>`<div class="arena-manual-d6-face"><div class="d6-side d6-front">${new Array(9).fill('').map((_,i)=>`<i class="${FACES[n].includes(i)?'':'empty'}"></i>`).join('')}</div></div>`;
 
   function style(){
@@ -46,7 +46,7 @@
     const area=document.getElementById('battleArea');if(!area){window.__arenaCritRolling=false;return;}
     area.querySelector('.arena-manual-crit-overlay')?.remove();
     const el=document.createElement('div');el.className='arena-manual-crit-overlay';
-    el.innerHTML=`<div class="arena-manual-crit-modal"><div class="arena-manual-crit-title">CRÍTICO!</div><div class="arena-manual-crit-sub">Sua Critical Eye ativou!<br>Você decide quando rolar o D6.</div><div class="arena-manual-table"><div class="arena-manual-surface></div><div class="arena-manual-hand"><div class="palm"></div><div class="finger f1"></div><div class="finger f2"></div><div class="finger f3"></div><div class="finger f4"></div><div class="thumb"></div></div><div class="arena-manual-d6-wrap">${face(1)}</div><div class="arena-manual-result">?</div></div><div class="arena-manual-mult">Quanto maior o número, maior o dano.</div><button type="button" class="arena-manual-roll-btn">🎲 ROLAR O D6</button></div>`;
+    el.innerHTML=`<div class="arena-manual-crit-modal"><div class="arena-manual-crit-title">CRÍTICO!</div><div class="arena-manual-crit-sub">Sua Critical Eye ativou!<br>Você decide quando rolar o D6.</div><div class="arena-manual-table"><div class="arena-manual-surface"></div><div class="arena-manual-hand"><div class="palm"></div><div class="finger f1"></div><div class="finger f2"></div><div class="finger f3"></div><div class="finger f4"></div><div class="thumb"></div></div><div class="arena-manual-d6-wrap">${face(1)}</div><div class="arena-manual-result">?</div></div><div class="arena-manual-mult">Quanto maior o número, maior o dano.</div><button type="button" class="arena-manual-roll-btn">🎲 ROLAR O D6</button></div>`;
     area.appendChild(el);
     const btn=el.querySelector('.arena-manual-roll-btn');const wrap=el.querySelector('.arena-manual-d6-wrap');const result=el.querySelector('.arena-manual-result');const mult=el.querySelector('.arena-manual-mult);
     btn.addEventListener('click',()=>{
@@ -84,8 +84,8 @@
     };
     window.__arenaManualCritAttackWrapped=true;
 
-    // IMPORTANTE: renderBattle captura `attack` no onclick no momento em que cria o botão.
-    // Como este arquivo é carregado depois, precisamos religar o botão atual e todos os futuros.
+    // renderBattle captura `attack` no onclick quando cria o botão.
+    // Este wrapper garante que o botão use o ataque manual depois que o combate é renderizado.
     const previousRender=typeof window.renderBattle==='function'?window.renderBattle:null;
     if(previousRender&&!window.__arenaManualCritRenderWrapped){
       window.renderBattle=function(){
