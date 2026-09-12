@@ -16,14 +16,16 @@ var weapon_level := 1
 var weapon_damage := 18
 var potion_count := 2
 var last_loot := "Nenhum"
+var _player_origin := Vector2.ZERO
 
 @onready var status: Label = $HUD/Status
 @onready var stats: Label = $HUD/Stats
 @onready var loot: Label = $HUD/Loot
 @onready var enemy: Node2D = $Enemy
+@onready var player: CharacterBody2D = $Player
 
 func _ready() -> void:
-    # Deixa a criatura de demonstração visível assim que o jogo abre.
+    _player_origin = player.position
     enemy.setup("Criatura de Treino")
     _refresh_ui("Arena pronta — ESPAÇO inicia o combate")
 
@@ -42,6 +44,8 @@ func start_wave(next_wave: int = wave) -> void:
     in_combat = true
     enemy.position = Vector2(640, 245)
     enemy.setup(enemy_name)
+    if enemy.has_method("show_spawn"):
+        enemy.show_spawn()
     _refresh_ui("Onda %d/%d — %s — pressione ESPAÇO para atacar" % [wave, MAX_WAVE, enemy_name])
 
 func attack() -> void:
@@ -51,10 +55,16 @@ func attack() -> void:
 
     var damage := weapon_damage + (wave / 2) + randi_range(0, 10)
     enemy_hp = max(0, enemy_hp - damage)
+    _animate_attack(damage)
 
     if enemy_hp == 0:
+        if enemy.has_method("die"):
+            enemy.die()
         _win_wave()
         return
+
+    if enemy.has_method("hit_flash"):
+        enemy.hit_flash()
 
     var incoming := max(1, 4 + wave + randi_range(0, 4))
     player_hp = max(0, player_hp - incoming)
@@ -65,6 +75,32 @@ func attack() -> void:
         return
 
     _refresh_ui("Você causou %d de dano — %s: %d/%d HP" % [damage, enemy_name, enemy_hp, enemy_max_hp])
+
+func _animate_attack(damage: int) -> void:
+    var origin := _player_origin
+    var direction := (enemy.position - player.position).normalized()
+    if direction.length() < 0.1:
+        direction = Vector2.UP
+
+    var tween := create_tween()
+    tween.tween_property(player, "position", origin + direction * 26.0, 0.07).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+    tween.tween_property(player, "position", origin, 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+    _show_damage_number(damage)
+
+func _show_damage_number(damage: int) -> void:
+    var label := Label.new()
+    label.text = "-%d" % damage
+    label.position = enemy.position + Vector2(-22, -55)
+    label.add_theme_font_size_override("font_size", 22)
+    label.modulate = Color(1.0, 0.86, 0.28, 1.0)
+    add_child(label)
+
+    var tween := create_tween()
+    tween.set_parallel(true)
+    tween.tween_property(label, "position", label.position + Vector2(0, -38), 0.45)
+    tween.tween_property(label, "modulate", Color(1, 0.86, 0.28, 0), 0.45)
+    tween.set_parallel(false)
+    tween.tween_callback(label.queue_free)
 
 func _win_wave() -> void:
     var reward := 25 + (wave * 8)
