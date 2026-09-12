@@ -1,134 +1,19 @@
-// D6 3D da Arena — dado realmente tridimensional em CSS 3D.
+// D6 da Arena — versão WebGL: cubo 3D real, com profundidade e iluminação.
 (()=>{
   if(window.__arenaCrit3DInstalled)return;
   window.__arenaCrit3DInstalled=true;
-
-  const FACES={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
-
-  const dots=n=>`<div class="arena3d-dots">${Array.from({length:9},(_,i)=>`<i class="${FACES[n].includes(i)?'on':''}"></i>`).join('')}</div>`;
-  const cube=n=>`
-    <div class="arena3d-cube">
-      <div class="arena3d-face front">${dots(n)}</div>
-      <div class="arena3d-face back">${dots(n)}</div>
-      <div class="arena3d-face right">${dots(n)}</div>
-      <div class="arena3d-face left">${dots(n)}</div>
-      <div class="arena3d-face top">${dots(n)}</div>
-      <div class="arena3d-face bottom">${dots(n)}</div>
-    </div>`;
-
-  function installStyle(){
-    if(document.getElementById('arena-3d-dice-style'))return;
-    const s=document.createElement('style');s.id='arena-3d-dice-style';
-    s.textContent=`
-      #battleArea{position:relative}
-      .arena3d-overlay{position:absolute;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 35%,rgba(105,72,25,.18),rgba(5,3,8,.9) 72%);backdrop-filter:blur(3px);overflow:hidden}
-      .arena3d-modal{width:min(410px,92%);padding:20px 20px 22px;border:1px solid rgba(235,197,103,.7);border-radius:17px;background:linear-gradient(150deg,#241b20,#100c12 62%,#07060a);box-shadow:0 24px 80px rgba(0,0,0,.85),0 0 45px rgba(222,179,72,.12);text-align:center;color:#f7e9c8;font-family:Cinzel,serif}
-      .arena3d-title{font-size:1.75rem;font-weight:900;letter-spacing:2px;color:#f04b45;text-shadow:0 3px 0 #5e0e0b,0 0 18px rgba(255,62,52,.38)}
-      .arena3d-sub{margin:5px auto 0;max-width:310px;font:700 .72rem/1.45 Arial,sans-serif;color:#d7ccba}
-      .arena3d-stage{position:relative;height:225px;margin:2px 0 0;perspective:700px;perspective-origin:50% 43%;transform-style:preserve-3d;overflow:visible}
-      .arena3d-table{position:absolute;left:7%;right:7%;bottom:20px;height:84px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(218,181,91,.25),rgba(76,54,29,.18) 44%,rgba(8,7,10,0) 72%);border-bottom:2px solid rgba(226,193,105,.28);box-shadow:0 17px 32px rgba(0,0,0,.72);transform:rotateX(64deg);transform-origin:center;z-index:1}
-      .arena3d-shadow{position:absolute;left:50%;bottom:38px;width:102px;height:28px;border-radius:50%;background:rgba(0,0,0,.65);filter:blur(8px);transform:translateX(-50%) rotateX(66deg);z-index:2}
-      .arena3d-hand{position:absolute;left:50%;bottom:70px;width:122px;height:100px;z-index:5;transform:translateX(-50%) rotate(-8deg);filter:drop-shadow(0 10px 9px rgba(0,0,0,.52));transform-origin:50% 100%}
-      .arena3d-hand .palm{position:absolute;left:28px;bottom:0;width:72px;height:54px;border:2px solid #663b2d;border-radius:36px 32px 24px 25px;background:linear-gradient(145deg,#e6b487,#925541);transform:rotate(-7deg)}
-      .arena3d-hand .finger{position:absolute;bottom:30px;width:22px;border:2px solid #663b2d;border-radius:15px 15px 7px 7px;background:linear-gradient(145deg,#e8b78b,#965744);transform-origin:bottom center}
-      .arena3d-hand .f1{left:19px;height:49px;transform:rotate(-24deg)}.arena3d-hand .f2{left:38px;height:62px;transform:rotate(-9deg)}.arena3d-hand .f3{left:58px;height:60px;transform:rotate(5deg)}.arena3d-hand .f4{left:78px;height:50px;transform:rotate(18deg)}
-      .arena3d-hand .thumb{position:absolute;left:11px;bottom:12px;width:37px;height:24px;border:2px solid #663b2d;border-radius:18px;background:linear-gradient(145deg,#e4b082,#925541);transform:rotate(-30deg)}
-
-      /* O dado é um cubo de 6 faces reais: cada face ocupa uma posição no espaço 3D. */
-      .arena3d-die{position:absolute;left:50%;bottom:75px;width:86px;height:86px;z-index:7;transform-style:preserve-3d;transform:translateX(-50%) rotateX(25deg) rotateY(-32deg) rotateZ(-8deg);}
-      .arena3d-cube{position:absolute;inset:0;width:86px;height:86px;transform-style:preserve-3d;}
-      .arena3d-face{position:absolute;inset:0;width:86px;height:86px;box-sizing:border-box;border:3px solid #f0d991;border-radius:14px;background:linear-gradient(145deg,#fff9df 0%,#e7d18f 53%,#a57e39 100%);box-shadow:inset 0 2px 1px rgba(255,255,255,.95),inset -7px -8px 13px rgba(82,55,13,.2);backface-visibility:hidden;}
-      .arena3d-face.front{transform:translateZ(43px)}
-      .arena3d-face.back{transform:rotateY(180deg) translateZ(43px)}
-      .arena3d-face.right{transform:rotateY(90deg) translateZ(43px)}
-      .arena3d-face.left{transform:rotateY(-90deg) translateZ(43px)}
-      .arena3d-face.top{transform:rotateX(90deg) translateZ(43px)}
-      .arena3d-face.bottom{transform:rotateX(-90deg) translateZ(43px)}
-      .arena3d-dots{position:absolute;inset:11px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:3px;transform:translateZ(1px)}
-      .arena3d-dots i{width:12px;height:12px;align-self:center;justify-self:center;border-radius:50%;background:transparent}
-      .arena3d-dots i.on{background:#201a20;box-shadow:inset 0 1px 1px rgba(255,255,255,.2),0 2px 2px rgba(0,0,0,.4)}
-      .arena3d-cube:after{content:"";position:absolute;inset:-2px;border-radius:16px;box-shadow:0 0 16px rgba(242,205,113,.18);transform:translateZ(0)}
-
-      .arena3d-result{position:absolute;left:0;right:0;bottom:13px;z-index:20;font:900 3.2rem/1 Arial,sans-serif;color:#fff;text-shadow:0 3px 18px rgba(255,255,255,.32);opacity:0;transform:scale(.55)}
-      .arena3d-mult{min-height:23px;margin-top:0;font:900 .86rem Arial,sans-serif;color:#e6c66f;letter-spacing:.3px}
-      .arena3d-roll{width:100%;margin-top:14px;padding:14px 18px;border:2px solid #e2bd62;border-radius:10px;background:linear-gradient(180deg,#725426,#382714);color:#ffeca9;font:900 .98rem Arial,sans-serif;letter-spacing:1px;cursor:pointer;box-shadow:0 7px 18px rgba(0,0,0,.48);transition:transform .12s,filter .12s}.arena3d-roll:hover{filter:brightness(1.15);transform:translateY(-1px)}.arena3d-roll:disabled{opacity:.65;cursor:default;transform:none}
-
-      .arena3d-overlay.rolling .arena3d-hand{animation:arena3dHand .82s cubic-bezier(.2,.7,.2,1) 1}
-      .arena3d-overlay.rolling .arena3d-die{animation:arena3dThrow 1.58s cubic-bezier(.12,.7,.16,1) forwards}
-      .arena3d-overlay.rolling .arena3d-shadow{animation:arena3dShadow 1.58s ease-out forwards}
-      .arena3d-overlay.rolling .arena3d-cube{animation:arena3dCubeRoll 1.58s cubic-bezier(.1,.62,.18,1) forwards}
-      .arena3d-overlay.resolved .arena3d-die{animation:arena3dLand .28s ease-out forwards}
-      .arena3d-overlay.resolved .arena3d-result{opacity:1;animation:arena3dResult .45s cubic-bezier(.2,.8,.2,1) forwards}
-
-      @keyframes arena3dHand{0%{transform:translateX(-50%) rotate(-8deg)}22%{transform:translateX(-50%) translateY(-13px) rotate(-20deg)}48%{transform:translateX(-50%) translateY(6px) rotate(14deg)}72%{transform:translateX(-50%) translateY(-8px) rotate(-15deg)}100%{transform:translateX(-50%) rotate(-8deg)}}
-      @keyframes arena3dThrow{0%{bottom:77px;transform:translateX(-50%) rotateX(25deg) rotateY(-32deg) rotateZ(-8deg) scale(.76)}18%{bottom:142px;transform:translateX(-50%) rotateX(25deg) rotateY(-32deg) rotateZ(-8deg) scale(.84)}44%{bottom:124px;transform:translateX(-50%) rotateX(25deg) rotateY(-32deg) rotateZ(-8deg) scale(1)}70%{bottom:70px;transform:translateX(-50%) rotateX(25deg) rotateY(-32deg) rotateZ(-8deg) scale(1.04)}86%{bottom:79px;transform:translateX(-50%) rotateX(25deg) rotateY(-32deg) rotateZ(-8deg) scale(1)}100%{bottom:73px;transform:translateX(-50%) rotateX(25deg) rotateY(-32deg) rotateZ(-8deg) scale(1)}}
-      @keyframes arena3dCubeRoll{0%{transform:rotateX(0) rotateY(0) rotateZ(0)}18%{transform:rotateX(115deg) rotateY(145deg) rotateZ(65deg)}42%{transform:rotateX(290deg) rotateY(355deg) rotateZ(175deg)}67%{transform:rotateX(510deg) rotateY(590deg) rotateZ(310deg)}84%{transform:rotateX(650deg) rotateY(755deg) rotateZ(420deg)}100%{transform:rotateX(735deg) rotateY(840deg) rotateZ(500deg)}}
-      @keyframes arena3dShadow{0%{transform:translateX(-50%) rotateX(66deg) scale(.42);opacity:.18}42%{transform:translateX(-50%) rotateX(66deg) scale(.72);opacity:.38}70%{transform:translateX(-50%) rotateX(66deg) scale(1.24);opacity:.8}100%{transform:translateX(-50%) rotateX(66deg) scale(1);opacity:.64}}
-      @keyframes arena3dLand{from{transform:translateX(-50%) rotateX(25deg) rotateY(-32deg) rotateZ(-8deg) scale(1)}to{transform:translateX(-50%) rotateX(25deg) rotateY(-32deg) rotateZ(-8deg) scale(1.05)}}
-      @keyframes arena3dResult{from{opacity:0;transform:scale(.45) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
-      @media(max-width:620px){.arena3d-modal{width:min(335px,91%);padding:18px 16px 20px}.arena3d-stage{height:195px;perspective:620px}.arena3d-die,.arena3d-cube,.arena3d-face{width:78px;height:78px}.arena3d-face.front{transform:translateZ(39px)}.arena3d-face.back{transform:rotateY(180deg) translateZ(39px)}.arena3d-face.right{transform:rotateY(90deg) translateZ(39px)}.arena3d-face.left{transform:rotateY(-90deg) translateZ(39px)}.arena3d-face.top{transform:rotateX(90deg) translateZ(39px)}.arena3d-face.bottom{transform:rotateX(-90deg) translateZ(39px)}.arena3d-die{bottom:72px;transform:translateX(-50%) rotateX(25deg) rotateY(-32deg) rotateZ(-8deg) scale(.9)}.arena3d-hand{transform:translateX(-50%) scale(.9) rotate(-8deg)}}
-    `;
-    document.head.appendChild(s);
-  }
-
-  function open(baseAttack,bonus,innerAttack){
-    const area=document.getElementById('battleArea');
-    if(!area){window.__arenaCritRolling=false;return}
-    area.querySelector('.arena3d-overlay')?.remove();
-
-    const el=document.createElement('div');
-    el.className='arena3d-overlay';
-    el.innerHTML=`<div class="arena3d-modal"><div class="arena3d-title">CRÍTICO!</div><div class="arena3d-sub">Sua Critical Eye ativou.<br>Jogue o D6 manualmente para definir o multiplicador do dano.</div><div class="arena3d-stage"><div class="arena3d-table"></div><div class="arena3d-shadow"></div><div class="arena3d-hand"><div class="palm"></div><div class="finger f1"></div><div class="finger f2"></div><div class="finger f3"></div><div class="finger f4"></div><div class="thumb"></div></div><div class="arena3d-die">${cube(1)}</div><div class="arena3d-result">?</div></div><div class="arena3d-mult">D6 maior = dano maior</div><button type="button" class="arena3d-roll">🎲 ROLAR O D6</button></div>`;
-    area.appendChild(el);
-
-    const btn=el.querySelector('.arena3d-roll');
-    const die=el.querySelector('.arena3d-die');
-    const result=el.querySelector('.arena3d-result');
-    const mult=el.querySelector('.arena3d-mult');
-
-    btn.addEventListener('click',()=>{
-      if(btn.disabled)return;
-      btn.disabled=true;
-      btn.textContent='🎲 ROLANDO...';
-      el.classList.add('rolling');
-
-      const roll=1+Math.floor(Math.random()*6);
-      const multiplier=1+(roll*.25);
-
-      setTimeout(()=>{die.innerHTML=cube(roll)},1580);
-      setTimeout(()=>{
-        result.textContent=roll;
-        mult.textContent=`DANO CRÍTICO: x${multiplier.toFixed(2)}`;
-        el.classList.remove('rolling');
-        el.classList.add('resolved');
-
-        setTimeout(()=>{
-          el.remove();
-          if(!battle){window.__arenaCritRolling=false;return}
-
-          const oldAttack=battle.attack;
-          battle.attack=Math.floor(baseAttack*multiplier);
-          const oldRandom=Math.random;
-          let first=true;
-          Math.random=()=>{if(first){first=false;return .999999}return oldRandom()};
-          try{innerAttack()}
-          finally{
-            Math.random=oldRandom;
-            battle.attack=oldAttack;
-            window.__arenaCritRolling=false;
-          }
-          battleLog(`<span class="loot">CRÍTICO! D6 = ${roll} · x${multiplier.toFixed(2)} dano</span>`);
-        },700);
-      },1830);
-    });
-  }
-
-  window.__arenaRollCrit3D=function(baseAttack,bonus,innerAttack){
-    if(window.__arenaCritRolling)return;
-    window.__arenaCritRolling=true;
-    installStyle();
-    open(baseAttack,bonus,innerAttack);
-  };
-
-  installStyle();
+  const FACE_DOTS={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
+  function installStyle(){if(document.getElementById('arena-webgl-dice-style'))return;const s=document.createElement('style');s.id='arena-webgl-dice-style';s.textContent=`#battleArea{position:relative}.arena3d-overlay{position:absolute;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 35%,rgba(100,69,27,.2),rgba(4,3,7,.9) 76%);backdrop-filter:blur(3px);overflow:hidden}.arena3d-modal{width:min(410px,93%);padding:18px 20px 20px;border:1px solid rgba(235,197,103,.7);border-radius:16px;background:linear-gradient(150deg,#211923,#100c13 62%,#07060a);box-shadow:0 24px 75px rgba(0,0,0,.82),0 0 42px rgba(222,179,72,.12);text-align:center;color:#f7e9c8;font-family:Cinzel,serif}.arena3d-title{font-size:1.7rem;font-weight:900;letter-spacing:2px;color:#f04b45;text-shadow:0 3px 0 #5e0e0b,0 0 18px rgba(255,62,52,.38)}.arena3d-sub{margin:4px auto 0;max-width:320px;font:700 .7rem/1.4 Arial,sans-serif;color:#d7ccba}.arena3d-stage{position:relative;height:225px;margin:4px 0 0;overflow:hidden}.arena3d-canvas{position:absolute;left:50%;top:5px;width:350px;height:205px;transform:translateX(-50%);display:block;filter:drop-shadow(0 18px 13px rgba(0,0,0,.35))}.arena3d-table{position:absolute;left:10%;right:10%;bottom:22px;height:70px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(224,185,91,.24),rgba(75,52,27,.18) 45%,rgba(8,7,10,0) 72%);border-bottom:2px solid rgba(226,193,105,.3);box-shadow:0 16px 30px rgba(0,0,0,.7);transform:rotateX(61deg)}.arena3d-hand{position:absolute;left:50%;bottom:59px;width:116px;height:91px;z-index:5;transform:translateX(-50%) rotate(-8deg);filter:drop-shadow(0 9px 8px rgba(0,0,0,.5));transform-origin:50% 100%;pointer-events:none}.arena3d-hand .palm{position:absolute;left:28px;bottom:0;width:69px;height:50px;border:2px solid #6b3e2e;border-radius:36px 32px 24px 25px;background:linear-gradient(145deg,#e0ad7e,#9a5b43);transform:rotate(-7deg)}.arena3d-hand .finger{position:absolute;bottom:29px;width:21px;border:2px solid #6b3e2e;border-radius:15px 15px 7px 7px;background:linear-gradient(145deg,#e5b382,#9d6047);transform-origin:bottom center}.arena3d-hand .f1{left:19px;height:47px;transform:rotate(-24deg)}.arena3d-hand .f2{left:37px;height:60px;transform:rotate(-9deg)}.arena3d-hand .f3{left:56px;height:58px;transform:rotate(5deg)}.arena3d-hand .f4{left:75px;height:48px;transform:rotate(18deg)}.arena3d-hand .thumb{position:absolute;left:11px;bottom:12px;width:35px;height:22px;border:2px solid #6b3e2e;border-radius:18px;background:linear-gradient(145deg,#e0aa7a,#9a5b43);transform:rotate(-30deg)}.arena3d-result{position:absolute;left:0;right:0;bottom:10px;z-index:20;font:900 3rem/1 Arial,sans-serif;color:#fff;text-shadow:0 3px 18px rgba(255,255,255,.35);opacity:0;transform:scale(.65)}.arena3d-mult{min-height:22px;margin-top:-1px;font:900 .84rem Arial,sans-serif;color:#e6c66f;letter-spacing:.3px}.arena3d-roll{width:100%;margin-top:12px;padding:13px 18px;border:2px solid #e2bd62;border-radius:10px;background:linear-gradient(180deg,#725426,#382714);color:#ffeca9;font:900 .96rem Arial,sans-serif;letter-spacing:1px;cursor:pointer;box-shadow:0 7px 18px rgba(0,0,0,.48);transition:transform .12s,filter .12s}.arena3d-roll:hover{filter:brightness(1.15);transform:translateY(-1px)}.arena3d-roll:disabled{opacity:.65;cursor:default;transform:none}.arena3d-overlay.rolling .arena3d-hand{animation:arena3dHand .7s ease-in-out 1}.arena3d-overlay.resolved .arena3d-result{opacity:1;animation:arena3dResult .45s cubic-bezier(.2,.8,.2,1) forwards}@keyframes arena3dHand{0%{transform:translateX(-50%) rotate(-8deg)}25%{transform:translateX(-50%) translateY(-12px) rotate(-19deg)}50%{transform:translateX(-50%) translateY(5px) rotate(13deg)}75%{transform:translateX(-50%) translateY(-7px) rotate(-14deg)}100%{transform:translateX(-50%) rotate(-8deg)}}@keyframes arena3dResult{from{opacity:0;transform:scale(.45) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}@media(max-width:620px){.arena3d-modal{width:min(340px,92%);padding:17px 15px 19px}.arena3d-stage{height:205px}.arena3d-canvas{width:315px;height:190px;top:3px}.arena3d-hand{transform:translateX(-50%) scale(.88) rotate(-8deg)}}`;document.head.appendChild(s)}
+  function faceTexture(n){const c=document.createElement('canvas');c.width=256;c.height=256;const x=c.getContext('2d');const g=x.createLinearGradient(0,0,256,256);g.addColorStop(0,'#fffbe8');g.addColorStop(.52,'#e7d18f');g.addColorStop(1,'#aa8847');x.fillStyle=g;x.fillRect(0,0,256,256);x.strokeStyle='#f5dc8e';x.lineWidth=8;x.strokeRect(5,5,246,246);x.fillStyle='#211a20';FACE_DOTS[n].forEach(i=>{const col=i%3,row=Math.floor(i/3);x.beginPath();x.arc(48+col*80,48+row*80,17,0,Math.PI*2);x.fill()});return c}
+  function shader(gl,type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(s));return s}
+  function initWebGL(canvas){const gl=canvas.getContext('webgl',{alpha:true,antialias:true});if(!gl)return null;const vs=shader(gl,gl.VERTEX_SHADER,`attribute vec3 aPos;attribute vec3 aNormal;attribute vec2 aUV;uniform mat4 uMVP;uniform mat4 uModel;varying vec3 vNormal;varying vec2 vUV;void main(){gl_Position=uMVP*vec4(aPos,1.0);vNormal=mat3(uModel)*aNormal;vUV=aUV;}`),fs=shader(gl,gl.FRAGMENT_SHADER,`precision mediump float;uniform sampler2D uTex;uniform vec3 uLight;varying vec3 vNormal;varying vec2 vUV;void main(){vec3 n=normalize(vNormal);float light=.38+max(dot(n,normalize(uLight)),0.0)*.72;vec4 tex=texture2D(uTex,vUV);gl_FragColor=vec4(tex.rgb*light,tex.a);}`),program=gl.createProgram();gl.attachShader(program,vs);gl.attachShader(program,fs);gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(program));gl.useProgram(program);const positions=[],normals=[],uvs=[];const faces=[{n:[0,0,1],v:[[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]]},{n:[0,0,-1],v:[[1,-1,-1],[-1,-1,-1],[-1,1,-1],[1,1,-1]]},{n:[1,0,0],v:[[1,-1,1],[1,-1,-1],[1,1,-1],[1,1,1]]},{n:[-1,0,0],v:[[-1,-1,-1],[-1,-1,1],[-1,1,1],[-1,1,-1]]},{n:[0,1,0],v:[[-1,1,1],[1,1,1],[1,1,-1],[-1,1,-1]]},{n:[0,-1,0],v:[[-1,-1,-1],[1,-1,-1],[1,-1,1],[-1,-1,1]]}];faces.forEach(f=>{const q=f.v;[[0,1,2],[0,2,3]].forEach(t=>t.forEach(i=>{positions.push(...q[i]);normals.push(...f.n);uvs.push(i===0?0:i===1?1:i===2?1:0,i===0||i===1?0:1)}))});const buf=(data)=>{const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.STATIC_DRAW);return b};const bp=buf(positions),bn=buf(normals),bu=buf(uvs),aPos=gl.getAttribLocation(program,'aPos'),aNormal=gl.getAttribLocation(program,'aNormal'),aUV=gl.getAttribLocation(program,'aUV');gl.bindBuffer(gl.ARRAY_BUFFER,bp);gl.enableVertexAttribArray(aPos);gl.vertexAttribPointer(aPos,3,gl.FLOAT,false,0,0);gl.bindBuffer(gl.ARRAY_BUFFER,bn);gl.enableVertexAttribArray(aNormal);gl.vertexAttribPointer(aNormal,3,gl.FLOAT,false,0,0);gl.bindBuffer(gl.ARRAY_BUFFER,bu);gl.enableVertexAttribArray(aUV);gl.vertexAttribPointer(aUV,2,gl.FLOAT,false,0,0);const textures=[1,2,3,4,5,6].map(n=>{const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,faceTexture(n));return t});return{gl,program,textures,uMVP:gl.getUniformLocation(program,'uMVP'),uModel:gl.getUniformLocation(program,'uModel'),uLight:gl.getUniformLocation(program,'uLight'),uTex:gl.getUniformLocation(program,'uTex')}}
+  function matMul(a,b){const o=new Float32Array(16);for(let r=0;r<4;r++)for(let c=0;c<4;c++)o[c+r*4]=a[r*4]*b[c]+a[r*4+1]*b[c+4]+a[r*4+2]*b[c+8]+a[r*4+3]*b[c+12];return o}
+  function perspective(fov,aspect,near,far){const f=1/Math.tan(fov/2),nf=1/(near-far);return new Float32Array([f/aspect,0,0,0,0,f,0,0,0,0,(far+near)*nf,-1,0,0,(2*far*near)*nf,0])}
+  function translate(z){return new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,z,1])}
+  function rotX(a){const c=Math.cos(a),s=Math.sin(a);return new Float32Array([1,0,0,0,0,c,s,0,0,-s,c,0,0,0,0,1])}
+  function rotY(a){const c=Math.cos(a),s=Math.sin(a);return new Float32Array([c,0,-s,0,0,1,0,0,s,0,c,0,0,0,0,1])}
+  function rotZ(a){const c=Math.cos(a),s=Math.sin(a);return new Float32Array([c,s,0,0,-s,c,0,0,0,0,1,0,0,0,0,1])}
+  function draw(state,rx,ry,rz,bounce){const{gl,program,textures,uMVP,uModel,uLight,uTex}=state;gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);gl.cullFace(gl.BACK);let model=matMul(rotZ(rz),matMul(rotY(ry),rotX(rx)));model=matMul(translate(-5.7+bounce),model);const mvp=matMul(perspective(Math.PI/4,gl.canvas.width/gl.canvas.height,.1,100),model);gl.uniformMatrix4fv(uModel,false,model);gl.uniformMatrix4fv(uMVP,false,mvp);gl.uniform3f(uLight,-.45,.75,1.1);for(let f=0;f<6;f++){gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,textures[f]);gl.uniform1i(uTex,0);gl.drawArrays(gl.TRIANGLES,f*6,6)}}
+  function open(baseAttack,bonus,innerAttack){const area=document.getElementById('battleArea');if(!area){window.__arenaCritRolling=false;return}area.querySelector('.arena3d-overlay')?.remove();const el=document.createElement('div');el.className='arena3d-overlay';el.innerHTML=`<div class="arena3d-modal"><div class="arena3d-title">CRÍTICO!</div><div class="arena3d-sub">Sua Critical Eye ativou.<br>Jogue o D6 real em 3D para definir o multiplicador do dano.</div><div class="arena3d-stage"><div class="arena3d-table"></div><canvas class="arena3d-canvas" width="700" height="410"></canvas><div class="arena3d-hand"><div class="palm"></div><div class="finger f1"></div><div class="finger f2"></div><div class="finger f3"></div><div class="finger f4"></div><div class="thumb"></div></div><div class="arena3d-result">?</div></div><div class="arena3d-mult">D6 maior = dano maior</div><button type="button" class="arena3d-roll">🎲 ROLAR O D6</button></div>`;area.appendChild(el);const canvas=el.querySelector('.arena3d-canvas');let state;try{state=initWebGL(canvas)}catch(e){console.error('Arena WebGL D6:',e);state=null}if(!state){window.__arenaCritRolling=false;el.remove();toast?.('Seu navegador não conseguiu iniciar o D6 3D.');return}const btn=el.querySelector('.arena3d-roll'),result=el.querySelector('.arena3d-result'),mult=el.querySelector('.arena3d-mult');let raf=0,start=performance.now(),rolling=false,finalRoll=1;function loop(now){const t=(now-start)/1000;if(!rolling){draw(state,.48,.72,-.12,0);return}const p=Math.min(t/1.55,1),ease=1-Math.pow(1-p,3);draw(state,.48+ease*8.8,.72+ease*12.5,-.12+ease*11.2,Math.sin(p*Math.PI)*1.9);if(p<1)raf=requestAnimationFrame(loop)}draw(state,.48,.72,-.12,0);btn.addEventListener('click',()=>{if(btn.disabled)return;btn.disabled=true;btn.textContent='🎲 ROLANDO...';rolling=true;start=performance.now();finalRoll=1+Math.floor(Math.random()*6);raf=requestAnimationFrame(loop);setTimeout(()=>{rolling=false;cancelAnimationFrame(raf);const multiplier=1+(finalRoll*.25);draw(state,.8,1.15,.1,0);result.textContent=finalRoll;mult.textContent=`DANO CRÍTICO: x${multiplier.toFixed(2)}`;el.classList.add('resolved');setTimeout(()=>{el.remove();if(!battle){window.__arenaCritRolling=false;return}const oldAttack=battle.attack;battle.attack=Math.floor(baseAttack*multiplier);const oldRandom=Math.random;let first=true;Math.random=()=>{if(first){first=false;return .999999}return oldRandom()};try{innerAttack()}finally{Math.random=oldRandom;battle.attack=oldAttack;window.__arenaCritRolling=false}battleLog(`<span class="loot">CRÍTICO! D6 = ${finalRoll} · x${multiplier.toFixed(2)} dano</span>`)},700)},1550)});}
+  window.__arenaRollCrit3D=function(baseAttack,bonus,innerAttack){if(window.__arenaCritRolling)return;window.__arenaCritRolling=true;installStyle();open(baseAttack,bonus,innerAttack)};installStyle();
 })();
