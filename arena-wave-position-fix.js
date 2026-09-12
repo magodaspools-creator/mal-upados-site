@@ -10,4 +10,13 @@
   const observer=new MutationObserver(moveWaves);
   observer.observe(document.body,{childList:true,subtree:true});
   setTimeout(()=>observer.disconnect(),10000);
+
+  function loadRatFix(){
+    if(document.getElementById('arena-rat-sprite-fix'))return;
+    const s=document.createElement('script');
+    s.id='arena-rat-sprite-fix';
+    s.src='arena-rat-sprite-fix.js?v=rat-grey-20260912';
+    document.body.appendChild(s);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',loadRatFix);else loadRatFix();
 })();
