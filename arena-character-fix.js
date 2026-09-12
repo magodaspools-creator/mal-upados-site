@@ -34,8 +34,6 @@
     btn.onclick=e=>{e.stopPropagation();const open=wrap.classList.toggle('open');btn.setAttribute('aria-expanded',String(open));};
     document.addEventListener('click',e=>{if(!wrap.contains(e.target)){wrap.classList.remove('open');btn.setAttribute('aria-expanded','false')}});
 
-    // arena.js carrega os membros da guilda de forma assíncrona.
-    // Tentamos novamente até a lista existir, evitando o picker ficar vazio.
     const timer=setInterval(()=>{
       if(draw())clearInterval(timer);
     },250);
@@ -45,13 +43,12 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 
-// Carregador isolado dos sistemas extras da Arena.
-// Espera o personagem/jogo existir antes de carregar Timer e Bestiário.
-// Isso evita que os módulos iniciem antes de arena.js terminar o loadGame().
+// Carrega os recursos extras depois que a interface já existe.
+// Eles são independentes da loja, armas, personagens e combate.
 (()=>{
   const files=[
-    'arena-campaign-timer.js?v=timer-20260912b',
-    'arena-bestiary.js?v=bestiary-20260912b'
+    'arena-campaign-timer-fix.js?v=timer-fix-20260912c',
+    'arena-bestiary-fix.js?v=bestiary-fix-20260912c'
   ];
   const load=()=>files.forEach(src=>{
     if(document.querySelector(`script[data-arena-feature="${src}"]`))return;
@@ -60,14 +57,6 @@
     s.dataset.arenaFeature=src;
     document.body.appendChild(s);
   });
-  const ready=()=>{
-    try{return !!window.game&&typeof window.game==='object'&&!!window.game.character}catch{return false}
-  };
-  if(ready())load();
-  else{
-    const wait=setInterval(()=>{
-      if(ready()){clearInterval(wait);load();}
-    },100);
-    setTimeout(()=>clearInterval(wait),20000);
-  }
+  if(document.body)load();
+  else document.addEventListener('DOMContentLoaded',load,{once:true});
 })();
