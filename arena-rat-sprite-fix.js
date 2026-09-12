@@ -11,6 +11,7 @@
     const s=document.createElement('style');
     s.id='arena-rat-sprite-style';
     s.textContent=`
+      #arenaGameMode .arena-fighter-icon.rat-sprite-override{background-image:none!important;}
       #arenaGameMode .arena-fighter-icon.rat-sprite-override::after{
         content:'';
         position:absolute;
