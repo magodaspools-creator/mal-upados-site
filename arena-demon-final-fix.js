@@ -65,4 +65,9 @@
   if(!document.querySelector(`script[src^="arena-campaign-timer.js"]`)){
     const s=document.createElement('script');s.src=timerSrc;document.body.appendChild(s);
   }
+  // Bestiário depois do timer, para observar a vitória final sem interferir no relógio.
+  const bestiarySrc='arena-bestiary.js?v=bestiary-20260912';
+  if(!document.querySelector(`script[src^="arena-bestiary.js"]`)){
+    const s=document.createElement('script');s.src=bestiarySrc;document.body.appendChild(s);
+  }
 })();
