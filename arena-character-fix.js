@@ -43,9 +43,9 @@
 (()=>{
   const files=[
     'arena-campaign-timer-fix.js?v=timer-fix-20260912c',
-    'arena-bestiary-fix.js?v=bestiary-fix-20260912e',
+    'arena-bestiary-fix.js?v=bestiary-infinite-20260912a',
     'arena-bestiary-intro.js?v=bestiary-intro-20260912b',
-    'arena-bestiary-counter-fix.js?v=bestiary-counter-20260912a',
+    'arena-bestiary-counter-fix.js?v=bestiary-counter-infinite-20260912a',
     'arena-bestiary-platinum-popup.js?v=platinum-popup-20260912a',
     'arena-combat-final-fix.js?v=combat-fix-20260912',
     'arena-flee-fix.js?v=flee-fix-20260912',
