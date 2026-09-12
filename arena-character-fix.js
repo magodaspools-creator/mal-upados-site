@@ -49,7 +49,8 @@
     'arena-bestiary-platinum-popup.js?v=platinum-popup-20260912a',
     'arena-combat-final-fix.js?v=combat-fix-20260912',
     'arena-flee-fix.js?v=flee-fix-20260912',
-    'arena-gold-universal.js?v=gold-universal-20260912'
+    'arena-gold-universal.js?v=gold-universal-20260912',
+    'arena-account-systems.js?v=account-systems-20260912a'
   ];
   const load=()=>files.forEach(src=>{
     if(document.querySelector(`script[data-arena-feature="${src}"]`))return;
