@@ -24,12 +24,17 @@
   }
   function capacity(){return current()?.slots||0}
 
-  // Cada Amuleto/Trinket comprado ocupa 1 slot físico da Backpack.
-  // Upgrade de Trinket NÃO cria uma nova unidade: substitui a atual no mesmo slot.
-  function specialItems(){
-    if(typeof SHOP_ITEMS==='undefined')return [];
+  // Trinkets de nível 2/3 ficam fora de SHOP_ITEMS para a loja exibir apenas o card-base.
+  // Para inventário/capacidade, usamos a fonte completa do sistema de Trinkets.
+  function allSpecialItems(){
     ensure();
-    return SHOP_ITEMS.filter(item=>game.shopOwned.includes(item.id)&&(item.category==='amulets'||item.category==='trinkets'));
+    const amulets=typeof SHOP_ITEMS!=='undefined'?SHOP_ITEMS.filter(item=>item.category==='amulets'):[];
+    const trinkets=window.arenaTrinkets?.TRINKETS||[];
+    return [...amulets,...trinkets];
+  }
+  function specialItems(){
+    ensure();
+    return allSpecialItems().filter(item=>game.shopOwned.includes(item.id));
   }
   function usedSlots(){return specialItems().length}
   function freeSlots(){return Math.max(0,capacity()-usedSlots())}
@@ -42,7 +47,12 @@
   const previousSlotFor=typeof slotFor==='function'?slotFor:null;
   if(previousSlotFor){window.slotFor=function(item){if(item?.category==='backpacks')return 'backpack';return previousSlotFor(item)}}
 
-  function itemById(id){return typeof SHOP_ITEMS!=='undefined'?SHOP_ITEMS.find(x=>x.id===id):null}
+  function itemById(id){
+    if(typeof SHOP_ITEMS!=='undefined'){
+      const shopItem=SHOP_ITEMS.find(x=>x.id===id);if(shopItem)return shopItem;
+    }
+    return (window.arenaTrinkets?.TRINKETS||[]).find(x=>x.id===id)||null;
+  }
   function blockedMessage(item){
     const bp=current();
     if(!bp)return 'Compre e equipe uma Backpack antes de carregar Amuletos ou Trinkets.';
@@ -59,14 +69,10 @@
       const item=itemById(btn.dataset.id);if(!item)return;
       const action=(btn.textContent||'').toLowerCase();
       const isSpecial=item.category==='amulets'||item.category==='trinkets';
-      // Upgrade de Trinket troca o ID da unidade existente pelo próximo nível.
-      // Portanto NÃO consome slot adicional e nunca deve ser bloqueado por capacidade.
       const isUpgrade=isSpecial&&item.category==='trinkets'&&action.includes('upgrade');
       const isBuy=!game.shopOwned.includes(item.id)&&!isUpgrade;
       const isEquip=game.shopOwned.includes(item.id)&&action.includes('equipar');
-
       if(isUpgrade)return;
-
       if(isSpecial&&isBuy&&!canCarrySpecial(item)){
         e.preventDefault();
         e.stopImmediatePropagation();
