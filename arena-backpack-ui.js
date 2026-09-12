@@ -3,10 +3,17 @@
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const empty=`<div class="backpack-empty-slot"><span>＋</span><small>Vazio</small></div>`;
 
-  function item(id){return typeof SHOP_ITEMS!=='undefined'?SHOP_ITEMS.find(x=>x.id===id):null}
+  function item(id){
+    if(typeof SHOP_ITEMS!=='undefined'){
+      const shopItem=SHOP_ITEMS.find(x=>x.id===id);if(shopItem)return shopItem;
+    }
+    return (window.arenaTrinkets?.TRINKETS||[]).find(x=>x.id===id)||null;
+  }
   function ownedSpecials(){
-    if(typeof game==='undefined'||!game||typeof SHOP_ITEMS==='undefined')return [];
-    return SHOP_ITEMS.filter(x=>game.shopOwned?.includes(x.id)&&(x.category==='amulets'||x.category==='trinkets'));
+    if(typeof game==='undefined'||!game)return [];
+    const amulets=typeof SHOP_ITEMS!=='undefined'?SHOP_ITEMS.filter(x=>game.shopOwned?.includes(x.id)&&x.category==='amulets'):[];
+    const trinkets=(window.arenaTrinkets?.TRINKETS||[]).filter(x=>game.shopOwned?.includes(x.id));
+    return [...amulets,...trinkets];
   }
   function backpack(){return window.arenaBackpacks?.current?.()||null}
   function equippedAmulet(){return game?.shopEquipped?.amulet||null}
@@ -18,7 +25,6 @@
       game.shopEquipped.amulet=id;
     }else if(it.category==='trinkets'&&window.arenaTrinkets?.equip){
       window.arenaTrinkets.equip(id);
-      // arenaTrinkets.equip já persiste/renderiza; apenas sincronizamos a mochila depois.
       setTimeout(render,0);
       return;
     }
@@ -64,7 +70,7 @@
     const slots=[];
     for(let i=0;i<capacity;i++){
       const current=items[i];
-      slots.push(current?`<div class="backpack-inv-slot filled ${((current.category==='amulets'&&equippedAmulet()===current.id)||(current.category==='trinkets'&&equippedTrinkets().includes(current.id)))?'active-item':''}"><div class="backpack-item-icon">${sprite(current)}</div><strong>${esc(current.name)}</strong><small>${esc(current.category==='amulets'?'Amuleto':'Trinket')}</small>${actionHtml(current)}</div>`:empty);
+      slots.push(current?`<div class="backpack-inv-slot filled ${((current.category==='amulets'&&equippedAmulet()===current.id)||(current.category==='trinkets'&&equippedTrinkets().includes(current.id)))?'active-item':''}"><div class="backpack-item-icon">${sprite(current)}</div><strong>${esc(current.name)}${current.category==='trinkets'&&current.level?` I${current.level}`:''}</strong><small>${esc(current.category==='amulets'?'Amuleto':'Trinket')}</small>${actionHtml(current)}</div>`:empty);
     }
     content.innerHTML=`<div class="backpack-slots">${slots.join('')}</div><div class="backpack-note">Equipe e desequipe Amuletos e Trinkets diretamente pela Backpack. O Amuleto ocupa 1 slot e você pode ter até 1 Trinket de cada tipo equipado.</div>`;
     content.querySelectorAll('[data-backpack-action]').forEach(btn=>btn.addEventListener('click',()=>{
