@@ -1,10 +1,28 @@
-// Tutorial do Bestiário — aparece uma única vez após a primeira vitória no Level 1.
+// Tutorial do Bestiário — aparece uma única vez após a primeira vitória da criatura.
 (()=>{
   if(window.__arenaBestiaryIntroInstalled)return;
   window.__arenaBestiaryIntroInstalled=true;
 
   const STORAGE='malupados_arena_v1';
-  const seenKey=()=>`malupados_bestiary_intro_seen_${game?.character||'default'}`;
+  const currentChar=()=>{
+    const a=document.getElementById('playerName')?.textContent?.trim();
+    const b=document.getElementById('characterPickerName')?.textContent?.trim();
+    const c=document.getElementById('characterSelect')?.value?.trim();
+    if(a&&a!=='Carregando...')return a;
+    if(b&&b!=='Escolher personagem')return b;
+    if(c)return c;
+    return game?.character||'default';
+  };
+  const seenKey=()=>`malupados_bestiary_intro_seen_${currentChar()}`;
+
+  function hasFirstKill(){
+    try{
+      const all=JSON.parse(localStorage.getItem(STORAGE)||'{}');
+      const g=all[currentChar()];
+      const bestiary=g?.bestiary||{};
+      return Object.values(bestiary).some(v=>Number(v?.kills||0)>0);
+    }catch{return false}
+  }
 
   function close(){
     document.getElementById('arenaBestiaryIntro')?.remove();
@@ -12,7 +30,7 @@
   }
 
   function open(){
-    if(!game||game.level!==1||localStorage.getItem(seenKey()))return;
+    if(!game||localStorage.getItem(seenKey())||!hasFirstKill())return;
 
     localStorage.setItem(seenKey(),'1');
     const modal=document.createElement('div');
@@ -41,18 +59,23 @@
     modal.querySelector('.bti-backdrop').onclick=close;
     modal.querySelector('#btiOpenBestiary').onclick=()=>{
       close();
-      if(typeof window.arenaOpenBestiary==='function')window.arenaOpenBestiary();
-      else document.getElementById('arenaBestiaryButton')?.click();
+      document.getElementById('arenaBestiaryButton')?.click();
     };
   }
 
-  window.addEventListener('arena:bestiary-kill',()=>{
-    setTimeout(()=>{
-      if(typeof game==='undefined'||!game)return;
-      if(game.level!==1||localStorage.getItem(seenKey()))return;
+  // Evento normal quando o Bestiário já estava carregado.
+  window.addEventListener('arena:bestiary-kill',()=>setTimeout(open,100));
+
+  // Segurança: se o script carregar depois da primeira morte, recupera o evento
+  // olhando o registro salvo. Também cobre level-up no mesmo combate.
+  const timer=setInterval(()=>{
+    if(localStorage.getItem(seenKey())){clearInterval(timer);return;}
+    if(hasFirstKill()){
       open();
-    },80);
-  });
+      clearInterval(timer);
+    }
+  },300);
+  setTimeout(()=>clearInterval(timer),20000);
 
   const style=document.createElement('style');
   style.textContent=`
