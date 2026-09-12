@@ -1,0 +1,1 @@
+Static mob assets created in monsters-static/. The existing renderer will be switched to these assets in the next renderer load.
