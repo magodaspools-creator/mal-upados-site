@@ -1,8 +1,6 @@
 extends Node2D
 
-# O pack de monstros GegX ainda não está presente no repositório remoto.
-# Enquanto isso, usamos sprites pixel-art que já foram enviados no projeto:
-# inimigos normais usam critters do Emberglen e bosses usam o sprite de boss.
+# Inimigos temporários usando pixel art que já está no projeto.
 const EMBERGLEN_ROOT := "res://assets-importados/emberglen-starter-v2.0/"
 const BOSS_PATH := EMBERGLEN_ROOT + "sampler/bosses/still.png"
 
@@ -19,6 +17,7 @@ const NORMAL_ENEMIES := {
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 
 var monster_name := "Criatura de Treino"
+var _base_scale := Vector2.ONE
 
 func _ready() -> void:
     _load_enemy(monster_name)
@@ -26,6 +25,9 @@ func _ready() -> void:
 func setup(name: String) -> void:
     monster_name = name
     _load_enemy(monster_name)
+    sprite.modulate = Color.WHITE
+    sprite.scale = _base_scale
+    sprite.visible = true
 
 func _load_enemy(name: String) -> void:
     var path := BOSS_PATH if name in ["Arena Boss", "Demon Lord"] else EMBERGLEN_ROOT + NORMAL_ENEMIES.get(name, "props/critters/mouse.png")
@@ -47,5 +49,35 @@ func _load_enemy(name: String) -> void:
     sprite.centered = true
     sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
     sprite.modulate = Color.WHITE
-    sprite.scale = Vector2(1.0, 1.0) if name in ["Arena Boss", "Demon Lord"] else Vector2(2.0, 2.0)
+    _base_scale = Vector2(1.0, 1.0) if name in ["Arena Boss", "Demon Lord"] else Vector2(2.0, 2.0)
+    sprite.scale = _base_scale
     sprite.play("idle")
+
+func hit_flash() -> void:
+    if not is_instance_valid(sprite):
+        return
+    var original := position
+    var tween := create_tween()
+    tween.tween_property(sprite, "modulate", Color(1.0, 0.72, 0.72, 1.0), 0.05)
+    tween.tween_property(sprite, "modulate", Color.WHITE, 0.09)
+    tween.parallel().tween_property(self, "position", original + Vector2(7, 0), 0.04)
+    tween.tween_property(self, "position", original, 0.08)
+
+func die() -> void:
+    if not is_instance_valid(sprite):
+        return
+    var tween := create_tween()
+    tween.set_parallel(true)
+    tween.tween_property(sprite, "modulate", Color(1, 1, 1, 0), 0.22)
+    tween.tween_property(sprite, "scale", _base_scale * 1.18, 0.22)
+    tween.set_parallel(false)
+    tween.tween_callback(func(): sprite.visible = false)
+
+func show_spawn() -> void:
+    sprite.visible = true
+    sprite.modulate = Color(1, 1, 1, 0)
+    sprite.scale = _base_scale * 0.78
+    var tween := create_tween()
+    tween.set_parallel(true)
+    tween.tween_property(sprite, "modulate", Color.WHITE, 0.18)
+    tween.tween_property(sprite, "scale", _base_scale, 0.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
