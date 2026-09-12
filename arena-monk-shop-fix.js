@@ -1,5 +1,5 @@
-// Integração FINAL das armas Monk na loja da Arena.
-// Este arquivo roda por último para garantir que nenhum outro fix sobrescreva as armas.
+// Integração das armas Monk na loja da Arena.
+// Mantém a navegação normal de Knight / Paladin / Monk e evita filtro travado.
 (()=>{
   const MONK_WEAPONS=[
     {id:'iron-knuckle',name:'Iron Knuckle',icon:'🥊',category:'weapons',vocation:'Monk',class:'Monk',hands:2,price:300,attack:12,defense:0,minLevel:3,bonus:'+12 ataque · 2 mãos · Monk'},
@@ -25,7 +25,9 @@
     const filters=document.getElementById('shopFilters');
     if(!filters||typeof shopFilter==='undefined'||shopFilter!=='weapons')return;
     const sub=filters.querySelector('.weapon-subfilters');
-    if(!sub||sub.querySelector('[data-weapon-vocation="Monk"]'))return;
+    if(!sub)return;
+    if(sub.querySelector('[data-weapon-vocation="Monk"]'))return;
+
     const label=[...sub.querySelectorAll('.weapon-subfilter-label')].find(x=>x.textContent.trim()==='Vocação');
     const btn=document.createElement('button');
     btn.type='button';
@@ -33,6 +35,7 @@
     btn.dataset.weaponVocation='Monk';
     btn.textContent='Monk';
     if(label)label.after(btn); else sub.appendChild(btn);
+
     btn.onclick=()=>{
       ensureItems();
       sub.querySelectorAll('[data-weapon-vocation]').forEach(b=>b.classList.remove('active'));
@@ -42,10 +45,24 @@
     };
   }
 
+  function syncMonkFilterState(){
+    const filters=document.getElementById('shopFilters');
+    const sub=filters?.querySelector('.weapon-subfilters');
+    if(!sub)return;
+
+    const monk=sub.querySelector('[data-weapon-vocation="Monk"]');
+    const active=sub.querySelector('[data-weapon-vocation].active');
+
+    // Se Knight, Paladin ou Todas estiver ativo, o filtro Monk deixa de valer.
+    window.__arenaMonkFilter=!!(monk&&active===monk);
+  }
+
   function applyMonkFilter(){
     const box=document.getElementById('shopItems');
     if(!box)return;
+    syncMonkFilterState();
     if(!window.__arenaMonkFilter)return;
+
     box.querySelectorAll('.shop-item').forEach(card=>{
       const name=card.querySelector('.shop-info strong')?.textContent?.trim()||'';
       const item=typeof SHOP_ITEMS!=='undefined'?SHOP_ITEMS.find(x=>x.name===name):null;
