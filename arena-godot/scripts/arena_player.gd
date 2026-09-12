@@ -13,6 +13,8 @@ var _loaded_vocation := ""
 
 func _ready() -> void:
     sprite.scale = CHARACTER_SCALE
+    sprite.centered = true
+    sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
     _load_vocation(vocation)
     _play_animation("idle_south")
 
