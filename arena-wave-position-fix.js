@@ -10,14 +10,4 @@
   const observer=new MutationObserver(moveWaves);
   observer.observe(document.body,{childList:true,subtree:true});
   setTimeout(()=>observer.disconnect(),10000);
-
-  // Carrega o normalizador das sprites mesmo sem alterar o HTML da Arena.
-  function loadSpriteNormalizer(){
-    if(document.getElementById('arena-game-sprite-normalize'))return;
-    const s=document.createElement('script');
-    s.id='arena-game-sprite-normalize';
-    s.src='arena-game-sprite-normalize.js?v=sprite-normalize-20260912';
-    document.body.appendChild(s);
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',loadSpriteNormalizer);else loadSpriteNormalizer();
 })();
