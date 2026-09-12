@@ -22,15 +22,15 @@
   const rods=SHOP_ITEMS
     .filter(x=>x.category==='rods')
     .slice()
-    .sort((a,b)=>(b.attack||0)-(a.attack||0));
+    .sort((a,b)=>(a.attack||0)-(b.attack||0));
 
   const wands=SHOP_ITEMS
     .filter(x=>x.category==='wands')
     .slice()
-    .sort((a,b)=>(b.attack||0)-(a.attack||0));
+    .sort((a,b)=>(a.attack||0)-(b.attack||0));
 
-  // Mantém exatamente as Wands atuais. Apenas copia os status dos Rods por
-  // posição e ordena as Wands da maior para a menor força de ataque.
+  // Mantém exatamente as Wands atuais. Copia os status dos Rods por posição
+  // e ordena as Wands da menor para a maior força de ataque.
   wands.forEach((wand,i)=>{
     const rod=rods[i];
     if(!rod)return;
@@ -43,7 +43,7 @@
 
   const sortedWands=SHOP_ITEMS
     .filter(x=>x.category==='wands')
-    .sort((a,b)=>(b.attack||0)-(a.attack||0));
+    .sort((a,b)=>(a.attack||0)-(b.attack||0));
   const first=SHOP_ITEMS.findIndex(x=>x.category==='wands');
   if(first>=0){
     SHOP_ITEMS.splice(first,sortedWands.length,...sortedWands);
