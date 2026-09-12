@@ -40,14 +40,15 @@
   };
   const data=()=>{const all=load(),c=char();if(!all[c])all[c]={};if(!all[c].bestiary)all[c].bestiary={};return{all,c,g:all[c]}};
   const required=name=>name==='Deathbringer'?5:25;
-  const count=name=>Math.min(required(name),Number(data().g.bestiary[name]?.kills||0));
+  // O contador é permanente: a Platina é conquistada em 25/25 (ou 5/5),
+  // mas depois disso continua 26, 27, 100, 250, 250000...
+  const count=name=>Number(data().g.bestiary[name]?.kills||0);
 
   function record(name){
     name=String(name||'').replace(/\s+/g,' ').trim();
     const mob=monsters.find(m=>m[0].toLowerCase()===name.toLowerCase());
     if(!mob)return false;
     const d=data(),old=Number(d.g.bestiary[name]?.kills||0);
-    if(old>=required(name))return false;
     d.g.bestiary[name]={kills:old+1};
     d.all[d.c]=d.g;
     save(d.all);
@@ -57,7 +58,6 @@
   window.arenaRecordBestiaryKill=record;
 
   function close(){document.getElementById('arenaBestiaryModal')?.remove();document.body.classList.remove('bestiary-open')}
-  // ESC fecha o Bestiário, como é esperado em interfaces de jogo.
   document.addEventListener('keydown',e=>{
     if(e.key==='Escape' && document.getElementById('arenaBestiaryModal')){
       e.preventDefault();
@@ -88,9 +88,6 @@
     const target=document.querySelector('.map-controls');if(target)target.prepend(b);else document.body.appendChild(b);
   }
 
-  // O motor base chama winBattle() localmente e, logo depois, troca o HTML da batalha.
-  // Por isso não dependemos da tela de resultado. Capturamos o nome da criatura ANTES
-  // do ataque e confirmamos a vitória pelo contador game.kills depois do ataque.
   let pendingKill=null;
   document.addEventListener('click',e=>{
     const btn=e.target.closest('#attackBtn');
