@@ -1,0 +1,47 @@
+// Perfil completo da Arena: identidade, combate, economia, Bestiário e equipamento.
+(()=>{
+  const STYLE='arena-profile-complete-style';
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const fmt=n=>new Intl.NumberFormat('pt-BR').format(Math.floor(Number(n)||0));
+  const xpTotal=g=>{const l=Math.max(1,Number(g?.level)||1),x=Math.max(0,Number(g?.xp)||0),c=l-1;return Math.floor(100*c+65*c*(c-1)/2+x)};
+  const req=n=>String(n)==='Deathbringer'?5:25;
+  const bestiary=()=>game?.bestiary&&typeof game.bestiary==='object'?game.bestiary:{};
+  const kills=n=>Math.max(0,Number(bestiary()?.[n]?.kills??bestiary()?.[n])||0);
+  const complete=n=>kills(n)>=req(n);
+  const completed=()=>Object.keys(bestiary()).filter(complete).length;
+  const equipment=()=>{
+    const ids=game?.shopEquipped||{};
+    const slots=[['weapon','Arma'],['armor','Armadura'],['helmets','Helmet'],['backpack','Backpack'],['amulet','Amuleto'],['shield','Escudo'],['rings','Ring'],['boots','Boots']];
+    return slots.map(([slot,label])=>{let item=null,id=ids[slot];if(id&&typeof SHOP_ITEMS!=='undefined')item=SHOP_ITEMS.find(x=>x.id===id);if(!item){const fb={weapon:['Espada de Bronze','⚔️'],armor:['Leather Armor','🛡️'],helmets:['Nenhum','—'],backpack:['Nenhuma','—'],amulet:['Nenhum','—'],shield:['Nenhum','—'],rings:['Nenhum','—'],boots:['Nenhuma','—']}[slot];item={name:fb[0],icon:fb[1],bonus:''}}return {slot,label,item}});
+  };
+  const trinkets=()=>{const ids=Array.isArray(game?.shopEquipped?.trinkets)?game.shopEquipped.trinkets:[];return ids.map(id=>typeof SHOP_ITEMS!=='undefined'?SHOP_ITEMS.find(x=>x.id===id):null).filter(Boolean)};
+  function stats(){
+    const l=Math.max(1,Number(game?.level)||1),w=Number(game?.weapon)||0,a=Number(game?.armor)||0;
+    let atk=15+l*4+w*3,def=a*3,hp=110+l*12+def;
+    if(game?.shopEquipped&&typeof SHOP_ITEMS!=='undefined')Object.values(game.shopEquipped).flat().forEach(id=>{const it=SHOP_ITEMS.find(x=>x&&x.id===id);const b=String(it?.bonus||'');const m=b.match(/([+-]?\d+)\s*(ATK|Ataque|DEF|Defesa|HP|Vida)/i);if(!m)return;const n=Number(m[1])||0;if(/atk|ataque/i.test(m[2]))atk+=n;if(/def|defesa/i.test(m[2]))def+=n;if(/hp|vida/i.test(m[2]))hp+=n});
+    return {atk,def,hp};
+  }
+  function install(){if(document.getElementById(STYLE))return;const s=document.createElement('style');s.id=STYLE;s.textContent=`
+    .apc-hero{position:relative;padding:20px;border:1px solid #4b4638;background:radial-gradient(circle at 15% 20%,#302a1b,#17191d 48%,#0e1013);overflow:hidden}.apc-hero:after{content:'✦';position:absolute;right:22px;top:12px;color:#8d7138;font-size:3.5rem;opacity:.2}.apc-name{font:900 1.7rem Cinzel,serif;color:#efd078}.apc-sub{margin-top:5px;color:#969ca5;font-size:.7rem}.apc-xp{margin-top:14px}.apc-xp-head{display:flex;justify-content:space-between;color:#bfc3c8;font-size:.58rem;text-transform:uppercase}.apc-xp-bar{height:7px;background:#292d32;margin-top:5px;border:1px solid #363a40}.apc-xp-bar i{display:block;height:100%;background:linear-gradient(90deg,#80602b,#d9ad4f)}.apc-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}.apc-card{border:1px solid #30343a;background:#141619;padding:11px}.apc-card span{display:block;color:#737a83;font-size:.53rem;text-transform:uppercase;letter-spacing:.55px}.apc-card strong{display:block;color:#e2e5e8;font-size:1rem;margin-top:5px}.apc-section{margin-top:16px}.apc-section h3{margin:0 0 8px;color:#c9cdd2;font:800 .75rem Cinzel,serif;text-transform:uppercase;letter-spacing:1px}.apc-combat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.apc-combat .apc-card{text-align:center}.apc-combat strong{font-size:1.25rem;color:#e8c76d}.apc-equipment{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.apc-equip{min-height:76px;border:1px solid #34383e;background:linear-gradient(145deg,#22252a,#121417);padding:8px;text-align:center}.apc-equip-icon{font-size:1.55rem;height:29px}.apc-equip small{display:block;color:#727983;font-size:.5rem;text-transform:uppercase}.apc-equip strong{display:block;color:#d5d8dc;font-size:.58rem;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.apc-equip em{display:block;color:#c39a49;font-size:.5rem;font-style:normal;margin-top:2px}.apc-trinkets{display:flex;gap:7px;flex-wrap:wrap}.apc-trinket{border:1px solid #403a2e;background:#1a1814;padding:7px 9px;color:#d6d8dc;font-size:.58rem}.apc-trinket em{color:#c49b4c;font-style:normal;margin-left:5px}.apc-best-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.apc-best{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;border:1px solid #30343a;background:#141619;padding:8px}.apc-best-name{color:#d5d8dc;font-size:.62rem}.apc-best-name small{display:block;color:#737a83;font-size:.5rem;margin-top:2px}.apc-best-count{color:#e2bf68;font-weight:900;font-size:.65rem}.apc-best.done{border-color:#6d582f}.apc-achievement-line{display:flex;justify-content:space-between;align-items:center;border:1px solid #30343a;background:#141619;padding:10px}.apc-achievement-line strong{color:#e0e3e7;font-size:.68rem}.apc-achievement-line span{color:#c39a49;font-size:.62rem}@media(max-width:650px){.apc-grid{grid-template-columns:repeat(2,1fr)}.apc-equipment{grid-template-columns:repeat(2,1fr)}.apc-best-grid{grid-template-columns:1fr}.apc-combat{grid-template-columns:1fr 1fr}.apc-combat .apc-card:last-child{grid-column:1/-1}}
+  `;document.head.appendChild(s)}
+  function render(){
+    const body=document.getElementById('arenaAccountBody');if(!body||typeof game==='undefined'||!game)return;
+    const d=stats(), b=bestiary(), names=Object.keys(b).sort((a,c)=>kills(c)-kills(a)).slice(0,8), l=Math.max(1,Number(game.level)||1),need=100+(l-1)*65,x=Math.max(0,Number(game.xp)||0),pct=Math.min(100,x/need*100),eq=equipment(),tr=trinkets();
+    const ach=game.achievementUnlocked&&typeof game.achievementUnlocked==='object'?Object.keys(game.achievementUnlocked).length:0;
+    body.innerHTML=`<div class="apc-hero"><div class="apc-name">${esc(game.character)}</div><div class="apc-sub">${esc((typeof members!=='undefined'&&members.find(x=>x.name===game.character)?.vocation)||'Aventureiro')} · Personagem da Arena</div><div class="apc-xp"><div class="apc-xp-head"><span>Level ${fmt(l)}</span><span>${fmt(x)} / ${fmt(need)} XP</span></div><div class="apc-xp-bar"><i style="width:${pct}%"></i></div></div></div>
+    <div class="apc-grid"><div class="apc-card"><span>XP total</span><strong>${fmt(xpTotal(game))}</strong></div><div class="apc-card"><span>Gold</span><strong>${fmt(game.gold)}</strong></div><div class="apc-card"><span>Criaturas</span><strong>${fmt(game.kills)}</strong></div><div class="apc-card"><span>Vitórias</span><strong>${fmt(game.wins)}</strong></div><div class="apc-card"><span>Melhor streak</span><strong>${fmt(game.bestStreak)}</strong></div><div class="apc-card"><span>Dano causado</span><strong>${fmt(game.damage)}</strong></div><div class="apc-card"><span>Bestiários</span><strong>${fmt(completed())}</strong></div><div class="apc-card"><span>Conquistas</span><strong>${fmt(ach)}</strong></div></div>
+    <div class="apc-section"><h3>Combate</h3><div class="apc-combat"><div class="apc-card"><span>Ataque</span><strong>${fmt(d.atk)}</strong></div><div class="apc-card"><span>Defesa</span><strong>${fmt(d.def)}</strong></div><div class="apc-card"><span>Vida máxima</span><strong>${fmt(d.hp)}</strong></div></div></div>
+    <div class="apc-section"><h3>Equipamento atual</h3><div class="apc-equipment">${eq.map(x=>`<div class="apc-equip"><div class="apc-equip-icon">${esc(x.item.icon||'◆')}</div><small>${esc(x.label)}</small><strong>${esc(x.item.name)}</strong>${x.item.bonus?`<em>${esc(x.item.bonus)}</em>`:''}</div>`).join('')}</div>${tr.length?`<div class="apc-trinkets" style="margin-top:7px">${tr.map(x=>`<div class="apc-trinket">${esc(x.name)} <em>${esc(x.bonus||'')}</em></div>`).join('')}</div>`:''}</div>
+    <div class="apc-section"><h3>Maiores marcas no Bestiário</h3><div class="apc-best-grid">${names.length?names.map(n=>`<div class="apc-best ${complete(n)?'done':''}"><div class="apc-best-name">${esc(n)}<small>${complete(n)?'PLATINA · completo':`Meta: ${req(n)} abates`}</small></div><div class="apc-best-count">${fmt(kills(n))}</div></div>`).join(''):`<div class="apc-best"><div class="apc-best-name">Nenhuma criatura registrada ainda.</div></div>`}</div></div>
+    <div class="apc-section"><h3>Resumo da carreira</h3><div class="apc-achievement-line"><strong>Progresso geral da Arena</strong><span>${fmt(game.level)}º level · ${fmt(game.kills)} kills · ${fmt(game.wins)} vitórias</span></div></div>`;
+  }
+  function hook(){
+    install();
+    const open=window.openModal;
+    const observer=new MutationObserver(()=>{const body=document.getElementById('arenaAccountBody');const title=document.getElementById('arenaAccountTitle');if(body&&title&&/perfil/i.test(title.textContent||''))render()});
+    observer.observe(document.body,{childList:true,subtree:true});
+    document.addEventListener('click',e=>{const b=e.target.closest('[data-account="profile"],[data-tab="profile"]');if(b)setTimeout(render,30)},true);
+    setInterval(()=>{const body=document.getElementById('arenaAccountBody'),title=document.getElementById('arenaAccountTitle');if(body&&title&&/perfil/i.test(title.textContent||''))render()},1000);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',hook);else hook();
+})();
