@@ -1,6 +1,7 @@
 extends CharacterBody2D
 
-const CHARACTER_ROOT := "res://characters/"
+# Assets enviados pelo projeto. O waves game usa esta cópia como fonte oficial.
+const CHARACTER_ROOT := "res://assets-importados/"
 const CHARACTER_SCALE := Vector2(0.5, 0.5)
 const WALK_SPEED := 220.0
 
