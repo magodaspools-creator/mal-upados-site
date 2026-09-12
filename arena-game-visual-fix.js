@@ -1,11 +1,5 @@
-// Visual fix for Arena Waves: remove fallback weapon glyph, repair Rat sprite-sheet cropping,
-// and turn the battle stage into an actual dungeon arena instead of a flat brown panel.
+// Visual fix for Arena Waves: remove fallback weapon glyph and turn the battle stage into a dungeon arena.
 (()=>{
- const ROOT='arena-godot/assets-importados/';
- const RAT=ROOT+'monsters-lg-rpg/rat/idle.png';
- const RAT_W=748, RAT_H=70, RAT_FRAMES=10;
- const RAT_FRAME_W=RAT_W/RAT_FRAMES;
- const RAT_SIZE=88;
  function css(){
   if(document.getElementById('arena-game-visual-fix-style'))return;
   const s=document.createElement('style');s.id='arena-game-visual-fix-style';
@@ -45,20 +39,14 @@
   `;
   document.head.appendChild(s);
  }
- function enemyName(){return String(document.getElementById('arenaEnemyName')?.textContent||'').toLowerCase()}
- function playerIcon(){return document.querySelector('#arenaPlayerName')?.closest('.arena-fighter')?.querySelector('.arena-fighter-icon')}
- function enemyIcon(){return document.getElementById('arenaEnemyIcon')}
- function fixText(){const p=playerIcon();if(p)p.textContent='';const e=enemyIcon();if(e)e.textContent=''}
- function rat(){
-  const e=enemyIcon();if(!e||!enemyName().includes('rat'))return false;
-  const frame=(Date.now()/180|0)%RAT_FRAMES;
-  e.style.backgroundImage=`url("${RAT}")`;
-  e.style.backgroundSize=`${RAT_SIZE*(RAT_W/RAT_H)}px ${RAT_SIZE}px`;
-  e.style.backgroundPosition=`-${frame*RAT_SIZE*(RAT_FRAME_W/RAT_H)}px center`;
-  e.style.backgroundRepeat='no-repeat';
-  return true;
+ function fixText(){
+  const p=document.querySelector('#arenaPlayerName')?.closest('.arena-fighter')?.querySelector('.arena-fighter-icon');
+  if(p)p.textContent='';
+  const e=document.getElementById('arenaEnemyIcon');
+  if(e)e.textContent='';
  }
- function boot(){css();fixText();rat()}
+ function boot(){css();fixText()}
  function wait(){if(document.getElementById('arenaGameMode'))boot();else setTimeout(wait,250)}
- wait();setInterval(()=>{if(document.getElementById('arenaGameMode')){fixText();rat()}},90);
+ wait();
+ setInterval(()=>{if(document.getElementById('arenaGameMode'))fixText()},90);
 })();
