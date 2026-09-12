@@ -1,19 +1,27 @@
 // Waves pixel-art renderer for the website.
-// Enemy art: CC0 monster assets from LiquidGalaxyLAB/lg-rpg (LuizMelo).
-// Rat: Animated Rat and Bat by Calciumtrice, CC-BY 3.0.
+// Enemy art: CC0 monster assets from LiquidGalaxyLAB/lg-rpg (LuizMelo) + unique free battlers from hiddenone's Resource Warehouse.
 (()=>{
  const ROOT='arena-godot/assets-importados/';
  const HERO_ROOT={knight:'knight-hero-128/knight-hero-128',mage:'mage-hero-128/mage-hero-128',archer:'archer-hero-128/archer-hero-128',rogue:'rogue-hero-128/rogue-hero-128'};
  const RAW='https://raw.githubusercontent.com/LiquidGalaxyLAB/lg-rpg/main/lg_rpg_server/public/assets/enemies/';
- const RAT_RAW='https://opengameart.org/sites/default/files/rat%20and%20bat%20spritesheet%20calciumtrice.png';
+ const HIDDEN='https://www.hiddenone-sprites.com/uploads/7/1/8/7/71878507/published/';
  const MONSTERS={
-  // 320x320 sheet = 10 columns x 8 rows at 32x32. First 4 rows are the Rat animations.
-  rat:{src:RAT_RAW,frames:10,w:32,h:32,rate:8,size:96,row:0},
+  rat:{src:'https://www.hiddenone-sprites.com/uploads/7/1/8/7/71878507/published/rat-grey-sv_2.png?1550287821=',frames:1,w:96,h:96,rate:1,size:96},
   goblin:{src:RAW+'goblin/idle.png',frames:4,w:150,h:150,rate:6,size:96},
   skeleton:{src:RAW+'skeleton/idle.png',frames:4,w:150,h:150,rate:6,size:96},
   slime:{src:RAW+'slime/idle.png',frames:14,w:156,h:156,rate:8,size:96},
   bat:{src:RAW+'bat/fly.png',frames:11,w:87,h:87,rate:12,size:96},
-  dragon:{src:RAW+'boss/dragon_idle.png',frames:6,w:70,h:73,rate:8,size:96}
+  dragon:{src:RAW+'boss/dragon_idle.png',frames:6,w:70,h:73,rate:8,size:112},
+  cockatrice:{src:HIDDEN+'cockatrice-sv_2.png',frames:1,w:96,h:96,rate:1,size:96},
+  plant:{src:HIDDEN+'plant-sv_2.png',frames:1,w:96,h:96,rate:1,size:96},
+  spider:{src:HIDDEN+'spider-sv_2.png',frames:1,w:96,h:96,rate:1,size:96},
+  snake:{src:HIDDEN+'snake-sv_2.png',frames:1,w:96,h:96,rate:1,size:96},
+  hornet:{src:HIDDEN+'hornet-sv_2.png',frames:1,w:96,h:96,rate:1,size:96},
+  sahuagin:{src:HIDDEN+'sahuagin-sv_2.png',frames:1,w:96,h:96,rate:1,size:96},
+  ghost:{src:HIDDEN+'ghost-sv_2.png',frames:1,w:96,h:96,rate:1,size:96},
+  imp:{src:HIDDEN+'imp-sv_2.png',frames:1,w:96,h:96,rate:1,size:96},
+  gazer:{src:HIDDEN+'gazer-sv_2.png',frames:1,w:96,h:96,rate:1,size:96},
+  mimic:{src:HIDDEN+'mimic-sv_2.png',frames:1,w:96,h:96,rate:1,size:96}
  };
  const HERO_FRAMES=7,HERO_SIZE=96;
  let timer=null,animFrame=0,attacking=false,lastEnemyHp=null;
@@ -55,12 +63,19 @@
  function enemyKind(){
   const n=String(document.getElementById('arenaEnemyName')?.textContent||'').toLowerCase();
   if(n.includes('rat'))return'rat';
-  if(n.includes('goblin')||n.includes('troll')||n.includes('orc'))return'goblin';
-  if(n.includes('skeleton')||n.includes('cyclops')||n.includes('scarab'))return'skeleton';
-  if(n.includes('slime')||n.includes('scorpion'))return'slime';
-  if(n.includes('bat')||n.includes('hellhound'))return'bat';
-  if(n.includes('dragon'))return'dragon';
-  if(n.includes('demon')||n.includes('deathbringer'))return'skeleton';
+  if(n.includes('troll'))return'sahuagin';
+  if(n==='orc')return'goblin';
+  if(n.includes('berserker'))return'imp';
+  if(n.includes('rider'))return'cockatrice';
+  if(n.includes('cyclops'))return'gazer';
+  if(n.includes('scorpion'))return'scorpion';
+  if(n.includes('scarab'))return'mimic';
+  if(n.includes('dragon hatchling'))return'hornet';
+  if(n==='dragon'||n.includes('dragon lord')||n.includes('frost dragon'))return'dragon';
+  if(n.includes('demon skeleton'))return'skeleton';
+  if(n.includes('hellhound'))return'spider';
+  if(n==='demon')return'ghost';
+  if(n.includes('deathbringer'))return'sufferingSoul';
   return null;
  }
  function draw(){
