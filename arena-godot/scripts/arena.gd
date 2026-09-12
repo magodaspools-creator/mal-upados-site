@@ -28,10 +28,6 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
     if Input.is_action_just_pressed("attack"):
         attack()
-    if Input.is_key_pressed(KEY_Q):
-        _use_potion()
-    if Input.is_key_pressed(KEY_U):
-        _upgrade_weapon()
 
 func start_wave(next_wave: int = wave) -> void:
     if player_hp <= 0:
