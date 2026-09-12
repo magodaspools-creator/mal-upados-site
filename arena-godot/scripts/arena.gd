@@ -23,6 +23,8 @@ var last_loot := "Nenhum"
 @onready var enemy: Node2D = $Enemy
 
 func _ready() -> void:
+    # Deixa a criatura de demonstração visível assim que o jogo abre.
+    enemy.setup("Criatura de Treino")
     _refresh_ui("Arena pronta — ESPAÇO inicia o combate")
 
 func _process(_delta: float) -> void:
