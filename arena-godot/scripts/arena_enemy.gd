@@ -1,45 +1,51 @@
 extends Node2D
 
-# Inimigo visual provisório do modo de waves.
-# Usamos um sprite GegX que já existe no projeto para conseguirmos testar o jogo
-# imediatamente, sem depender do pack de monstros.
-const DEMO_ENEMY_ROOT := "res://characters/rogue-hero-128/rogue-hero-128"
+# O pack de monstros GegX ainda não está presente no repositório remoto.
+# Enquanto isso, usamos sprites pixel-art que já foram enviados no projeto:
+# inimigos normais usam critters do Emberglen e bosses usam o sprite de boss.
+const EMBERGLEN_ROOT := "res://assets-importados/emberglen-starter-v2.0/"
+const BOSS_PATH := EMBERGLEN_ROOT + "sampler/bosses/still.png"
+
+const NORMAL_ENEMIES := {
+    "Rat": "props/critters/mouse.png",
+    "Goblin": "props/critters/raccoon.png",
+    "Orc": "props/critters/fox_sleeping.png",
+    "Scorpion": "props/critters/ladybug.png",
+    "Dragon": "props/critters/owl_branch.png",
+    "Hellhound": "props/critters/crow.png",
+    "Demon": "props/critters/raccoon.png"
+}
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 
 var monster_name := "Criatura de Treino"
 
 func _ready() -> void:
-    _load_demo_enemy()
+    _load_enemy(monster_name)
 
 func setup(name: String) -> void:
     monster_name = name
-    # Por enquanto o visual permanece fixo. O nome/HP continuam mudando por onda.
-    _load_demo_enemy()
+    _load_enemy(monster_name)
 
-func _load_demo_enemy() -> void:
+func _load_enemy(name: String) -> void:
+    var path := BOSS_PATH if name in ["Arena Boss", "Demon Lord"] else EMBERGLEN_ROOT + NORMAL_ENEMIES.get(name, "props/critters/mouse.png")
+    var texture := load(path) as Texture2D
+
+    if texture == null:
+        push_warning("Sprite de inimigo não encontrado: " + path)
+        return
+
     var frames := SpriteFrames.new()
     frames.remove_animation("default")
-
-    for animation_name in ["idle_south", "idle_north", "idle_east", "idle_west"]:
-        var path := DEMO_ENEMY_ROOT + "/" + animation_name
-        if not DirAccess.dir_exists_absolute(ProjectSettings.globalize_path(path)):
-            continue
-
-        frames.add_animation(animation_name)
-        frames.set_animation_speed(animation_name, 7.0)
-        frames.set_animation_loop(animation_name, true)
-
-        var files := DirAccess.get_files_at(path)
-        files.sort()
-        for file_name in files:
-            if file_name.to_lower().ends_with(".png"):
-                var texture := load(path + "/" + file_name) as Texture2D
-                if texture:
-                    frames.add_frame(animation_name, texture)
+    frames.add_animation("idle")
+    frames.set_animation_speed("idle", 1.0)
+    frames.set_animation_loop("idle", true)
+    frames.add_frame("idle", texture)
 
     sprite.sprite_frames = frames
-    sprite.scale = Vector2(0.7, 0.7)
+    sprite.animation = "idle"
+    sprite.centered = true
     sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-    sprite.modulate = Color(0.72, 0.28, 0.28, 1.0)
-    sprite.play("idle_south")
+    sprite.modulate = Color.WHITE
+    sprite.scale = Vector2(1.0, 1.0) if name in ["Arena Boss", "Demon Lord"] else Vector2(2.0, 2.0)
+    sprite.play("idle")
