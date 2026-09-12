@@ -6,7 +6,6 @@
     const legacy=document.getElementById('characterSelect');
     if(!wrap||!btn||!menu)return;
 
-    let rendered=false;
     const draw=()=>{
       if(typeof members==='undefined'||!Array.isArray(members)||members.length===0)return false;
       menu.innerHTML=members.map(m=>{
@@ -27,16 +26,13 @@
         btn.setAttribute('aria-expanded','false');
         draw();
       }));
-      rendered=true;
       return true;
     };
 
     btn.onclick=e=>{e.stopPropagation();const open=wrap.classList.toggle('open');btn.setAttribute('aria-expanded',String(open));};
     document.addEventListener('click',e=>{if(!wrap.contains(e.target)){wrap.classList.remove('open');btn.setAttribute('aria-expanded','false')}});
 
-    const timer=setInterval(()=>{
-      if(draw())clearInterval(timer);
-    },250);
+    const timer=setInterval(()=>{if(draw())clearInterval(timer)},250);
     if(draw())clearInterval(timer);
     setTimeout(()=>clearInterval(timer),15000);
   };
@@ -44,21 +40,16 @@
 })();
 
 // Carrega os recursos extras depois que a interface já existe.
-// Eles são independentes da loja, armas, personagens e combate.
 (()=>{
   const files=[
     'arena-campaign-timer-fix.js?v=timer-fix-20260912c',
-    'arena-bestiary-fix.js?v=bestiary-fix-20260912c',
+    'arena-bestiary-fix.js?v=bestiary-fix-20260912d',
     'arena-combat-final-fix.js?v=combat-fix-20260912',
     'arena-flee-fix.js?v=flee-fix-20260912'
   ];
   const load=()=>files.forEach(src=>{
     if(document.querySelector(`script[data-arena-feature="${src}"]`))return;
-    const s=document.createElement('script');
-    s.src=src;
-    s.dataset.arenaFeature=src;
-    document.body.appendChild(s);
+    const s=document.createElement('script');s.src=src;s.dataset.arenaFeature=src;document.body.appendChild(s);
   });
-  if(document.body)load();
-  else document.addEventListener('DOMContentLoaded',load,{once:true});
+  if(document.body)load();else document.addEventListener('DOMContentLoaded',load,{once:true});
 })();
