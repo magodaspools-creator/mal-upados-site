@@ -1,5 +1,5 @@
 ; Mal Upados Arena - Godot 4 visual prototype
-; Asset-driven 2D architecture. Drop licensed assets into res://assets/.
+; Asset-driven 2D architecture. Characters, items and tilesets live in dedicated folders.
 config_version=5
 
 [application]
