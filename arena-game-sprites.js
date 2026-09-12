@@ -1,24 +1,18 @@
 // Waves pixel-art renderer for the website.
-// IMPORTANT: this belongs only to the Waves mini-game, not the normal Arena hunt UI.
+// Enemy art: CC0 monster assets from LiquidGalaxyLAB/lg-rpg (LuizMelo).
 (()=>{
  const ROOT='arena-godot/assets-importados/';
  const HERO_ROOT={knight:'knight-hero-128/knight-hero-128',mage:'mage-hero-128/mage-hero-128',archer:'archer-hero-128/archer-hero-128',rogue:'rogue-hero-128/rogue-hero-128'};
- const HERO_FRAMES=7;
- const MAP_BG='';
- const HERO_SIZE=96;
- const ENEMY_SIZE=88;
+ const MONSTER_ROOT=ROOT+'monsters-lg-rpg/';
+ const HERO_FRAMES=7, RAT_FRAMES=10;
+ const HERO_SIZE=96, ENEMY_SIZE=88;
  let timer=null,animFrame=0,attacking=false,lastEnemyHp=null;
  const cache=new Set();
  function preload(src){if(!src||cache.has(src))return;cache.add(src);const img=new Image();img.decoding='async';img.src=src}
  function style(){
   if(document.getElementById('arena-game-sprites-style'))return;
   const s=document.createElement('style');s.id='arena-game-sprites-style';s.textContent=`
-   #arenaGameMode .arena-game-battle{position:relative;display:block!important;min-height:390px;overflow:hidden;padding:0!important;border:1px solid rgba(190,151,78,.45);background:
-    radial-gradient(circle at 18% 28%,rgba(117,93,55,.24) 0 2px,transparent 3px),
-    radial-gradient(circle at 72% 67%,rgba(117,93,55,.20) 0 2px,transparent 3px),
-    repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 48px),
-    repeating-linear-gradient(90deg,rgba(0,0,0,.12) 0 1px,transparent 1px 48px),
-    linear-gradient(180deg,#37322a 0%,#292821 48%,#211f1a 100%);isolation:isolate;box-shadow:inset 0 0 0 8px #151613,inset 0 0 0 10px #5a4d38,inset 0 0 70px rgba(0,0,0,.72)}
+   #arenaGameMode .arena-game-battle{position:relative;display:block!important;min-height:390px;overflow:hidden;padding:0!important;border:1px solid rgba(190,151,78,.45);background:radial-gradient(circle at 18% 28%,rgba(117,93,55,.24) 0 2px,transparent 3px),radial-gradient(circle at 72% 67%,rgba(117,93,55,.20) 0 2px,transparent 3px),repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 48px),repeating-linear-gradient(90deg,rgba(0,0,0,.12) 0 1px,transparent 1px 48px),linear-gradient(180deg,#37322a 0%,#292821 48%,#211f1a 100%);isolation:isolate;box-shadow:inset 0 0 0 8px #151613,inset 0 0 0 10px #5a4d38,inset 0 0 70px rgba(0,0,0,.72)}
    #arenaGameMode .arena-game-battle:before{content:"";position:absolute;inset:12px;border:2px solid rgba(190,151,78,.18);box-shadow:inset 0 0 0 1px rgba(0,0,0,.45);pointer-events:none;z-index:0}
    #arenaGameMode .arena-game-battle:after{content:"";position:absolute;left:50%;top:0;bottom:0;width:2px;background:linear-gradient(180deg,transparent,rgba(190,151,78,.18),transparent);transform:translateX(-50%);pointer-events:none;z-index:0}
    #arenaGameMode .arena-fighter{position:absolute!important;z-index:2;width:190px;min-height:0!important;padding:8px!important;border:0!important;background:transparent!important;box-shadow:none!important;backdrop-filter:none!important}
@@ -40,13 +34,14 @@
  function playerVocation(){const n=String(document.getElementById('arenaPlayerName')?.textContent||'').toLowerCase();if(n.includes('mage')||n.includes('mago'))return'mage';if(n.includes('archer')||n.includes('paladin')||n.includes('paladino'))return'archer';if(n.includes('rogue')||n.includes('monk')||n.includes('monge'))return'rogue';return'knight'}
  function heroIdle(v,n){return ROOT+HERO_ROOT[v]+'/idle_south/'+String(n).padStart(2,'0')+'.png'}
  function paint(el,src,size){if(!el)return;el.style.backgroundImage=src?`url(\"${src}\")`:'';el.style.backgroundSize=size+'px '+size+'px'}
+ function paintSheet(el,src,size,frame,total){if(!el)return;el.style.backgroundImage=`url(\"${src}\")`;el.style.backgroundSize=(size*total)+'px '+size+'px';el.style.backgroundPosition=(-frame*size)+'px center'}
  function playerEl(){return document.querySelector('#arenaPlayerName')?.closest('.arena-fighter')?.querySelector('.arena-fighter-icon')}
  function enemyEl(){return document.getElementById('arenaEnemyIcon')}
- function prepareAssets(){for(const v of Object.keys(HERO_ROOT))for(let i=0;i<HERO_FRAMES;i++)preload(heroIdle(v,i))}
- function enemyUsesSprite(){const name=String(document.getElementById('arenaEnemyName')?.textContent||'').toLowerCase();return /knight|shieldmaiden|sentinela/.test(name)}
- function draw(){const p=playerEl(),e=enemyEl();if(!p||!e)return;const v=playerVocation();paint(p,heroIdle(v,animFrame%HERO_FRAMES),HERO_SIZE);if(enemyUsesSprite()){const name=String(document.getElementById('arenaEnemyName')?.textContent||'').toLowerCase();const key=name.includes('shieldmaiden')?'02_shieldmaiden_IRONDEEP':name.includes('thorn')?'03_thorn_knight_VERDANT':name.includes('obsidian')?'04_obsidian_knight_EMBERWING':name.includes('glacier')?'05_glacier_knight_FROSTHOLD':name.includes('capshield')?'06_capshield_knight_GLOOMCAP':'01_coral_knight_SUNKEN';const src=ROOT+'six-kingdoms-free-v1.0/six-kingdoms-free-v1.0/'+key+'/128/south.png';paint(e,src,ENEMY_SIZE);e.textContent=''}else{paint(e,'',ENEMY_SIZE)}}
+ function prepareAssets(){for(const v of Object.keys(HERO_ROOT))for(let i=0;i<HERO_FRAMES;i++)preload(heroIdle(v,i));preload(MONSTER_ROOT+'rat/idle.png')}
+ function enemyKind(){const n=String(document.getElementById('arenaEnemyName')?.textContent||'').toLowerCase();if(n.includes('rat')||n.includes('rato'))return'rat';return'other'}
+ function draw(){const p=playerEl(),e=enemyEl();if(!p||!e)return;const v=playerVocation();paint(p,heroIdle(v,animFrame%HERO_FRAMES),HERO_SIZE);const kind=enemyKind();if(kind==='rat'){paintSheet(e,MONSTER_ROOT+'rat/idle.png',ENEMY_SIZE,animFrame%RAT_FRAMES,RAT_FRAMES);e.textContent=''}else if(/knight|shieldmaiden|sentinela/.test(String(document.getElementById('arenaEnemyName')?.textContent||'').toLowerCase())){const name=String(document.getElementById('arenaEnemyName')?.textContent||'').toLowerCase();const key=name.includes('shieldmaiden')?'02_shieldmaiden_IRONDEEP':name.includes('thorn')?'03_thorn_knight_VERDANT':name.includes('obsidian')?'04_obsidian_knight_EMBERWING':name.includes('glacier')?'05_glacier_knight_FROSTHOLD':name.includes('capshield')?'06_capshield_knight_GLOOMCAP':'01_coral_knight_SUNKEN';paint(e,ROOT+'six-kingdoms-free-v1.0/six-kingdoms-free-v1.0/'+key+'/128/south.png',ENEMY_SIZE);e.textContent=''}else{paint(e,'',ENEMY_SIZE)}}
  function startAttack(){if(attacking)return;attacking=true;const p=playerEl();if(p){p.classList.remove('waves-attack');void p.offsetWidth;p.classList.add('waves-attack');setTimeout(()=>p.classList.remove('waves-attack'),300)}setTimeout(()=>{attacking=false;draw()},310)}
- function idleAnimation(){if(attacking)return;animFrame=(animFrame+1)%HERO_FRAMES;draw()}
+ function idleAnimation(){if(attacking)return;animFrame=(animFrame+1)%Math.max(HERO_FRAMES,RAT_FRAMES);draw()}
  function enemyDamageFx(){const el=enemyEl();if(!el)return;el.classList.remove('waves-damage');void el.offsetWidth;el.classList.add('waves-damage');setTimeout(()=>el.classList.remove('waves-damage'),230)}
  function hookAttack(){const b=document.getElementById('arenaAttackBtn');if(b&&!b.dataset.pixelHook){b.dataset.pixelHook='1';b.addEventListener('click',()=>setTimeout(startAttack,0))}}
  function observeDamage(){const t=document.getElementById('arenaEnemyHpText');if(!t)return;const m=String(t.textContent||'').match(/([\d.,]+)\s*\/\s*([\d.,]+)/);if(!m)return;const hp=Number(m[1].replace(/\./g,'').replace(',','.'));if(lastEnemyHp!==null&&hp<lastEnemyHp)enemyDamageFx();lastEnemyHp=hp}
