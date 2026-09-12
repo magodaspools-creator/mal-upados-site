@@ -1,9 +1,7 @@
 (()=>{
   if(typeof SHOP_ITEMS==='undefined')return;
 
-  // Existem armas antigas em arena-weapons-fix.js que usam category='wands'
-  // e duplicam Wands atuais ou classificam Rods como Wands. Elas não fazem
-  // parte do arsenal atual do Sorcerer.
+  // Armas antigas que usavam category='wands' mas nao fazem parte do arsenal atual.
   const LEGACY_WAND_IDS=new Set([
     'sorcerer-wand',
     'sorcerer-destruction',
@@ -19,6 +17,8 @@
     if(LEGACY_WAND_IDS.has(SHOP_ITEMS[i].id))SHOP_ITEMS.splice(i,1);
   }
 
+  const ATK_VALUES=[8,20,24,29,35,43,51,59,68];
+
   const rods=SHOP_ITEMS
     .filter(x=>x.category==='rods')
     .slice()
@@ -29,25 +29,32 @@
     .slice()
     .sort((a,b)=>(a.attack||0)-(b.attack||0));
 
-  // Mantém exatamente as Wands atuais. Copia os status dos Rods por posição
-  // e ordena as Wands da menor para a maior força de ataque.
+  // Define exatamente a progressao de ATK solicitada para Rods e Wands.
+  rods.forEach((rod,i)=>{
+    if(ATK_VALUES[i]===undefined)return;
+    rod.attack=ATK_VALUES[i];
+  });
+
   wands.forEach((wand,i)=>{
-    const rod=rods[i];
-    if(!rod)return;
-    wand.attack=rod.attack;
-    wand.defense=rod.defense;
-    wand.price=rod.price;
-    wand.minLevel=rod.minLevel;
-    wand.bonus=`+${rod.attack} ataque${rod.defense?` · +${rod.defense} defesa`:''} · Sorcerer`;
+    if(ATK_VALUES[i]===undefined)return;
+    wand.attack=ATK_VALUES[i];
+    wand.bonus=`+${ATK_VALUES[i]} ataque · Sorcerer`;
+  });
+
+  // Reordena apenas as posicoes ocupadas por Wands, preservando Rings,
+  // Rods e todos os demais itens exatamente onde estavam.
+  const wandIndexes=[];
+  SHOP_ITEMS.forEach((item,i)=>{
+    if(item.category==='wands')wandIndexes.push(i);
   });
 
   const sortedWands=SHOP_ITEMS
     .filter(x=>x.category==='wands')
     .sort((a,b)=>(a.attack||0)-(b.attack||0));
-  const first=SHOP_ITEMS.findIndex(x=>x.category==='wands');
-  if(first>=0){
-    SHOP_ITEMS.splice(first,sortedWands.length,...sortedWands);
-  }
+
+  wandIndexes.forEach((idx,i)=>{
+    if(sortedWands[i])SHOP_ITEMS[idx]=sortedWands[i];
+  });
 
   if(typeof shopRender==='function')shopRender();
 })();
