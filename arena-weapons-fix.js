@@ -8,6 +8,7 @@ const CLASS_WEAPONS=[
   {id:'paladin-crossbow',name:'Arbalest',icon:'🏹',category:'weapons',class:'Paladin',price:650,attack:20,defense:0,minLevel:10,bonus:'+20 ataque · Paladin'},
   {id:'paladin-holy',name:'Divine Bow',icon:'✨',category:'weapons',class:'Paladin',price:980,attack:25,defense:2,minLevel:15,bonus:'+25 ataque · +2 defesa · Paladin'},
   {id:'paladin-demon',name:'Royal Crossbow',icon:'🏹',category:'weapons',class:'Paladin',price:1550,attack:31,defense:3,minLevel:22,bonus:'+31 ataque · +3 defesa · Paladin'},
+  {id:'paladin-bis',name:'Divine Crossbow',icon:'🏹',category:'weapons',class:'Paladin',price:2500,attack:43,defense:4,minLevel:30,bonus:'+43 ataque · +4 defesa · Paladin'},
   {id:'sorcerer-wand',name:'Wand of Voodoo',icon:'🪄',category:'wands',class:'Sorcerer',price:430,attack:16,defense:0,minLevel:6,bonus:'+16 ataque · Sorcerer'},
   {id:'sorcerer-destruction',name:'Wand of Destruction',icon:'💥',category:'wands',class:'Sorcerer',price:760,attack:22,defense:0,minLevel:10,bonus:'+22 ataque · Sorcerer'},
   {id:'sorcerer-supreme',name:'Wand of Cosmic Energy',icon:'🌌',category:'wands',class:'Sorcerer',price:1200,attack:28,defense:1,minLevel:16,bonus:'+28 ataque · +1 defesa · Sorcerer'},
