@@ -72,7 +72,7 @@
       const box=document.getElementById('shopItems');
       if(!box)return;
       box.querySelectorAll('.shop-item').forEach(card=>{
-        const name=card.querySelector('h3')?.textContent;
+        const name=card.querySelector('.shop-info strong')?.textContent||card.querySelector('h3')?.textContent;
         const item=BLESS_ITEMS.find(x=>x.name===name);
         if(!item)return;
         const button=card.querySelector('button');
