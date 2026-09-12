@@ -1,14 +1,14 @@
 extends Node2D
 
-const MOCKUP_PATH := "res://tilesets/Foozle_2DT0003_Lucifer_Dungeon_Tileset_Pixel_Art/Foozle_2DT0003_Lucifer_Dungeon_Tileset_Pixel_Art/DungeonTileset Mockup.png"
+# Tileset enviado pelo projeto. O mockup serve como cenário visual imediato
+# enquanto montamos o mapa tile-a-tile.
+const MOCKUP_PATH := "res://assets-importados/Foozle_2DT0003_Lucifer_Dungeon_Tileset_Pixel_Art/Foozle_2DT0003_Lucifer_Dungeon_Tileset_Pixel_Art/DungeonTileset Mockup.png"
 
 @onready var background: Sprite2D = $ArenaBackground
 
 func _ready() -> void:
     var texture := load(MOCKUP_PATH) as Texture2D
     if texture == null:
-        # The Godot project root is arena-godot, so the asset path above is correct
-        # when the project is opened from that folder.
         push_warning("Mockup do tileset não encontrado: " + MOCKUP_PATH)
         return
 
