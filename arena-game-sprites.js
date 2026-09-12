@@ -6,12 +6,12 @@
  const MONSTER_ROOT=ROOT+'monsters-lg-rpg/';
  const RAW='https://raw.githubusercontent.com/LiquidGalaxyLAB/lg-rpg/main/lg_rpg_server/public/assets/enemies/';
  const MONSTERS={
-  rat:{src:MONSTER_ROOT+'rat/idle.png',frames:10,w:70,h:70,rate:8,size:88},
-  goblin:{src:RAW+'goblin/idle.png',frames:4,w:150,h:150,rate:6,size:88},
-  skeleton:{src:RAW+'skeleton/idle.png',frames:4,w:150,h:150,rate:6,size:88},
-  slime:{src:RAW+'slime/idle.png',frames:14,w:156,h:156,rate:8,size:88},
-  bat:{src:RAW+'bat/fly.png',frames:11,w:87,h:87,rate:12,size:82},
-  dragon:{src:RAW+'boss/dragon_idle.png',frames:6,w:70,h:73,rate:8,size:92}
+  rat:{src:MONSTER_ROOT+'rat/idle.png',frames:10,w:70,h:70,rate:8,size:96},
+  goblin:{src:RAW+'goblin/idle.png',frames:4,w:150,h:150,rate:6,size:96},
+  skeleton:{src:RAW+'skeleton/idle.png',frames:4,w:150,h:150,rate:6,size:96},
+  slime:{src:RAW+'slime/idle.png',frames:14,w:156,h:156,rate:8,size:96},
+  bat:{src:RAW+'bat/fly.png',frames:11,w:87,h:87,rate:12,size:96},
+  dragon:{src:RAW+'boss/dragon_idle.png',frames:6,w:70,h:73,rate:8,size:96}
  };
  const HERO_FRAMES=7,HERO_SIZE=96;
  let timer=null,animFrame=0,attacking=false,lastEnemyHp=null;
