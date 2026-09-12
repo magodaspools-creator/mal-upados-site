@@ -20,4 +20,10 @@
   });
 
   if(typeof shopRender==='function')shopRender();
+
+  // Carrega o módulo de campanha depois de todos os módulos da Arena.
+  const src='arena-demon-final-fix.js?v=final-boss-20260912';
+  if(!document.querySelector(`script[src^="arena-demon-final-fix.js"]`)){
+    const s=document.createElement('script');s.src=src;document.body.appendChild(s);
+  }
 })();
