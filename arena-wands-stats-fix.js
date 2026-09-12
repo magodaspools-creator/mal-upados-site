@@ -1,6 +1,24 @@
 (()=>{
   if(typeof SHOP_ITEMS==='undefined')return;
 
+  // Existem armas antigas em arena-weapons-fix.js que usam category='wands'
+  // e duplicam Wands atuais ou classificam Rods como Wands. Elas não fazem
+  // parte do arsenal atual do Sorcerer.
+  const LEGACY_WAND_IDS=new Set([
+    'sorcerer-wand',
+    'sorcerer-destruction',
+    'sorcerer-supreme',
+    'sorcerer-abyss',
+    'druid-rod',
+    'druid-rod-destruction',
+    'druid-supreme',
+    'druid-abyss'
+  ]);
+
+  for(let i=SHOP_ITEMS.length-1;i>=0;i--){
+    if(LEGACY_WAND_IDS.has(SHOP_ITEMS[i].id))SHOP_ITEMS.splice(i,1);
+  }
+
   const rods=SHOP_ITEMS
     .filter(x=>x.category==='rods')
     .slice()
@@ -11,8 +29,8 @@
     .slice()
     .sort((a,b)=>(b.attack||0)-(a.attack||0));
 
-  // Mantém exatamente os mesmos wands existentes.
-  // Apenas copia os status dos Rods por posição e ordena do maior ATK para o menor.
+  // Mantém exatamente as Wands atuais. Apenas copia os status dos Rods por
+  // posição e ordena as Wands da maior para a menor força de ataque.
   wands.forEach((wand,i)=>{
     const rod=rods[i];
     if(!rod)return;
