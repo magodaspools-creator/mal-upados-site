@@ -84,8 +84,6 @@
     };
     window.__arenaManualCritAttackWrapped=true;
 
-    // renderBattle captura `attack` no onclick quando cria o botão.
-    // Este wrapper garante que o botão use o ataque manual depois que o combate é renderizado.
     const previousRender=typeof window.renderBattle==='function'?window.renderBattle:null;
     if(previousRender&&!window.__arenaManualCritRenderWrapped){
       window.renderBattle=function(){
@@ -94,9 +92,18 @@
         if(btn)btn.onclick=window.attack;
       };
       window.__arenaManualCritRenderWrapped=true;
-      const currentBtn=document.getElementById('attackBtn');
-      if(currentBtn)currentBtn.onclick=window.attack;
     }
   }
+
+  // Captura o clique antes do onclick criado pelo arena.js. Isso elimina qualquer
+  // referência antiga ao attack automático e garante que o D6 manual seja sempre o primeiro fluxo.
+  document.addEventListener('click',function(e){
+    const btn=e.target.closest?.('#attackBtn');
+    if(!btn)return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    if(typeof window.attack==='function')window.attack();
+  },true);
+
   install();window.addEventListener('load',install);setTimeout(install,700);
 })();
