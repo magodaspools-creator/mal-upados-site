@@ -28,7 +28,7 @@
     'arena-flee-fix.js?v=flee-fix-20260912',
     'arena-gold-universal.js?v=gold-universal-20260912',
     'arena-account-systems.js?v=account-systems-20260912a',
-    'arena-profile-complete.js?v=profile-complete-20260912a'
+    'arena-profile-advanced.js?v=profile-advanced-20260912b'
   ];
   const load=()=>files.forEach(src=>{if(document.querySelector(`script[data-arena-feature="${src}"]`))return;const s=document.createElement('script');s.src=src;s.dataset.arenaFeature=src;document.body.appendChild(s)});
   if(document.body)load();else document.addEventListener('DOMContentLoaded',load,{once:true});
