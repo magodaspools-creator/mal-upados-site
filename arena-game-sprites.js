@@ -41,8 +41,7 @@
  function paint(el,src,size){if(!el)return;el.style.backgroundImage=src?`url("${src}")`:'';el.style.backgroundSize=size+'px '+size+'px';el.style.backgroundPosition='center'}
  function paintSheet(el,m,frame){
   if(!el||!m)return;
-  const targetH=m.size;
-  const targetW=targetH*(m.w/m.h);
+  const targetH=m.size,targetW=targetH*(m.w/m.h);
   el.style.backgroundImage=`url("${m.src}")`;
   el.style.backgroundSize=`${targetW*m.frames}px ${targetH}px`;
   el.style.backgroundPosition=`${-(frame*targetW)}px center`;
@@ -54,11 +53,12 @@
  function enemyKind(){
   const n=String(document.getElementById('arenaEnemyName')?.textContent||'').toLowerCase();
   if(n.includes('rat'))return'rat';
-  if(n.includes('goblin'))return'goblin';
-  if(n.includes('skeleton'))return'skeleton';
-  if(n.includes('slime'))return'slime';
-  if(n.includes('bat'))return'bat';
+  if(n.includes('goblin')||n.includes('troll')||n.includes('orc'))return'goblin';
+  if(n.includes('skeleton')||n.includes('cyclops')||n.includes('scarab'))return'skeleton';
+  if(n.includes('slime')||n.includes('scorpion'))return'slime';
+  if(n.includes('bat')||n.includes('hellhound'))return'bat';
   if(n.includes('dragon'))return'dragon';
+  if(n.includes('demon')||n.includes('deathbringer'))return'skeleton';
   return null;
  }
  function draw(){
