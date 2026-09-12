@@ -5,8 +5,9 @@
  const HERO_ROOT={knight:'knight-hero-128/knight-hero-128',mage:'mage-hero-128/mage-hero-128',archer:'archer-hero-128/archer-hero-128',rogue:'rogue-hero-128/rogue-hero-128'};
  const MONSTER_ROOT=ROOT+'monsters-lg-rpg/';
  const RAW='https://raw.githubusercontent.com/LiquidGalaxyLAB/lg-rpg/main/lg_rpg_server/public/assets/enemies/';
+ const RAT_RAW='https://raw.githubusercontent.com/AntumDeluge/game-resources/master/sprite/animal/rodent/PNG/64x64_scale/rat.png';
  const MONSTERS={
-  rat:{src:MONSTER_ROOT+'rat/idle.png',frames:10,w:70,h:70,rate:8,size:96},
+  rat:{src:RAT_RAW,frames:1,w:64,h:64,rate:1,size:96},
   goblin:{src:RAW+'goblin/idle.png',frames:4,w:150,h:150,rate:6,size:96},
   skeleton:{src:RAW+'skeleton/idle.png',frames:4,w:150,h:150,rate:6,size:96},
   slime:{src:RAW+'slime/idle.png',frames:14,w:156,h:156,rate:8,size:96},
