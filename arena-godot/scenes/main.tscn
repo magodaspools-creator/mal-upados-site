@@ -8,11 +8,20 @@ script = ExtResource("1")
 
 [node name="World" type="Node2D" parent="."]
 
+[node name="ArenaFloor" type="Polygon2D" parent="World"]
+polygon = PackedVector2Array(64, 128, 1216, 128, 1216, 536, 64, 536)
+
+[node name="ArenaBorder" type="Line2D" parent="World"]
+points = PackedVector2Array(64, 128, 1216, 128, 1216, 536, 64, 536, 64, 128)
+width = 4.0
+closed = true
+
 [node name="Player" type="CharacterBody2D" parent="."]
 position = Vector2(640, 360)
 script = ExtResource("2")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player"]
+texture_filter = 1
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(0, 0)
