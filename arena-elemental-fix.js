@@ -12,10 +12,11 @@
   // Arena 1 = Terra | Arena 2 = Energy | Arena 3 = Fogo | Arena 4 = Gelo | Arena 5 = Death.
   const ZONE_ELEMENTS=['earth','energy','fire','ice','death'];
 
+  // Ordem da loja segue exatamente a ordem das áreas da Arena.
   const AMULETS=[
     {id:'earthguard-amulet',name:'Earthguard Amulet',icon:'🌿',category:'amulets',price:5500,attack:0,defense:0,minLevel:1,bonus:'10% resistência a Terra',element:'earth',elementalResistance:0.10},
-    {id:'fireheart-amulet',name:'Fireheart Amulet',icon:'🔥',category:'amulets',price:7500,attack:0,defense:0,minLevel:5,bonus:'10% resistência a Fogo',element:'fire',elementalResistance:0.10},
     {id:'energy-prism-amulet',name:'Energy Prism Amulet',icon:'⚡',category:'amulets',price:9500,attack:0,defense:0,minLevel:12,bonus:'10% resistência a Energy',element:'energy',elementalResistance:0.10},
+    {id:'fireheart-amulet',name:'Fireheart Amulet',icon:'🔥',category:'amulets',price:7500,attack:0,defense:0,minLevel:5,bonus:'10% resistência a Fogo',element:'fire',elementalResistance:0.10},
     {id:'frost-amulet',name:'Frost Amulet',icon:'❄️',category:'amulets',price:12000,attack:0,defense:0,minLevel:20,bonus:'10% resistência a Gelo',element:'ice',elementalResistance:0.10},
     {id:'death-amulet',name:'Death Amulet',icon:'💀',category:'amulets',price:22000,attack:0,defense:0,minLevel:35,bonus:'10% resistência a Death',element:'death',elementalResistance:0.10}
   ];
