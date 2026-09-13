@@ -48,10 +48,14 @@
  }
  function playerVocation(){const n=String(document.getElementById('arenaPlayerName')?.textContent||'').toLowerCase();if(n.includes('mage')||n.includes('mago'))return'mage';if(n.includes('archer')||n.includes('paladin')||n.includes('paladino'))return'archer';if(n.includes('rogue')||n.includes('monk')||n.includes('monge'))return'rogue';return'knight'}
  function heroIdle(v,n){return ROOT+HERO_ROOT[v]+'/idle_south/'+String(n).padStart(2,'0')+'.png'}
- function paint(el,src,size){if(!el)return;el.style.backgroundImage=src?`url(\"${src}\")`:'';el.style.backgroundSize=size+'px '+size+'px';el.style.backgroundPosition='center'}
+ function paint(el,src,size){if(!el)return;el.style.width=size+'px';el.style.height=size+'px';el.style.backgroundImage=src?`url(\"${src}\")`:'';el.style.backgroundSize=size+'px '+size+'px';el.style.backgroundPosition='center'}
  function paintSheet(el,m,frame){
   if(!el||!m)return;
   const targetH=m.size,targetW=targetH*(m.w/m.h);
+  // O elemento vira exatamente a janela de UM frame. Isso impede qualquer
+  // vazamento visual das outras poses do spritesheet.
+  el.style.width=`${targetW}px`;
+  el.style.height=`${targetH}px`;
   el.style.backgroundImage=`url(\"${m.src}\")`;
   el.style.backgroundSize=`${targetW*m.frames}px ${targetH*(m.rows||1)}px`;
   el.style.backgroundPosition=`${-(frame*targetW)}px ${-((m.row||0)*targetH)}px`;
@@ -62,29 +66,12 @@
  function prepareAssets(){for(const v of Object.keys(HERO_ROOT))for(let i=0;i<HERO_FRAMES;i++)preload(heroIdle(v,i));Object.values(MONSTERS).forEach(m=>preload(m.src))}
  function enemyKind(){
   const n=String(document.getElementById('arenaEnemyName')?.textContent||'').toLowerCase();
-  if(n.includes('rat'))return'rat';
-  if(n.includes('troll'))return'sahuagin';
-  if(n==='orc')return'goblin';
-  if(n.includes('berserker'))return'imp';
-  if(n.includes('rider'))return'cockatrice';
-  if(n.includes('cyclops'))return'gazer';
-  if(n.includes('scorpion'))return'scorpion';
-  if(n.includes('scarab'))return'plant';
-  if(n.includes('dragon hatchling'))return'snake';
-  if(n==='dragon')return'dragon';
-  if(n.includes('dragon lord'))return'puppet';
-  if(n.includes('frost dragon'))return'drone';
-  if(n.includes('demon skeleton'))return'skeleton';
-  if(n.includes('hellhound'))return'spider';
-  if(n==='demon')return'willoWisp';
-  if(n.includes('deathbringer'))return'sufferingSoul';
-  return null;
+  if(n.includes('rat'))return'rat';if(n.includes('troll'))return'sahuagin';if(n==='orc')return'goblin';if(n.includes('berserker'))return'imp';if(n.includes('rider'))return'cockatrice';if(n.includes('cyclops'))return'gazer';if(n.includes('scorpion'))return'scorpion';if(n.includes('scarab'))return'plant';if(n.includes('dragon hatchling'))return'snake';if(n==='dragon')return'dragon';if(n.includes('dragon lord'))return'puppet';if(n.includes('frost dragon'))return'drone';if(n.includes('demon skeleton'))return'skeleton';if(n.includes('hellhound'))return'spider';if(n==='demon')return'willoWisp';if(n.includes('deathbringer'))return'sufferingSoul';return null;
  }
  function draw(){
   const p=playerEl(),e=enemyEl();if(!p||!e)return;
   const v=playerVocation();paint(p,heroIdle(v,animFrame%HERO_FRAMES),HERO_SIZE);p.textContent='';e.textContent='';
-  const kind=enemyKind(),m=MONSTERS[kind];
-  if(m)paintSheet(e,m,m.animated?animFrame%m.frames:0);else e.style.backgroundImage='';
+  const kind=enemyKind(),m=MONSTERS[kind];if(m)paintSheet(e,m,m.animated?animFrame%m.frames:0);else{e.style.backgroundImage='';e.style.width='112px';e.style.height='112px'}
  }
  function startAttack(){if(attacking)return;attacking=true;const p=playerEl();if(p){p.classList.remove('waves-attack');void p.offsetWidth;p.classList.add('waves-attack');setTimeout(()=>p.classList.remove('waves-attack'),300)}setTimeout(()=>{attacking=false;draw()},310)}
  function idleAnimation(){if(attacking)return;animFrame++;draw()}
