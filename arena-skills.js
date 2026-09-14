@@ -9,8 +9,27 @@
   function need(s){s=Math.max(1,Math.floor(Number(s)||1));if(s<=20)return 20;if(s<=30)return 30;if(s<=40)return 45;if(s<=50)return 65;if(s<=60)return 90;if(s<=70)return 125;if(s<=80)return 170;if(s<=90)return 230;return Math.floor(300*Math.pow(1.08,s-90));}
   function progress(){const x=ensure();return Math.max(0,Number(game.skills[x.field+'_progress'])||0);}
   function train(n=1){const x=ensure();game.skills[x.field+'_progress']=progress()+n;let ups=0;while(game.skills[x.field+'_progress']>=need(x.value)){game.skills[x.field+'_progress']-=need(x.value);game.skills[x.field]++;x.value++;ups++;toast(`SKILL UP! ${SN[x.v]} ${x.value}.`);}if(typeof persist==='function')persist();renderCompact();return ups;}
-  function bonus(){const x=ensure();const base=battle&&Number.isFinite(Number(battle.attack))?Number(battle.attack):0;return Math.floor(base*Math.max(0,x.value-10)*0.04);}
-  function current(){const x=ensure();return {v:x.v,field:x.field,value:x.value,progress:progress(),need:need(x.value),name:SN[x.v]||'Combat Skill'};}
+
+  // Skill is the main combat-power multiplier. Level provides the base attack;
+  // skill determines how effectively that base is converted into real damage.
+  function skillMultiplier(value){
+    const s=Math.max(10,Number(value)||10);
+    if(s<=20)return 1+(s-10)*0.03;
+    if(s<=30)return 1.3+(s-20)*0.04;
+    if(s<=40)return 1.7+(s-30)*0.05;
+    if(s<=50)return 2.2+(s-40)*0.06;
+    if(s<=60)return 2.8+(s-50)*0.07;
+    if(s<=70)return 3.5+(s-60)*0.08;
+    if(s<=80)return 4.3+(s-70)*0.09;
+    if(s<=90)return 5.2+(s-80)*0.10;
+    return 6.2+(s-90)*0.11;
+  }
+  function bonus(){
+    const x=ensure();
+    const base=battle&&Number.isFinite(Number(battle.baseAttack))?Number(battle.baseAttack):battle&&Number.isFinite(Number(battle.attack))?Number(battle.attack):0;
+    return Math.max(0,Math.floor(base*(skillMultiplier(x.value)-1)));
+  }
+  function current(){const x=ensure();return {v:x.v,field:x.field,value:x.value,progress:progress(),need:need(x.value),name:SN[x.v]||'Combat Skill',multiplier:skillMultiplier(x.value)};}
 
   function installCompact(){
     const panel=document.querySelector('.character-panel .stat-grid');
@@ -45,10 +64,11 @@
     const mn=document.getElementById('skillModalName'),mv=document.getElementById('skillModalValue'),pt=document.getElementById('skillProgressText');if(mn)mn.textContent=`${ICON[x.v]||'⚔'} ${SN[x.v]||'Combat Skill'}`;if(mv)mv.textContent=`Skill ${s}`;if(pt)pt.textContent=`${fmt(p)} / ${fmt(r)} para Skill ${s+1}`;
   }
   function patch(){
-    if(typeof startBattle==='function'&&!window.__arenaSkillBattlePatch){window.__arenaSkillBattlePatch=true;const old=startBattle;window.startBattle=function(...a){old(...a);if(battle)battle.attack+=bonus();};}
+    if(typeof startBattle==='function'&&!window.__arenaSkillBattlePatch){window.__arenaSkillBattlePatch=true;const old=startBattle;window.startBattle=function(...a){old(...a);if(battle){const x=ensure();battle.baseAttack=Number(battle.attack)||0;battle.attack=Math.floor(battle.baseAttack*skillMultiplier(x.value));}};}
     if(typeof attack==='function'&&!window.__arenaSkillAttackPatch){window.__arenaSkillAttackPatch=true;const old=attack;window.attack=function(...a){if(!battle)return old(...a);const hp=battle.hp;const r=old(...a);if(hp>battle.hp)train(2);return r;};}
   }
   window.arenaSkillBonus=bonus;
+  window.arenaSkillMultiplier=skillMultiplier;
   window.arenaSkillTrain=train;
   window.arenaSkillRender=renderCompact;
   window.arenaSkillCurrent=current;
