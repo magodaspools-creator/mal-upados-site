@@ -6,6 +6,12 @@
     const nav=document.getElementById('arenaSubnav');
     if(!nav)return false;
 
+    const upperMap=document.querySelector('.game-shell .map');
+    if(upperMap)upperMap.id='arenaMap';
+
+    const forgeSection=document.getElementById('arenaPhase4Command');
+    if(forgeSection)forgeSection.id='arenaForgeSection';
+
     if(nav.dataset.bound==='1')return true;
     nav.dataset.bound='1';
 
@@ -14,17 +20,6 @@
       btn.onclick=(e)=>{
         e.preventDefault();
         e.stopPropagation();
-
-        // Mapa e Forja são ações, não âncoras de rolagem.
-        if(target==='arenaMap'){
-          if(typeof window.__arenaOpenMap==='function')window.__arenaOpenMap();
-          return;
-        }
-        if(target==='arenaForgeSection'){
-          if(typeof window.__arenaOpenForge==='function')window.__arenaOpenForge();
-          return;
-        }
-
         const el=document.getElementById(target);
         if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
         nav.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===btn));
@@ -33,7 +28,7 @@
     return true;
   }
 
-  // A UI Polish cria o submenu depois do startup; espera sem alterar o mapa superior.
+  // A UI Polish cria o submenu e a Fase 4 cria a Forja de forma assíncrona.
   const timer=setInterval(()=>{if(bind())clearInterval(timer)},150);
   setTimeout(()=>clearInterval(timer),30000);
 })();
