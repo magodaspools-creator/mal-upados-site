@@ -10,11 +10,12 @@
   function loadForgeBalance(){loadScript('arena-forge-balance-fix.js?v=forge-balance-20260914','data-arena-forge-balance')}
   function loadCursedRuins(){loadScript('arena-cursed-ruins.js?v=cursed-ruins-20260914','data-arena-cursed-ruins')}
   function loadCursedRuinsUI(){loadScript('arena-cursed-ruins-ui.js?v=cursed-ruins-ui-20260914','data-arena-cursed-ruins-ui')}
+  function loadCharacterCreation(){loadScript('arena-character-creation.js?v=character-creation-20260914','data-arena-character-creation')}
   function boot(){
     loadSiteAuth();
     if(typeof window.load==='function'){try{window.load()}catch(e){console.error('Arena startup fix:',e)}}
     if(typeof members!=='undefined'&&Array.isArray(members)&&members.length){const menu=document.getElementById('characterPickerMenu');if(menu&&typeof window.__arenaCharacterDraw==='function')window.__arenaCharacterDraw();if(typeof window.renderAll==='function'&&typeof game!=='undefined'&&game)window.renderAll()}
-    loadPolish();loadSubnavFix();setTimeout(loadViews,250);setTimeout(loadForgeV2,500);setTimeout(loadForgeBalance,850);setTimeout(loadCursedRuins,1000);setTimeout(loadCursedRuinsUI,1200)
+    loadPolish();loadSubnavFix();setTimeout(loadViews,250);setTimeout(loadForgeV2,500);setTimeout(loadForgeBalance,850);setTimeout(loadCursedRuins,1000);setTimeout(loadCursedRuinsUI,1200);setTimeout(loadCharacterCreation,1400)
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,0),{once:true});else setTimeout(boot,0)
 })();
