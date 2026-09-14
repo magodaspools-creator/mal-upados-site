@@ -64,7 +64,8 @@
     const tuple=bossTuple(zoneIndex),list=ZONES[zoneIndex].monsters,index=list.length;
     list.push(tuple);
     activeBoss={zoneIndex,monsterIndex:index,baseScale:scale(zoneIndex),name:b.name,element:b.element};
-    originalStartBattle(zoneIndex,index);
+    // Use the current public startBattle so the Skill patch is applied to Boss fights too.
+    window.startBattle(zoneIndex,index);
     if(battle){battle.isBoss=true;battle.bossKills=kills(zoneIndex);battle.bossCooldown=b.cooldown;battle.bossTokenLoot=b.tokens||0}
     renderBossBattle();
   }
