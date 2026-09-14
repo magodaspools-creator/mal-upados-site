@@ -498,6 +498,12 @@
       "experience_exact": false,
       "experience_vocation": null
     },
+    "Braiz da Lucas": {
+      "level": 46,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
     "Brunett Full Bebezinha": {
       "level": 247,
       "experience": null,
@@ -566,12 +572,6 @@
     },
     "Bestiary Track": {
       "level": 62,
-      "experience": null,
-      "experience_exact": false,
-      "experience_vocation": null
-    },
-    "Braiz da Lucas": {
-      "level": 46,
       "experience": null,
       "experience_exact": false,
       "experience_vocation": null
