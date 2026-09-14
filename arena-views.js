@@ -8,16 +8,17 @@
     .arena-view.active{display:block}
     @keyframes arenaViewIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
     .arena-view[data-view="combat"] .game-shell{margin-bottom:0}
-    .arena-map-view-head,.arena-forge-view-head{display:flex;justify-content:space-between;align-items:end;gap:18px;padding:0 2px;margin-bottom:16px}
-    .arena-map-view-head h2,.arena-forge-view-head h2{margin:4px 0 0;font-family:Cinzel,serif;color:#e8dfc9}
-    .arena-map-view-head p,.arena-forge-view-head p{margin:5px 0 0;color:#777d83;font-size:.64rem}
-    .arena-map-view-body{border:1px solid #302f2b;background:linear-gradient(145deg,#151716,#0b0d0e);padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+    .arena-view[data-view="combat"] .adventure-panel>.section-head,.arena-view[data-view="combat"] .adventure-panel>.map{display:none!important}
+    .arena-view[data-view="combat"] .adventure-panel{display:flex;align-items:stretch}
+    .arena-view[data-view="combat"] .battle-area{width:100%;margin:0}
+    .arena-map-art{border:1px solid #39372f;background:#090b0c;padding:10px;box-shadow:0 24px 70px rgba(0,0,0,.45)}
+    .arena-map-art img{display:block;width:100%;height:auto;border:1px solid #2d2d29;background:#0a0c0d}
     .arena-view .shop-section,.arena-view .activities,.arena-view .progress-section,.arena-view .arena-ranking,.arena-view .p3-codex,.arena-view .p4-command{margin-top:0}
     .arena-view .shop-section+.shop-section{margin-top:16px}
     .arena-view[data-view="daily"] .p3-codex{margin-top:16px}
     .arena-view[data-view="forge"] .p4-command{margin-top:0}
     .arena-view-empty{border:1px dashed #34383a;background:#0e1011;padding:30px;text-align:center;color:#737a80;font-size:.68rem}
-    @media(max-width:760px){.arena-view-shell{width:calc(100% - 14px)}.arena-map-view-head,.arena-forge-view-head{align-items:start;flex-direction:column}.arena-map-view-body{padding:10px}}
+    @media(max-width:760px){.arena-view-shell{width:calc(100% - 14px)}.arena-map-art{padding:5px}}
   `;
   const style=document.createElement('style');style.id='arenaViewsStyle';style.textContent=CSS;document.head.appendChild(style);
 
@@ -35,14 +36,12 @@
     move(shell,combat);
 
     const mapView=mk('arenaViewMap','map');
-    const mapHead=document.createElement('div');mapHead.className='arena-map-view-head';
-    mapHead.innerHTML='<div><div class="eyebrow">MAPA DA ARENA</div><h2>Escolha seu destino</h2><p>Selecione uma área desbloqueada para definir onde sua próxima aventura acontece.</p></div>';
-    const mapBody=document.createElement('div');mapBody.className='arena-map-view-body';
-    const mapSource=shell.querySelector('.adventure-panel');
-    const mapSectionHead=mapSource?.querySelector('.section-head');
-    const map=mapSource?.querySelector('#map');
-    if(mapSectionHead){const title=mapSectionHead.querySelector('h2');if(title)title.textContent='Escolha seu destino';mapBody.appendChild(mapSectionHead)}
-    if(map)mapBody.appendChild(map);
+    const mapHead=document.createElement('div');
+    mapHead.className='arena-map-view-head';
+    mapHead.innerHTML='<div><div class="eyebrow">MAPA DA ARENA</div><h2>Mapa da Jornada</h2><p>Visão geral do mundo da Arena.</p></div>';
+    const mapBody=document.createElement('div');mapBody.className='arena-map-art';
+    const img=document.createElement('img');img.src='arena-map.svg?v=map-20260914';img.alt='Mapa da Jornada da Arena Mal Upados';
+    mapBody.appendChild(img);
     mapView.append(mapHead,mapBody);
 
     const forgeView=mk('arenaViewForge','forge');
@@ -82,14 +81,10 @@
 
   function watch(){
     if(!setup())return;
-    const daily=$('#arenaViewDaily'),forge=$('#arenaViewForge'),mapView=$('#arenaViewMap');
+    const daily=$('#arenaViewDaily'),forge=$('#arenaViewForge');
     const codex=$('#arenaPhase3Codex');if(daily&&codex&&codex.parentElement!==daily)daily.appendChild(codex);
     const command=$('#arenaPhase4Command');
     if(forge&&command&&command.parentElement!==forge){forge.querySelector('[data-forge-loading]')?.remove();forge.appendChild(command)}
-    const mapSource=$('.adventure-panel');
-    const mapHead=mapSource?.querySelector('.section-head');
-    const map=$('#map');
-    if(mapView&&map){const body=mapView.querySelector('.arena-map-view-body');if(body){if(mapHead&&mapHead.parentElement!==body)body.insertBefore(mapHead,map);if(map.parentElement!==body)body.appendChild(map)}}
   }
 
   const timer=setInterval(watch,250);setTimeout(()=>clearInterval(timer),180000);watch();
