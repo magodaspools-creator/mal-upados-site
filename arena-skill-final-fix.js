@@ -2,6 +2,14 @@
   if(window.__arenaSkillFinalFix)return;
   window.__arenaSkillFinalFix=true;
 
+  const el=document.createElement('div');
+  el.id='arenaSkillFinalDebug';
+  el.style.cssText='position:fixed;right:12px;bottom:12px;z-index:2147483647;background:#111;color:#fff;border:2px solid #d4af37;border-radius:8px;padding:12px;font:13px monospace;white-space:pre-line;box-shadow:0 8px 30px #000;min-width:330px';
+  el.textContent='SKILL FINAL FIX\nInstalando...';
+  document.body.appendChild(el);
+
+  let last={installed:false,seenBattle:false,skill:10,mult:1,base:0,effective:0,before:null,after:null};
+
   function skill(){
     try{
       const x=window.arenaSkillCurrent?.();
@@ -9,32 +17,65 @@
     }catch{return {value:10,mult:1}}
   }
 
-  // The existing combat stack replaces startBattle/attack several times.
-  // Apply the skill at the last possible layer, immediately before the real attack.
+  function getBattle(){
+    try{return (typeof battle!=='undefined')?battle:null}catch{return null}
+  }
+
+  function render(){
+    el.textContent=
+      'SKILL FINAL FIX\n'+
+      'INSTALADO: '+(last.installed?'SIM':'NAO')+'\n'+
+      'BATALHA VISTA: '+(last.seenBattle?'SIM':'NAO')+'\n'+
+      'SKILL: '+last.skill+' | x'+Number(last.mult).toFixed(2)+'\n'+
+      'BASE ATK: '+(last.base||'?')+'\n'+
+      'ATK FINAL: '+(last.effective||'?')+'\n'+
+      'HP INICIO: '+(last.before==null?'?':last.before)+'\n'+
+      'HP FIM: '+(last.after==null?'?':last.after);
+  }
+
   function install(){
     if(typeof window.attack!=='function')return false;
     if(window.__arenaSkillFinalAttack)return true;
 
     const original=window.attack;
     window.attack=function(...args){
-      if(typeof battle!=='undefined'&&battle){
-        const x=skill();
-        if(!Number.isFinite(Number(battle.baseAttack))||Number(battle.baseAttack)<=0){
-          battle.baseAttack=Number(battle.attack)||0;
+      const b=getBattle();
+      const x=skill();
+      last.skill=x.value;
+      last.mult=x.mult;
+      last.seenBattle=!!b;
+      last.before=b?Number(b.hp):null;
+
+      if(b){
+        if(!Number.isFinite(Number(b.baseAttack))||Number(b.baseAttack)<=0){
+          b.baseAttack=Number(b.attack)||0;
         }
-        const base=Number(battle.baseAttack)||0;
-        if(base>0){
-          battle.attack=Math.max(1,Math.floor(base*x.mult));
-        }
+        const base=Number(b.baseAttack)||0;
+        const effective=Math.max(1,Math.floor(base*x.mult));
+        if(base>0)b.attack=effective;
+        last.base=base;
+        last.effective=effective;
+      }else{
+        last.base=0;
+        last.effective=0;
       }
-      return original.apply(this,args);
+
+      render();
+      const r=original.apply(this,args);
+      const after=getBattle();
+      last.after=after?Number(after.hp):null;
+      render();
+      return r;
     };
     window.__arenaSkillFinalAttack=true;
+    last.installed=true;
+    render();
     return true;
   }
 
   function retry(){
     if(!install())setTimeout(retry,50);
+    else render();
   }
   retry();
 })();
