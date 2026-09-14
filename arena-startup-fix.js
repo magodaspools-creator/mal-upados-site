@@ -10,6 +10,14 @@
     document.body.appendChild(s);
   }
 
+  function loadSubnavFix(){
+    if(document.querySelector('script[data-arena-subnav-fix]'))return;
+    const s=document.createElement('script');
+    s.src='arena-subnav-fix.js?v=subnav-fix-20260914';
+    s.dataset.arenaSubnavFix='1';
+    document.body.appendChild(s);
+  }
+
   function boot(){
     // arena.js ainda possui compatibilidade com a antiga roleta, mas a Fase 3
     // removeu esses elementos da página. O erro de null interrompia load().
@@ -26,6 +34,7 @@
 
     // Camada final de acabamento visual/UX. Ela espera a Fase 4 existir antes de agir.
     loadPolish();
+    loadSubnavFix();
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,0),{once:true});
