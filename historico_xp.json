@@ -481,7 +481,7 @@
       "experience_vocation": null
     },
     "Lugas": {
-      "level": 271,
+      "level": 273,
       "experience": null,
       "experience_exact": false,
       "experience_vocation": null
@@ -510,6 +510,12 @@
       "experience_exact": false,
       "experience_vocation": null
     },
+    "Dolly Benzetacil": {
+      "level": 156,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
     "Dro Uid": {
       "level": 153,
       "experience": null,
@@ -522,6 +528,12 @@
       "experience_exact": true,
       "experience_vocation": "TibiaData/highscores"
     },
+    "Gepone": {
+      "level": 141,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
     "Lordebumbumole": {
       "level": 188,
       "experience": null,
@@ -530,12 +542,6 @@
     },
     "Sir Bilu": {
       "level": 42,
-      "experience": null,
-      "experience_exact": false,
-      "experience_vocation": null
-    },
-    "Vialacto": {
-      "level": 221,
       "experience": null,
       "experience_exact": false,
       "experience_vocation": null
@@ -570,20 +576,8 @@
       "experience_exact": false,
       "experience_vocation": null
     },
-    "Dolly Benzetacil": {
-      "level": 156,
-      "experience": null,
-      "experience_exact": false,
-      "experience_vocation": null
-    },
     "Dono de Terreno": {
       "level": 8,
-      "experience": null,
-      "experience_exact": false,
-      "experience_vocation": null
-    },
-    "Gepone": {
-      "level": 141,
       "experience": null,
       "experience_exact": false,
       "experience_vocation": null
@@ -620,6 +614,12 @@
     },
     "Verginia Junior": {
       "level": 82,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Vialacto": {
+      "level": 221,
       "experience": null,
       "experience_exact": false,
       "experience_vocation": null
