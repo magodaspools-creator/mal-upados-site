@@ -12,20 +12,22 @@
     const forgeSection=document.getElementById('arenaPhase4Command');
     if(forgeSection)forgeSection.id='arenaForgeSection';
 
-    if(nav.dataset.bound==='1')return true;
-    nav.dataset.bound='1';
+    if(nav.dataset.bound!=='1'){
+      nav.dataset.bound='1';
+      nav.querySelectorAll('button').forEach(btn=>{
+        const target=btn.dataset.target;
+        btn.onclick=(e)=>{
+          e.preventDefault();
+          e.stopPropagation();
+          const el=document.getElementById(target);
+          if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+          nav.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===btn));
+        };
+      });
+    }
 
-    nav.querySelectorAll('button').forEach(btn=>{
-      const target=btn.dataset.target;
-      btn.onclick=(e)=>{
-        e.preventDefault();
-        e.stopPropagation();
-        const el=document.getElementById(target);
-        if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
-        nav.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===btn));
-      };
-    });
-    return true;
+    // Só termina quando os dois destinos existem de verdade.
+    return !!upperMap && !!forgeSection;
   }
 
   // A UI Polish cria o submenu e a Fase 4 cria a Forja de forma assíncrona.
