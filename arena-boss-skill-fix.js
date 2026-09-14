@@ -2,16 +2,29 @@
   if(window.__arenaBossSkillFix)return;
   window.__arenaBossSkillFix=true;
 
+  // Intercepta o clique no botão do Boss em CAPTURE, antes do onclick
+  // instalado pelo renderBossBattle. Assim o primeiro ataque já usa o
+  // combate autoritativo do Boss, sem depender do segundo render.
+  function intercept(event){
+    const btn=event.target?.closest?.('#attackBtn');
+    if(!btn||typeof battle==='undefined'||!battle?.isBoss)return;
+    const direct=window.__arenaBossAttackDirect;
+    if(typeof direct!=='function')return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    direct();
+  }
+
+  document.addEventListener('click',intercept,true);
+
   function bind(){
     const btn=document.getElementById('attackBtn');
-    if(!btn)return;
-    // Bosses renderizam o botão diretamente e antes usavam a referência
-    // lexical `attack`, podendo escapar do wrapper final em window.attack.
-    if(btn.__arenaBossSkillBound)return;
-    btn.onclick=()=>{
-      if(typeof window.attack==='function')return window.attack();
-    };
-    btn.__arenaBossSkillBound=true;
+    if(!btn||typeof battle==='undefined'||!battle?.isBoss)return;
+    // Mantém uma referência coerente caso algum código externo leia onclick.
+    if(typeof window.__arenaBossAttackDirect==='function'){
+      btn.onclick=window.__arenaBossAttackDirect;
+      btn.__arenaBossSkillBound=true;
+    }
   }
 
   const observer=new MutationObserver(bind);
