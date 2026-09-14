@@ -33,7 +33,28 @@
     }
   }
 
+  // O painel de perfil também reconstrói o grid periodicamente. Se ele recriar o slot,
+  // restauramos imediatamente o Trinket correto antes de uma nova pintura da tela.
+  function watchTrinketSlot(){
+    const root=document.getElementById('arenaEquipmentSet');
+    if(!root||root.__trinketObserver)return;
+    const observer=new MutationObserver(()=>renderSetTrinkets());
+    observer.observe(root,{childList:true,subtree:true});
+    root.__trinketObserver=observer;
+    renderSetTrinkets();
+  }
+
+  function installVisualCleanup(){
+    if(document.getElementById('arena-trinket-repair-style'))return;
+    const style=document.createElement('style');
+    style.id='arena-trinket-repair-style';
+    style.textContent='.character-panel .equipment{display:none!important}';
+    document.head.appendChild(style);
+  }
+
   function loop(){
+    installVisualCleanup();
+    watchTrinketSlot();
     renderSetTrinkets();
     repairHpCap();
   }
