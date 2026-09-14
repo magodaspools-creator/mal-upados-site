@@ -9,10 +9,8 @@
     death:{name:'Death',icon:'💀',resistance:0.10,color:'#9f8bc4'}
   };
 
-  // Arena 1 = Terra | Arena 2 = Energy | Arena 3 = Fogo | Arena 4 = Gelo | Arena 5 = Death.
   const ZONE_ELEMENTS=['earth','energy','fire','ice','death'];
 
-  // Ordem da loja segue exatamente a ordem das áreas da Arena.
   const AMULETS=[
     {id:'earthguard-amulet',name:'Earthguard Amulet',icon:'🌿',category:'amulets',price:5500,attack:0,defense:0,minLevel:1,bonus:'10% resistência a Terra',element:'earth',elementalResistance:0.10},
     {id:'energy-prism-amulet',name:'Energy Prism Amulet',icon:'⚡',category:'amulets',price:9500,attack:0,defense:0,minLevel:12,bonus:'10% resistência a Energy',element:'energy',elementalResistance:0.10},
@@ -21,9 +19,7 @@
     {id:'death-amulet',name:'Death Amulet',icon:'💀',category:'amulets',price:22000,attack:0,defense:0,minLevel:35,bonus:'10% resistência a Death',element:'death',elementalResistance:0.10}
   ];
 
-  if(typeof SHOP_CATEGORIES!=='undefined'&&!SHOP_CATEGORIES.some(x=>x.id==='amulets')){
-    SHOP_CATEGORIES.push({id:'amulets',label:'Amuletos'});
-  }
+  if(typeof SHOP_CATEGORIES!=='undefined'&&!SHOP_CATEGORIES.some(x=>x.id==='amulets'))SHOP_CATEGORIES.push({id:'amulets',label:'Amuletos'});
   if(typeof SHOP_ITEMS!=='undefined')AMULETS.forEach(item=>{if(!SHOP_ITEMS.some(x=>x.id===item.id))SHOP_ITEMS.push(item)});
 
   if(typeof shopEnsure==='function'){
@@ -87,7 +83,32 @@
   if(typeof attack==='function'){
     attack=function(){
       if(!battle)return;
-      let dmg=Math.max(1,battle.attack+Math.floor(Math.random()*12)-6);
+
+      // A Skill deve entrar no dano REAL, não apenas no campo de debug.
+      // Durante o dado de crítico, respeitamos o valor temporariamente definido
+      // pelo sistema de crítico para não quebrar o multiplicador do crítico.
+      let attackPower=Number(battle.attack)||0;
+      if(!window.__arenaCritRolling && typeof window.arenaSkillCurrent==='function'){
+        try{
+          const skill=window.arenaSkillCurrent();
+          const value=Math.max(10,Number(skill?.value)||10);
+          let mult=1;
+          if(value<=20)mult=1+(value-10)*0.03;
+          else if(value<=30)mult=1.3+(value-20)*0.04;
+          else if(value<=40)mult=1.7+(value-30)*0.05;
+          else if(value<=50)mult=2.2+(value-40)*0.06;
+          else if(value<=60)mult=2.8+(value-50)*0.07;
+          else if(value<=70)mult=3.5+(value-60)*0.08;
+          else if(value<=80)mult=4.3+(value-70)*0.09;
+          else if(value<=90)mult=5.2+(value-80)*0.10;
+          else mult=6.2+(value-90)*0.11;
+          const base=Number(battle.baseAttack)||attackPower;
+          attackPower=Math.max(1,Math.floor(base*mult));
+          battle.attack=attackPower;
+        }catch{}
+      }
+
+      let dmg=Math.max(1,attackPower+Math.floor(Math.random()*12)-6);
       battle.hp=Math.max(0,battle.hp-dmg);
       game.damage+=dmg;
       battleLog(`Você causou <b>${dmg}</b> de dano.`);
