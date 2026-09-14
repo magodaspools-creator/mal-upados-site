@@ -10,6 +10,8 @@
   function loadSubnavFix(){loadScript('arena-subnav-fix.js?v=subnav-fix-20260914','data-arena-subnav-fix')}
   function loadViews(){loadScript('arena-views.js?v=views-20260914','data-arena-views')}
   function loadForgeV2(){loadScript('arena-forge-v2.js?v=forge-v2-20260914b','data-arena-forge-v2')}
+  function loadForgeBalance(){loadScript('arena-forge-balance-fix.js?v=forge-balance-20260914','data-arena-forge-balance')}
+  function loadCursedRuins(){loadScript('arena-cursed-ruins.js?v=cursed-ruins-20260914','data-arena-cursed-ruins')}
 
   function boot(){
     if(typeof window.load==='function'){
@@ -21,11 +23,13 @@
       if(typeof window.renderAll==='function'&&typeof game!=='undefined'&&game)window.renderAll();
     }
 
-    // Ordem: acabamento visual -> destinos do submenu -> views internas -> forja endgame.
+    // Ordem: acabamento visual -> destinos -> views -> forja -> balanceamento -> novo mapa.
     loadPolish();
     loadSubnavFix();
     setTimeout(loadViews,250);
     setTimeout(loadForgeV2,500);
+    setTimeout(loadForgeBalance,850);
+    setTimeout(loadCursedRuins,1000);
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,0),{once:true});
