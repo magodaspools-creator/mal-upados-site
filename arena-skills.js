@@ -52,6 +52,7 @@
   window.arenaSkillTrain=train;
   window.arenaSkillRender=renderCompact;
   window.arenaSkillCurrent=current;
+  window.arenaSkills={get:current};
   const nr=typeof normalizeGame==='function'?normalizeGame:null;if(nr&&!window.__arenaSkillNormalizePatch){window.__arenaSkillNormalizePatch=true;window.normalizeGame=function(){nr();ensure();};}
   const ra=typeof renderAll==='function'?renderAll:null;if(ra&&!window.__arenaSkillRenderPatch){window.__arenaSkillRenderPatch=true;window.renderAll=function(...a){const r=ra(...a);installCompact();installModal();renderCompact();return r;};}
   installCompact();installModal();patch();ensure();renderCompact();
