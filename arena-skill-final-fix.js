@@ -8,7 +8,7 @@
   el.textContent='SKILL FINAL FIX\nInstalando...';
   document.body.appendChild(el);
 
-  let last={installed:false,seenBattle:false,skill:10,mult:1,base:0,effective:0,before:null,after:null};
+  let last={installed:false,startHook:false,seenBattle:false,skill:10,mult:1,base:0,effective:0,before:null,after:null};
 
   function skill(){
     try{
@@ -18,13 +18,18 @@
   }
 
   function getBattle(){
-    try{return (typeof battle!=='undefined')?battle:null}catch{return null}
+    try{
+      if(window.__arenaBattleRef)return window.__arenaBattleRef;
+      if(typeof battle!=='undefined')return battle;
+    }catch{}
+    return null;
   }
 
   function render(){
     el.textContent=
       'SKILL FINAL FIX\n'+
       'INSTALADO: '+(last.installed?'SIM':'NAO')+'\n'+
+      'START HOOK: '+(last.startHook?'SIM':'NAO')+'\n'+
       'BATALHA VISTA: '+(last.seenBattle?'SIM':'NAO')+'\n'+
       'SKILL: '+last.skill+' | x'+Number(last.mult).toFixed(2)+'\n'+
       'BASE ATK: '+(last.base||'?')+'\n'+
@@ -33,7 +38,23 @@
       'HP FIM: '+(last.after==null?'?':last.after);
   }
 
-  function install(){
+  function installStartHook(){
+    if(typeof window.startBattle!=='function')return false;
+    if(window.__arenaSkillFinalStartHook)return true;
+
+    const originalStart=window.startBattle;
+    window.startBattle=function(...args){
+      const r=originalStart.apply(this,args);
+      try{window.__arenaBattleRef=(typeof battle!=='undefined')?battle:null}catch{window.__arenaBattleRef=null}
+      last.startHook=!!window.__arenaBattleRef;
+      render();
+      return r;
+    };
+    window.__arenaSkillFinalStartHook=true;
+    return true;
+  }
+
+  function installAttack(){
     if(typeof window.attack!=='function')return false;
     if(window.__arenaSkillFinalAttack)return true;
 
@@ -74,7 +95,9 @@
   }
 
   function retry(){
-    if(!install())setTimeout(retry,50);
+    const a=installStartHook();
+    const b=installAttack();
+    if(!a||!b)setTimeout(retry,50);
     else render();
   }
   retry();
