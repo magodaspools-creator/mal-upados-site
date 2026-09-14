@@ -62,8 +62,9 @@
     };
 
     const renderSuccess=()=>{
-      $('malAuthContent').innerHTML='<div class="mal-auth-success"><div class="success-mark">✓</div><h2 id="malAuthTitle">Conta criada</h2><p>Sua conta foi criada com sucesso. Agora entre para acessar sua conta.</p><button class="mal-account-btn mal-auth-submit" id="malAuthGoLogin">ENTRAR</button></div>';
-      $('malAuthGoLogin').onclick=()=>{current='login';render()}
+      $('malAuthContent').innerHTML='<div class="mal-auth-success"><div class="success-mark">✓</div><h2 id="malAuthTitle">Conta criada</h2><p>Sua conta foi criada com sucesso. Agora entre para acessar sua conta.</p><button class="mal-account-btn mal-auth-submit" id="malAuthGoLogin" type="button">ENTRAR</button></div>';
+      $('malAuthGoLogin').onclick=()=>{current='login';render()};
+      setTimeout(()=>$('malAuthGoLogin')?.focus(),30);
     };
 
     const submit=async()=>{
