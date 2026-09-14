@@ -6,12 +6,11 @@
   const ICON={Knight:'⚔',Paladin:'🏹',Sorcerer:'✨',Druid:'❄️',Monk:'✊'};
   function voc(){const m=typeof members!=='undefined'&&Array.isArray(members)?members.find(x=>x.name===game?.character):null;return VF(m?.vocation||'');}
   function ensure(){if(!game.skills||typeof game.skills!=='object')game.skills={};const v=voc()||'Knight',f=SF[v]||'melee';if(!Number.isFinite(Number(game.skills[f])))game.skills[f]=10;if(!Number.isFinite(Number(game.skills[f+'_progress'])))game.skills[f+'_progress']=0;return {v,field:f,value:Math.max(1,Math.floor(Number(game.skills[f])||1))};}
-  // Curva em degraus: inicio muito rapido, depois vai ficando progressivamente mais exigente.
   function need(s){s=Math.max(1,Math.floor(Number(s)||1));if(s<=20)return 20;if(s<=30)return 30;if(s<=40)return 45;if(s<=50)return 65;if(s<=60)return 90;if(s<=70)return 125;if(s<=80)return 170;if(s<=90)return 230;return Math.floor(300*Math.pow(1.08,s-90));}
   function progress(){const x=ensure();return Math.max(0,Number(game.skills[x.field+'_progress'])||0);}
   function train(n=1){const x=ensure();game.skills[x.field+'_progress']=progress()+n;let ups=0;while(game.skills[x.field+'_progress']>=need(x.value)){game.skills[x.field+'_progress']-=need(x.value);game.skills[x.field]++;x.value++;ups++;toast(`SKILL UP! ${SN[x.v]} ${x.value}.`);}if(typeof persist==='function')persist();renderCompact();return ups;}
-  // Cada skill acima de 10 aumenta o dano do ataque base em 4%.
   function bonus(){const x=ensure();const base=battle&&Number.isFinite(Number(battle.attack))?Number(battle.attack):0;return Math.floor(base*Math.max(0,x.value-10)*0.04);}
+  function current(){const x=ensure();return {v:x.v,field:x.field,value:x.value,progress:progress(),need:need(x.value),name:SN[x.v]||'Combat Skill'};}
 
   function installCompact(){
     const panel=document.querySelector('.character-panel .stat-grid');
@@ -49,7 +48,10 @@
     if(typeof startBattle==='function'&&!window.__arenaSkillBattlePatch){window.__arenaSkillBattlePatch=true;const old=startBattle;window.startBattle=function(...a){old(...a);if(battle)battle.attack+=bonus();};}
     if(typeof attack==='function'&&!window.__arenaSkillAttackPatch){window.__arenaSkillAttackPatch=true;const old=attack;window.attack=function(...a){if(!battle)return old(...a);const hp=battle.hp;const r=old(...a);if(hp>battle.hp)train(2);return r;};}
   }
-  window.arenaSkillBonus=bonus;window.arenaSkillTrain=train;window.arenaSkillRender=renderCompact;
+  window.arenaSkillBonus=bonus;
+  window.arenaSkillTrain=train;
+  window.arenaSkillRender=renderCompact;
+  window.arenaSkillCurrent=current;
   const nr=typeof normalizeGame==='function'?normalizeGame:null;if(nr&&!window.__arenaSkillNormalizePatch){window.__arenaSkillNormalizePatch=true;window.normalizeGame=function(){nr();ensure();};}
   const ra=typeof renderAll==='function'?renderAll:null;if(ra&&!window.__arenaSkillRenderPatch){window.__arenaSkillRenderPatch=true;window.renderAll=function(...a){const r=ra(...a);installCompact();installModal();renderCompact();return r;};}
   installCompact();installModal();patch();ensure();renderCompact();
