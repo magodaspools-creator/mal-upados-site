@@ -10,8 +10,8 @@
   function need(s){s=Math.max(1,Math.floor(Number(s)||1));return Math.max(35,Math.floor(35*Math.pow(1.05,Math.max(0,s-10))));}
   function progress(){const x=ensure();return Math.max(0,Number(game.skills[x.field+'_progress'])||0);}
   function train(n=1){const x=ensure();game.skills[x.field+'_progress']=progress()+n;let ups=0;while(game.skills[x.field+'_progress']>=need(x.value)){game.skills[x.field+'_progress']-=need(x.value);game.skills[x.field]++;x.value++;ups++;toast(`SKILL UP! ${SN[x.v]} ${x.value}.`);}if(typeof persist==='function')persist();renderCompact();return ups;}
-  // Cada skill acima de 10 aumenta o dano do ataque base em 2%.
-  function bonus(){const x=ensure();const base=battle&&Number.isFinite(Number(battle.attack))?Number(battle.attack):0;return Math.floor(base*Math.max(0,x.value-10)*0.02);}
+  // Cada skill acima de 10 aumenta o dano do ataque base em 4%.
+  function bonus(){const x=ensure();const base=battle&&Number.isFinite(Number(battle.attack))?Number(battle.attack):0;return Math.floor(base*Math.max(0,x.value-10)*0.04);}
 
   function installCompact(){
     const panel=document.querySelector('.character-panel .stat-grid');
