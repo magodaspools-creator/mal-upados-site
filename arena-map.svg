@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 820" role="img" aria-labelledby="title desc">
+  <title id="title">Mapa da Arena Mal Upados</title>
+  <desc id="desc">Mapa ilustrado das cinco regiões da Arena: Floresta Sombria, Acampamento Orc, Deserto Perdido, Covil dos Dragões e Abismo Demoníaco.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#101713"/><stop offset=".48" stop-color="#17191a"/><stop offset="1" stop-color="#0d0d12"/></linearGradient>
+    <linearGradient id="forest" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#203c2b"/><stop offset="1" stop-color="#12251b"/></linearGradient>
+    <linearGradient id="orc" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#4b4024"/><stop offset="1" stop-color="#282516"/></linearGradient>
+    <linearGradient id="desert" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#66502b"/><stop offset="1" stop-color="#332817"/></linearGradient>
+    <linearGradient id="dragon" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#263e49"/><stop offset="1" stop-color="#14252d"/></linearGradient>
+    <linearGradient id="death" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#3b293f"/><stop offset="1" stop-color="#1c1722"/></linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="shadow"><feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#000" flood-opacity=".5"/></filter>
+  </defs>
+  <rect width="1600" height="820" fill="url(#bg)"/>
+  <path d="M0 610 C260 510 370 660 610 560 S990 500 1190 600 1430 530 1600 590 V820 H0Z" fill="#090d0b" opacity=".7"/>
+  <path d="M80 690 C300 580 420 650 610 570 S900 470 1110 575 1370 530 1510 610" fill="none" stroke="#80652f" stroke-width="12" opacity=".35"/>
+  <path d="M80 690 C300 580 420 650 610 570 S900 470 1110 575 1370 530 1510 610" fill="none" stroke="#c29a4e" stroke-width="3" stroke-dasharray="14 16" opacity=".75"/>
+
+  <g filter="url(#shadow)">
+    <path d="M65 105 L245 55 390 145 350 330 185 365 65 275Z" fill="url(#forest)" stroke="#6f9d6c" stroke-width="3"/>
+    <path d="M365 145 L535 82 705 150 670 330 500 365 350 300Z" fill="url(#orc)" stroke="#b79b57" stroke-width="3"/>
+    <path d="M680 150 L850 88 1030 155 1010 345 840 390 670 320Z" fill="url(#desert)" stroke="#d1a65b" stroke-width="3"/>
+    <path d="M1010 155 L1185 95 1360 175 1320 360 1150 390 1005 325Z" fill="url(#dragon)" stroke="#78b6c7" stroke-width="3"/>
+    <path d="M1335 175 L1535 115 1580 300 1490 455 1320 370Z" fill="url(#death)" stroke="#9d72a5" stroke-width="3"/>
+  </g>
+
+  <g opacity=".8" fill="none" stroke="#8fc17e" stroke-width="7">
+    <path d="M115 210 l55 -65 45 70 48 -85 50 80 48 -48"/>
+    <path d="M150 290 l38 -52 36 45 45 -65 42 60"/>
+  </g>
+  <g opacity=".7" fill="#d6b96d">
+    <circle cx="440" cy="205" r="7"/><circle cx="490" cy="230" r="5"/><circle cx="550" cy="185" r="6"/><circle cx="600" cy="245" r="5"/>
+  </g>
+  <g fill="#c9a45a" opacity=".65">
+    <path d="M760 260 l45 -22 42 20 -42 22Z"/><path d="M860 205 l48 -18 35 22 -48 20Z"/><path d="M930 275 l38 -18 35 18 -38 20Z"/>
+  </g>
+  <g fill="#a8d6df" opacity=".55"><path d="M1080 260 q40 -65 80 0 q-40 45 -80 0Z"/><path d="M1180 220 q40 -60 75 5 q-35 45 -75 -5Z"/></g>
+  <g fill="#c18ac9" opacity=".45"><circle cx="1410" cy="250" r="25"/><circle cx="1490" cy="320" r="16"/><circle cx="1450" cy="390" r="9"/></g>
+
+  <g font-family="Georgia,serif" text-anchor="middle">
+    <text x="225" y="170" fill="#e8eadb" font-size="27" font-weight="700">I · FLORESTA SOMBRIA</text>
+    <text x="225" y="205" fill="#a6b59d" font-size="15">A origem da jornada</text>
+    <text x="525" y="195" fill="#eee5cb" font-size="27" font-weight="700">II · ACAMPAMENTO ORC</text>
+    <text x="525" y="230" fill="#c1b184" font-size="15">Território hostil</text>
+    <text x="850" y="205" fill="#f0dfb9" font-size="27" font-weight="700">III · DESERTO PERDIDO</text>
+    <text x="850" y="240" fill="#c7ad76" font-size="15">Ruínas esquecidas</text>
+    <text x="1180" y="205" fill="#d8eef0" font-size="27" font-weight="700">IV · COVIL DOS DRAGÕES</text>
+    <text x="1180" y="240" fill="#91bec8" font-size="15">O frio antes do fim</text>
+    <text x="1450" y="255" fill="#ead9ec" font-size="25" font-weight="700">V · ABISMO DEMONÍACO</text>
+    <text x="1450" y="290" fill="#ad86b5" font-size="15">Onde poucos retornam</text>
+  </g>
+
+  <g filter="url(#glow)">
+    <circle cx="225" cy="560" r="16" fill="#d8b66b"/><circle cx="225" cy="560" r="31" fill="none" stroke="#d8b66b" stroke-width="2" opacity=".6"/>
+    <path d="M210 560h30M225 545v30" stroke="#fff1c6" stroke-width="3"/>
+  </g>
+  <g font-family="Inter,Arial,sans-serif">
+    <text x="800" y="65" text-anchor="middle" fill="#d8cba9" font-size="17" letter-spacing="6">ARENA MAL UPADOS</text>
+    <text x="800" y="96" text-anchor="middle" fill="#6e7478" font-size="12" letter-spacing="2">MAPA DA JORNADA</text>
+  </g>
+  <rect x="28" y="28" width="1544" height="764" rx="10" fill="none" stroke="#4b4230" stroke-width="2"/>
+</svg>
