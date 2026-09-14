@@ -7,7 +7,7 @@
   function voc(){const m=typeof members!=='undefined'&&Array.isArray(members)?members.find(x=>x.name===game?.character):null;return VF(m?.vocation||'');}
   function ensure(){if(!game.skills||typeof game.skills!=='object')game.skills={};const v=voc()||'Knight',f=SF[v]||'melee';if(!Number.isFinite(Number(game.skills[f])))game.skills[f]=10;if(!Number.isFinite(Number(game.skills[f+'_progress'])))game.skills[f+'_progress']=0;return {v,field:f,value:Math.max(1,Math.floor(Number(game.skills[f])||1))};}
   // Comeca mais leve e aumenta gradualmente: skills iniciais sobem rapido, skills altas exigem mais treino.
-  function need(s){s=Math.max(1,Math.floor(Number(s)||1));return Math.max(35,Math.floor(35*Math.pow(1.05,Math.max(0,s-10))));}
+  function need(s){s=Math.max(1,Math.floor(Number(s)||1));return Math.max(35,Math.floor(35*Math.pow(1.04,Math.max(0,s-10))));}
   function progress(){const x=ensure();return Math.max(0,Number(game.skills[x.field+'_progress'])||0);}
   function train(n=1){const x=ensure();game.skills[x.field+'_progress']=progress()+n;let ups=0;while(game.skills[x.field+'_progress']>=need(x.value)){game.skills[x.field+'_progress']-=need(x.value);game.skills[x.field]++;x.value++;ups++;toast(`SKILL UP! ${SN[x.v]} ${x.value}.`);}if(typeof persist==='function')persist();renderCompact();return ups;}
   // Cada skill acima de 10 aumenta o dano do ataque base em 4%.
