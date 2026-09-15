@@ -28,11 +28,11 @@
   const style=document.createElement('style');style.id='arenaIllustratedMapStyle';style.textContent=CSS;document.head.appendChild(style);
 
   const zones=[
-    {name:'Floresta Sombria',meta:'Level 1+ · criaturas iniciais',icon:'🌲'},
-    {name:'Acampamento Orc',meta:'Level 5+ · caçada intermediária',icon:'🏕️'},
-    {name:'Deserto Perdido',meta:'Level 12+ · ruínas e escorpiões',icon:'🏜️'},
-    {name:'Covil dos Dragões',meta:'Level 20+ · dragões e fogo',icon:'🐉'},
-    {name:'Abismo Demoníaco',meta:'Level 35+ · conteúdo extremo',icon:'😈'}
+    {name:'Floresta Sombria',meta:'Level 1+ · criaturas iniciais',icon:'🌲',min:1},
+    {name:'Acampamento Orc',meta:'Level 10+ · caçada intermediária',icon:'🏕️',min:10},
+    {name:'Deserto Perdido',meta:'Level 20+ · ruínas e escorpiões',icon:'🏜️',min:20},
+    {name:'Covil dos Dragões',meta:'Level 35+ · dragões e fogo',icon:'🐉',min:35},
+    {name:'Abismo Demoníaco',meta:'Level 50+ · conteúdo extremo',icon:'😈',min:50}
   ];
 
   const gameLevel=()=>Number(document.getElementById('arenaLevel')?.textContent||1);
@@ -46,7 +46,7 @@
     modal.innerHTML=`<div class="arena-world-box">
       <div class="arena-world-head"><div><div class="eyebrow">MUNDO DA ARENA</div><h2>As Terras dos Mal Upados</h2><p>Explore visualmente o mundo da Arena. As regiões ficam disponíveis conforme seu personagem evolui.</p></div><button class="arena-world-close" type="button">Fechar</button></div>
       <div class="arena-world-art"><img src="arena-map.svg?v=illustrated-map-20260915" alt="Mapa ilustrado do mundo da Arena Mal Upados"><div class="arena-world-path"></div></div>
-      <div class="arena-world-hotspots">${zones.map((z,i)=>{const min=[1,5,12,20,35][i],locked=level<min;return `<button type="button" class="arena-world-hotspot ${i===current?'current ':''}${locked?'locked':''}" data-zone="${i}" ${locked?'disabled':''}><strong>${z.icon} ${z.name}</strong><span>${locked?'🔒 Level '+min+' necessário':z.meta}</span></button>`}).join('')}</div>
+      <div class="arena-world-hotspots">${zones.map((z,i)=>{const locked=level<z.min;return `<button type="button" class="arena-world-hotspot ${i===current?'current ':''}${locked?'locked':''}" data-zone="${i}" ${locked?'disabled':''}><strong>${z.icon} ${z.name}</strong><span>${locked?'🔒 Level '+z.min+' necessário':z.meta}</span></button>`}).join('')}</div>
       <div class="arena-world-info"><div><strong id="arenaWorldInfoTitle">${zones[current].icon} ${zones[current].name}</strong><span id="arenaWorldInfoMeta">${zones[current].meta}</span></div><button type="button" class="arena-world-go" id="arenaWorldGo">IR PARA ESTA ÁREA</button></div>
     </div>`;
     document.body.appendChild(modal);
@@ -57,7 +57,7 @@
       modal.querySelectorAll('.arena-world-hotspot').forEach(b=>b.classList.toggle('current',Number(b.dataset.zone)===i));
       modal.querySelector('#arenaWorldInfoTitle').textContent=`${zones[i].icon} ${zones[i].name}`;
       modal.querySelector('#arenaWorldInfoMeta').textContent=zones[i].meta;
-      modal.querySelector('#arenaWorldGo').disabled=level<[1,5,12,20,35][i];
+      modal.querySelector('#arenaWorldGo').disabled=level<zones[i].min;
     };
     modal.querySelectorAll('.arena-world-hotspot:not(.locked)').forEach(b=>b.addEventListener('click',()=>select(Number(b.dataset.zone))));
     modal.querySelector('#arenaWorldGo').onclick=()=>{
