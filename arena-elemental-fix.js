@@ -87,11 +87,10 @@
       if(!battle||battle.busy)return;
       battle.busy=true;
 
-      // A Skill deve entrar no dano REAL, não apenas no campo de debug.
-      // Durante o dado de crítico, respeitamos o valor temporariamente definido
-      // pelo sistema de crítico para não quebrar o multiplicador do crítico.
       let attackPower=Number(battle.attack)||0;
-      if(!window.__arenaCritRolling && typeof window.arenaSkillCurrent==='function'){
+      // Quando o módulo de Skill está presente, ele já escalou battle.attack
+      // antes deste wrapper. Nesse caso não multiplique novamente.
+      if(!window.__arenaSkillPowerFix&&!window.__arenaCritRolling&&typeof window.arenaSkillCurrent==='function'){
         try{
           const skill=window.arenaSkillCurrent();
           const value=Math.max(10,Number(skill?.value)||10);
