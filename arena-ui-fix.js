@@ -17,24 +17,8 @@
     nav?.querySelectorAll('button[data-target]').forEach(b=>b.classList.toggle('active',b.dataset.target===activeTarget));
   };
 
-  // arena-skills.js is already loaded statically by arena.html. The old fix
-  // only retried it once and only after the subnav existed, so a timing race
-  // could leave TREINAR SKILL missing forever. Retry independently for a short
-  // window until the character panel and the skill module have both settled.
-  const ensureSkillTraining=()=>{
-    if(document.getElementById('skillTrainBtn'))return true;
-    if(!document.querySelector('.character-panel'))return false;
-    const retry=document.querySelector('script[data-arena-skill-retry]');
-    if(retry)return false;
-    const s=document.createElement('script');
-    s.src=`arena-skills.js?v=skills-retry-${Date.now()}`;
-    s.setAttribute('data-arena-skill-retry','1');
-    document.body.appendChild(s);
-    setTimeout(()=>{
-      s.remove();
-      if(!document.getElementById('skillTrainBtn'))ensureSkillTraining();
-    },700);
-    return false;
+  const refreshSkill=()=>{
+    if(typeof window.arenaSkillRender==='function')window.arenaSkillRender();
   };
 
   const bindNav=()=>{
@@ -54,14 +38,16 @@
 
   const init=()=>{
     setHeaderLabel();
+    refreshSkill();
     let tries=0;
     const timer=setInterval(()=>{
       tries++;
       setHeaderLabel();
       bindNav();
-      const skillReady=ensureSkillTraining();
-      if(skillReady||tries>120)clearInterval(timer);
+      refreshSkill();
+      if((document.getElementById('skillTrainBtn')&&bindNav())||tries>120)clearInterval(timer);
     },100);
   };
+
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
