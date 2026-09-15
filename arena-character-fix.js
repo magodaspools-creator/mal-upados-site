@@ -13,6 +13,8 @@
     };
     btn.onclick=e=>{e.stopPropagation();const open=wrap.classList.toggle('open');btn.setAttribute('aria-expanded',String(open))};
     document.addEventListener('click',e=>{if(!wrap.contains(e.target)){wrap.classList.remove('open');btn.setAttribute('aria-expanded','false')}});
+    window.__arenaCharacterDraw=draw;
+    window.addEventListener('arena-character-created',()=>setTimeout(draw,0));
     const timer=setInterval(()=>{if(draw())clearInterval(timer)},250);if(draw())clearInterval(timer);setTimeout(()=>clearInterval(timer),15000);
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
