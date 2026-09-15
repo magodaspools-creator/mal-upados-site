@@ -9,12 +9,16 @@
   if(typeof originalAttack!=='function')return;
 
   window.attack=function(){
+    // Evita dois cliques simultâneos no mesmo turno, inclusive em Bosses.
+    if(!battle||battle.busy)return;
+
     // Batalhas normais continuam usando exatamente o motor original.
-    if(!battle?.isBoss){
+    if(!battle.isBoss){
       return originalAttack.apply(this,arguments);
     }
 
     if(battle.hp<=0||battle.playerHp<=0)return;
+    battle.busy=true;
 
     const dmg=Math.max(1,battle.attack+Math.floor(Math.random()*12)-6);
     battle.hp=Math.max(0,battle.hp-dmg);
@@ -49,6 +53,7 @@
       battleLog(`<b>☠️ FASE 2 — COLHEITA DA MORTE!</b> Deathbringer recuperou ${fmt(heal)} HP, ficou enfurecido e lançou uma onda de morte que causou ${fmt(pulse)} de dano.`);
     }
 
+    battle.busy=false;
     renderBattle();
   };
 })();
