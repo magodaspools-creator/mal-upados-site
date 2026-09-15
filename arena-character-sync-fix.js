@@ -46,13 +46,7 @@
       const serverLevel=Number(server.level||1);
       const localLevel=Number(local?.level||1);
       if(!local||localLevel<=serverLevel){
-        game={
-          ...game,
-          ...server,
-          character:current,
-          gender:server.gender||record?.gender,
-          vocation:server.vocation||record?.vocation
-        };
+        game={...game,...server,character:current,gender:server.gender||record?.gender,vocation:server.vocation||record?.vocation};
         if(typeof persist==='function')persist();
       }
     }
@@ -64,21 +58,20 @@
 
   window.arenaSyncCharacters=sync;
 
+  const resync=()=>setTimeout(()=>sync(),100);
   window.addEventListener('arena-character-created',event=>{
     const name=event.detail?.character?.name||null;
     setTimeout(()=>sync(name),0);
   });
-
-  const client=getClient();
-  client?.auth?.onAuthStateChange?.((event)=>{
-    if(event==='SIGNED_IN')setTimeout(()=>sync(),50);
-  });
+  window.addEventListener('mal-auth-changed',resync);
 
   let tries=0;
   const timer=setInterval(()=>{
     tries++;
     if(window.malUpadosSupabase?.auth){
-      if(!window.arenaSyncCharacters)window.arenaSyncCharacters=sync;
+      window.malUpadosSupabase.auth.onAuthStateChange?.((event)=>{
+        if(event==='SIGNED_IN')setTimeout(()=>sync(),50);
+      });
       clearInterval(timer);
     }else if(tries>100){
       clearInterval(timer);
