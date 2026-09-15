@@ -5,6 +5,7 @@
   const CHALLENGE_BUCKETS='malupados_arena_challenge_buckets_v2';
   let lastCharacter='';
   let lastDay='';
+  let bestiaryObserver=null;
 
   const day=()=>{
     const d=new Date();
@@ -25,20 +26,14 @@
     return h>>>0;
   }
 
-  function dailyChallengeIndex(character){
-    return hash(`${character}|${day()}`)%4;
-  }
+  function dailyChallengeIndex(character){return hash(`${character}|${day()}`)%4;}
 
   function syncChallengeBucket(character,force=false){
     if(!character)return;
     const today=day();
     const buckets=read(CHALLENGE_BUCKETS,{});
     const previous=lastCharacter&&lastDay===today?buckets[lastCharacter]||{}:null;
-
-    if(previous){
-      ['kills','gold','wins','zone'].forEach(type=>previous[type]=Number(localStorage.getItem(numericKeys(type))||0));
-    }
-
+    if(previous){['kills','gold','wins','zone'].forEach(type=>previous[type]=Number(localStorage.getItem(numericKeys(type))||0));}
     const bucket=buckets[character]&&buckets[character].day===today?buckets[character]:{day:today,kills:0,gold:0,wins:0,zone:0};
     ['kills','gold','wins','zone'].forEach(type=>{
       if(force||character!==lastCharacter||today!==lastDay)localStorage.setItem(numericKeys(type),String(Number(bucket[type])||0));
@@ -64,9 +59,6 @@
     const today=day();
     const changed=character!==lastCharacter||today!==lastDay;
     syncChallengeBucket(character,changed);
-
-    // Challenge rotation is deterministic per character/day instead of being
-    // permanently random from the day the character was first created.
     const expected=dailyChallengeIndex(character);
     if(Number(game.challengeIndex)!==expected||game.challengeDay!==today){
       game.challengeIndex=expected;
@@ -92,9 +84,6 @@
     if(typeof game==='undefined'||!game||typeof ZONES==='undefined')return;
     const maxUnlocked=ZONES.reduce((max,z,i)=>game.level>=Number(z.min)?i:max,-1);
     if(maxUnlocked<0)return;
-
-    // Keep the manually selected area. The old core addXP() changed zone on
-    // every level-up, which contradicted the map's manual-selection behavior.
     if(!Number.isInteger(game.manualZone)||game.manualZone<0||game.manualZone>maxUnlocked){
       game.manualZone=Math.min(Math.max(0,Number(game.zone)||0),maxUnlocked);
     }
@@ -102,7 +91,6 @@
       game.zone=game.manualZone;
       if(typeof persist==='function')persist();
     }
-
     const map=document.getElementById('map');
     if(map){
       map.querySelectorAll('.zone:not(.locked)').forEach(card=>{
@@ -118,7 +106,6 @@
         },true);
       });
     }
-
     const next=document.getElementById('nextZoneBtn');
     if(next){
       const ni=game.manualZone+1;
@@ -147,9 +134,6 @@
       try{
         const ls=b?Number(b.forgeLifesteal)||0:0;
         const after=b?Number(b.hp):NaN;
-        // arena.js stores enemy health as battle.hp, not battle.enemyHp.
-        // Only heal while the same battle is still alive; a kill must proceed
-        // directly to the victory screen without post-kill healing.
         if(b&&battle===b&&before>0&&Number.isFinite(after)&&after>0&&ls>0){
           const dealt=Math.max(0,before-after);
           if(dealt>0)b.playerHp=Math.min(Number(b.playerMax)||b.playerHp,b.playerHp+Math.max(1,Math.floor(dealt*ls/100)));
@@ -161,11 +145,28 @@
     return true;
   }
 
+  function repairBestiaryRecording(){
+    const area=document.getElementById('battleArea');
+    if(!area||bestiaryObserver)return;
+    bestiaryObserver=new MutationObserver(()=>{
+      const result=area.querySelector('.battle-empty.result h3');
+      const text=result?.textContent?.trim()||'';
+      if(!result||!/derrotado!/i.test(text))return;
+      if(area.dataset.bestiaryResult===text)return;
+      area.dataset.bestiaryResult=text;
+      const match=text.match(/^(.*?)\s+derrotado!/i);
+      const name=match?.[1]?.trim();
+      if(name&&typeof window.arenaRecordBestiaryKill==='function')window.arenaRecordBestiaryKill(name);
+    });
+    bestiaryObserver.observe(area,{childList:true,subtree:true,characterData:true});
+  }
+
   function boot(){
     repairChallenge();
     bindChallenge();
     repairMap();
     repairForgeLifesteal();
+    repairBestiaryRecording();
   }
 
   const observer=new MutationObserver(()=>{
@@ -173,6 +174,7 @@
     repairMap();
     repairChallenge();
     repairForgeLifesteal();
+    repairBestiaryRecording();
   });
   observer.observe(document.body,{childList:true,subtree:true});
 
