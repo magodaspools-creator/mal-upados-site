@@ -12,7 +12,7 @@
 
   function loadSiteAuth(){loadScript('site-auth.js?v=global-account-20260914','data-mal-site-auth')}
   function loadPolish(){loadScript('arena-ui-polish.js?v=ui-polish-20260914a','data-arena-ui-polish')}
-  function loadSubnavFix(){loadScript('arena-subnav-fix.js?v=subnav-fix-20260914','data-arena-subnav-fix')}
+  function loadSubnavFix(){loadScript('arena-subnav-fix.js?v=subnav-fix-20260915b','data-arena-subnav-fix')}
   function loadIllustratedMap(){loadScript('arena-illustrated-map.js?v=illustrated-map-20260915','data-arena-illustrated-map')}
   function loadUiFix(){loadScript('arena-ui-fix.js?v=ui-fix-20260915d','data-arena-ui-fix')}
   function loadGlobalSync(){loadScript('arena-global-sync.js?v=global-sync-20260915','data-arena-global-sync')}
