@@ -12,10 +12,11 @@
 
   function loadSiteAuth(){loadScript('site-auth.js?v=global-account-20260914','data-mal-site-auth')}
   function loadPolish(){loadScript('arena-ui-polish.js?v=ui-polish-20260914a','data-arena-ui-polish')}
-  function loadSubnavFix(){loadScript('arena-subnav-fix.js?v=subnav-fix-20260915b','data-arena-subnav-fix')}
+  function loadSubnavFix(){loadScript('arena-subnav-fix.js?v=arena-subnav-fix-20260915c','data-arena-subnav-fix')}
   function loadIllustratedMap(){loadScript('arena-illustrated-map.js?v=illustrated-map-20260915','data-arena-illustrated-map')}
-  function loadUiFix(){loadScript('arena-ui-fix.js?v=ui-fix-20260915d','data-arena-ui-fix')}
+  function loadUiFix(){loadScript('arena-ui-fix.js?v=ui-fix-20260915e','data-arena-ui-fix')}
   function loadGlobalSync(){loadScript('arena-global-sync.js?v=global-sync-20260915','data-arena-global-sync')}
+  function loadSkillCharacterFix(){loadScript('arena-skill-character-fix.js?v=skill-character-fix-20260915','data-arena-skill-character-fix')}
   function loadForgeV2(){loadScript('arena-forge-v2.js?v=forge-v2-20260914b','data-arena-forge-v2')}
   function loadForgeBalance(){loadScript('arena-forge-balance-fix.js?v=forge-balance-20260914','data-arena-forge-balance')}
   function loadCursedRuins(){loadScript('arena-cursed-ruins.js?v=cursed-ruins-20260914','data-arena-cursed-ruins')}
@@ -36,6 +37,7 @@
     loadWorldMap();
     loadIllustratedMap();
     loadUiFix();
+    loadSkillCharacterFix();
     // arena-views.js foi retirado do boot.
     // Ele movia elementos do DOM depois do primeiro paint e causava a "segunda tela"/pisca na Home.
     setTimeout(loadForgeV2,500);
