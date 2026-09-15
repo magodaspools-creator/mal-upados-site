@@ -24,7 +24,14 @@
     const originalStart=window.startBattle;
     window.startBattle=function(...args){
       const r=originalStart.apply(this,args);
-      try{window.__arenaBattleRef=(typeof battle!=='undefined')?battle:null}catch{window.__arenaBattleRef=null}
+      try{
+        window.__arenaBattleRef=(typeof battle!=='undefined')?battle:null;
+        const b=window.__arenaBattleRef;
+        // Cada batalha precisa partir do ataque atual do personagem.
+        // O valor antigo ficava preso na primeira batalha e podia ignorar
+        // level/equipamento trocados entre hunts.
+        if(b)b.baseAttack=Number(b.attack)||0;
+      }catch{window.__arenaBattleRef=null}
       return r;
     };
     window.__arenaSkillFinalStartHook=true;
