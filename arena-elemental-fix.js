@@ -72,7 +72,7 @@
         playerHp:110+game.level*12+defenseBonus*3,
         playerMax:110+game.level*12+defenseBonus*3,
         attack:15+game.level*4+attackBonus*3,
-        enemyDelay:0,log:[]
+        enemyDelay:0,log:[],busy:false
       };
       renderBattle();
       battleLog(`<span style="color:${elemental.color}">${elementLabel(battle.element)} · ataque elemental ativo</span>`);
@@ -82,7 +82,10 @@
 
   if(typeof attack==='function'){
     attack=function(){
-      if(!battle)return;
+      // O motor elemental substitui o attack() do core; portanto o lock do
+      // motor base precisa existir aqui também para impedir double-clicks.
+      if(!battle||battle.busy)return;
+      battle.busy=true;
 
       // A Skill deve entrar no dano REAL, não apenas no campo de debug.
       // Durante o dado de crítico, respeitamos o valor temporariamente definido
@@ -126,6 +129,7 @@
         battleLog(`${esc(battle.name)} ${elem.icon} causou <b>${finalIncoming}</b> de dano <span style="color:#b56b6b">(sem resistência elemental)</span>.`);
       }
       if(battle.playerHp<=0){loseBattle();return}
+      battle.busy=false;
       renderBattle();
     };
   }
