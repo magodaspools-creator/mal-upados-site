@@ -6,7 +6,7 @@
   const load=()=>{try{return JSON.parse(localStorage.getItem(STORE)||'{}')}catch{return {}}};
   const save=v=>{try{localStorage.setItem(STORE,JSON.stringify(v))}catch{}};
   const data=load();
-  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const esc=v=>String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
 
   function style(){
     if(document.getElementById('arenaPhase4Style'))return;
@@ -29,7 +29,17 @@
     const old=window.startBattle;
     window.startBattle=function(...args){
       const r=old.apply(this,args);
-      try{ensureForge();if(battle){battle.attack+=game.forge.weapon*2;battle.baseAttack=Number(battle.baseAttack||battle.attack);battle.playerMax+=game.forge.armor*6;battle.playerHp+=game.forge.armor*6;}}catch{}
+      try{
+        ensureForge();
+        if(battle){
+          // Skill scaling uses battle.baseAttack. Add forge power to that base
+          // value so the weapon upgrade cannot be overwritten by later wrappers.
+          battle.baseAttack=Number(battle.baseAttack||battle.attack||0)+(game.forge.weapon*2);
+          battle.attack=battle.baseAttack;
+          battle.playerMax+=game.forge.armor*6;
+          battle.playerHp+=game.forge.armor*6;
+        }
+      }catch{}
       return r;
     };
     window.__arenaPhase4Battle=true;
@@ -64,7 +74,7 @@
 
   function refresh(){
     const sec=document.getElementById('arenaPhase4Command');if(!sec||!game)return;
-    const goal=sec.querySelector('h3');const zone=typeof ZONES!=='undefined'?ZONES[Math.min(ZONES.length-1,Number(game.zone)||0)]:null;const nextZone=typeof ZONES!=='undefined'?ZONES[(Number(game.zone)||0)+1]:null;const need=typeof xpNeed==='function'?xpNeed():100;pct=Math.min(100,Number(game.xp||0)/need*100);if(goal)goal.textContent=nextZone&&game.level<nextZone.min?`Chegar ao Level ${nextZone.min} para desbloquear ${nextZone.name}`:`Buscar o próximo Level ${Number(game.level||1)+1}`;const prog=sec.querySelector('.p4-progress i');if(prog)prog.style.width=pct+'%';const stats=sec.querySelectorAll('.p4-stat strong');if(stats[0])stats[0].textContent=fmt(game.wins);if(stats[1])stats[1].textContent=fmt(game.streak);if(stats[2])stats[2].textContent=`${game.forge.weapon+game.forge.armor}/10`;
+    const goal=sec.querySelector('h3');const zone=typeof ZONES!=='undefined'?ZONES[Math.min(ZONES.length-1,Number(game.zone)||0)]:null;const nextZone=typeof ZONES!=='undefined'?ZONES[(Number(game.zone)||0)+1]:null;const need=typeof xpNeed==='function'?xpNeed():100;const pct=Math.min(100,Number(game.xp||0)/need*100);if(goal)goal.textContent=nextZone&&game.level<nextZone.min?`Chegar ao Level ${nextZone.min} para desbloquear ${nextZone.name}`:`Buscar o próximo Level ${Number(game.level||1)+1}`;const prog=sec.querySelector('.p4-progress i');if(prog)prog.style.width=pct+'%';const stats=sec.querySelectorAll('.p4-stat strong');if(stats[0])stats[0].textContent=fmt(game.wins);if(stats[1])stats[1].textContent=fmt(game.streak);if(stats[2])stats[2].textContent=`${game.forge.weapon+game.forge.armor}/10`;
   }
 
   style();patchBattle();
