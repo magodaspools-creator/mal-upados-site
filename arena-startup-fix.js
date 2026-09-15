@@ -22,8 +22,8 @@
   function loadUiFix(){loadScript('arena-ui-fix.js?v=ui-fix-20260915e','data-arena-ui-fix')}
   function loadGlobalSync(){loadScript('arena-global-sync.js?v=global-sync-20260915','data-arena-global-sync')}
   function loadSkillCharacterFix(){loadScript('arena-skill-character-fix.js?v=skill-character-fix-20260915','data-arena-skill-character-fix')}
-  function loadForgeV2(){loadScript('arena-forge-v2.js?v=forge-v3-20260915','data-arena-forge-v2')}
-  function loadDungeon(){loadScript('arena-dungeon.js?v=abyssal-gardens-20260915','data-arena-dungeon')}
+  function loadForgeV2(){loadScript('arena-forge-v2.js?v=forge-v4-20260915','data-arena-forge-v2')}
+  function loadDungeon(){loadScript('arena-dungeon.js?v=abyssal-gardens-v2-20260915','data-arena-dungeon')}
   function loadCharacterCreation(){loadScript('arena-character-creation.js?v=character-creation-20260914','data-arena-character-creation')}
   function loadCharacterSyncFix(){loadScript('arena-character-sync-fix.js?v=character-sync-fix-20260915a','data-arena-character-sync-fix')}
   function loadCharacterCreationUI(){loadScript('arena-character-creation-ui.js?v=character-creation-ui-20260915','data-arena-character-creation-ui')}
