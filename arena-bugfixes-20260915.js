@@ -38,8 +38,28 @@
     return true;
   }
 
-  function boot(){bindArenaStart();repairForgeLifesteal()}
-  const observer=new MutationObserver(()=>{bindArenaStart();repairForgeLifesteal()});
+  function repairBossDirectLock(){
+    if(window.__arenaBossDirectLock)return true;
+    const direct=window.__arenaBossAttackDirect;
+    if(typeof direct!=='function')return false;
+    window.__arenaBossAttackDirect=function(...args){
+      if(typeof battle==='undefined'||!battle?.isBoss||battle.busy)return;
+      const current=battle;
+      current.busy=true;
+      try{
+        return direct.apply(this,args);
+      }finally{
+        // winBattle()/loseBattle() may have destroyed the battle reference.
+        // Only unlock the same surviving fight.
+        if(typeof battle!=='undefined'&&battle===current)battle.busy=false;
+      }
+    };
+    window.__arenaBossDirectLock=true;
+    return true;
+  }
+
+  function boot(){bindArenaStart();repairForgeLifesteal();repairBossDirectLock()}
+  const observer=new MutationObserver(()=>{bindArenaStart();repairForgeLifesteal();repairBossDirectLock()});
   observer.observe(document.body,{childList:true,subtree:true});
   let tries=0;
   const timer=setInterval(()=>{
