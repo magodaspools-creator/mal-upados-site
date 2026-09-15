@@ -33,7 +33,6 @@
   }
 
   function close(){modal?.remove();modal=null}
-
   function baseState(name){return {character:name,level:1,xp:0,gold:100,wins:0,kills:0,damage:0,zone:0,weapon:0,armor:0,bestStreak:0,streak:0,lastChallenge:'',challengeProgress:0,challengeIndex:Math.floor(Math.random()*4)}}
 
   function openCreate(){
@@ -61,7 +60,7 @@
     const initial=baseState(name);initial.gender=gender;initial.vocation=vocation;
     const {data,error}=await window.malUpadosSupabase.from('arena_characters').insert({user_id:user.id,name,gender,vocation,game_state:initial}).select().single();
     if(error){msg.textContent=error.code==='23505'?'Esse nome de personagem já está em uso. Escolha outro.':error.message;msg.className='arena-char-msg error';btn.disabled=false;return}
-    if(typeof members!=='undefined'&&Array.isArray(members)){members.length=0;members.push({name:data.name,vocation:data.vocation,gender:data.gender})}
+    if(typeof members!=='undefined'&&Array.isArray(members)){members.length=0;members.push({name:data.name,vocation:data.vocation,gender:data.gender,characterId:data.id})}
     if(typeof loadGame==='function')loadGame(data.name);
     if(typeof game!=='undefined'&&game){game.gender=gender;game.vocation=vocation;if(typeof persist==='function')persist()}
     close();
@@ -91,14 +90,7 @@
     if(typeof renderAll==='function')renderAll();
   }
 
-  async function init(){
-    style();
-    for(let i=0;i<80&&!supabaseReady();i++)await new Promise(r=>setTimeout(r,250));
-    if(!supabaseReady())return;
-    const {data:{user}}=await window.malUpadosSupabase.auth.getUser();
-    if(user)syncCharacters();
-    window.malUpadosSupabase.auth.onAuthStateChange((event)=>{if(event==='SIGNED_IN')setTimeout(syncCharacters,250);if(event==='SIGNED_OUT')close()});
-  }
+  async function init(){style();for(let i=0;i<80&&!supabaseReady();i++)await new Promise(r=>setTimeout(r,250));if(!supabaseReady())return;const {data:{user}}=await window.malUpadosSupabase.auth.getUser();if(user)syncCharacters();window.malUpadosSupabase.auth.onAuthStateChange((event)=>{if(event==='SIGNED_IN')setTimeout(syncCharacters,250);if(event==='SIGNED_OUT')close()})}
   window.arenaOpenCharacterCreator=openCreate;
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
