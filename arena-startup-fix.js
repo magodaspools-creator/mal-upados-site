@@ -5,6 +5,7 @@
   function loadSiteAuth(){loadScript('site-auth.js?v=global-account-20260914','data-mal-site-auth')}
   function loadPolish(){loadScript('arena-ui-polish.js?v=ui-polish-20260914a','data-arena-ui-polish')}
   function loadSubnavFix(){loadScript('arena-subnav-fix.js?v=subnav-fix-20260914','data-arena-subnav-fix')}
+  function loadIllustratedMap(){loadScript('arena-illustrated-map.js?v=illustrated-map-20260915','data-arena-illustrated-map')}
   function loadForgeV2(){loadScript('arena-forge-v2.js?v=forge-v2-20260914b','data-arena-forge-v2')}
   function loadForgeBalance(){loadScript('arena-forge-balance-fix.js?v=forge-balance-20260914','data-arena-forge-balance')}
   function loadCursedRuins(){loadScript('arena-cursed-ruins.js?v=cursed-ruins-20260914','data-arena-cursed-ruins')}
@@ -21,6 +22,7 @@
     loadPolish();
     loadSubnavFix();
     loadWorldMap();
+    loadIllustratedMap();
     // arena-views.js foi retirado do boot.
     // Ele movia elementos do DOM depois do primeiro paint e causava a "segunda tela"/pisca na Home.
     setTimeout(loadForgeV2,500);
