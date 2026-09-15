@@ -53,7 +53,10 @@
     const oldAttack=window.attack;
     window.attack=function(...args){
       if(!window.battle)return oldAttack.apply(this,args);
-      // Re-apply on EVERY attack so no later combat wrapper can erase Skill power.
+      // Durante o D6, o sistema de crítico define battle.attack manualmente.
+      // Não sobrescreva esse valor com a Skill.
+      if(window.__arenaCritRolling)return oldAttack.apply(this,args);
+      // Re-aplica a Skill uma vez por ataque normal.
       applySkillPower();
       return oldAttack.apply(this,args);
     };
