@@ -46,6 +46,14 @@
     document.addEventListener('click',e=>{if(!wrap.contains(e.target)){wrap.classList.remove('open');btn.setAttribute('aria-expanded','false')}});
     window.__arenaCharacterDraw=draw;
     window.addEventListener('arena-character-created',()=>setTimeout(draw,0));
+    const start=document.getElementById('arenaStartBtn');
+    if(start&&!start.dataset.arenaStartBound){
+      start.dataset.arenaStartBound='1';
+      start.addEventListener('click',()=>{
+        document.querySelector('.game-shell')?.scrollIntoView({behavior:'smooth',block:'start'});
+        setTimeout(()=>document.getElementById('characterPickerBtn')?.focus(),350);
+      });
+    }
     const timer=setInterval(()=>{if(draw())clearInterval(timer)},250);
     if(draw())clearInterval(timer);
     setTimeout(()=>clearInterval(timer),15000);
@@ -54,12 +62,12 @@
 })();
 
 (()=>{
-  // Legacy compatibility modules. They are not loaded directly by arena.html,
-  // so keep their loader isolated here and guard every script against duplicates.
+  // Legacy feature loader. Each feature remains isolated in its own file.
+  // Bestiary counter is intentionally not loaded: arena-bestiary-fix.js is the
+  // single owner of bestiary recording and emits the canonical kill event.
   const files=[
     'arena-campaign-timer-fix.js?v=timer-fix-20260912c',
     'arena-bestiary-fix.js?v=bestiary-infinite-20260912a',
-    'arena-bestiary-counter-fix.js?v=bestiary-counter-infinite-20260912a',
     'arena-bestiary-platinum-popup.js?v=platinum-popup-20260912a',
     'arena-combat-final-fix.js?v=combat-fix-20260912',
     'arena-flee-fix.js?v=flee-fix-20260912',
