@@ -20,7 +20,7 @@ window.addXP=function(amount){
 
 window.renderMap=function(){
   const map=document.getElementById('map');
-  if(!map)return;
+  if(!map||typeof game==='undefined'||!game||!Array.isArray(ZONES))return;
 
   map.innerHTML=ZONES.map((z,i)=>{
     const unlocked=game.level>=z.min;
@@ -33,7 +33,8 @@ window.renderMap=function(){
   }).join('');
 
   const count=ZONES.filter(z=>game.level>=z.min).length;
-  document.getElementById('zoneCount').textContent=`${count} de ${ZONES.length} áreas desbloqueadas`;
+  const zoneCount=document.getElementById('zoneCount');
+  if(zoneCount)zoneCount.textContent=`${count} de ${ZONES.length} áreas desbloqueadas`;
 
   map.querySelectorAll('.zone:not(.locked)').forEach(card=>{
     const selectZone=()=>{
@@ -67,3 +68,18 @@ window.renderMap=function(){
     showZone(game.zone);
   };
 };
+
+// arena.js can render once before this override is loaded. Re-render after the
+// character/game state becomes available so "Escolha seu destino" never stays empty.
+(()=>{
+  let tries=0;
+  const timer=setInterval(()=>{
+    tries++;
+    if(typeof game!=='undefined'&&game&&typeof renderMap==='function'){
+      renderMap();
+      clearInterval(timer);
+      return;
+    }
+    if(tries>120)clearInterval(timer);
+  },100);
+})();
