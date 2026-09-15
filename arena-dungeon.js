@@ -1,160 +1,33 @@
 (()=>{
-  if(window.__arenaDungeon)return;
-  window.__arenaDungeon=true;
-
-  const STORE='malupados_arena_v1';
-  const ROOMS=10;
-  const RARITIES=[
-    {id:'common',name:'Comum',chance:70,cls:'common'},
-    {id:'uncommon',name:'Incomum',chance:23,cls:'uncommon'},
-    {id:'rare',name:'Raro',chance:6,cls:'rare'},
-    {id:'epic',name:'Épico',chance:.9,cls:'epic'},
-    {id:'legendary',name:'Lendário',chance:.1,cls:'legendary'}
-  ];
-  const MATERIALS={
-    essence:{name:'Essência Corrompida',icon:'◆'},
-    fragment:{name:'Fragmento Abissal',icon:'✦'},
-    core:{name:'Núcleo Abissal',icon:'◈'},
-    heart:{name:'Coração Abissal',icon:'♥'}
-  };
-  const STAGES=[
-    {min:0,max:19,name:'Contaminação',desc:'A corrupção ainda está adormecida.'},
-    {min:20,max:39,name:'Infecção',desc:'A Dungeon começa a reagir à sua presença.'},
-    {min:40,max:59,name:'Degradação',desc:'As rotas ficam instáveis e surgem escolhas perigosas.'},
-    {min:60,max:79,name:'Abismo',desc:'Elites e fendas corrompidas passam a dominar as salas.'},
-    {min:80,max:99,name:'Colapso',desc:'A própria Dungeon tenta impedir sua chegada ao fim.'},
-    {min:100,max:100,name:'Ascensão',desc:'A corrupção atingiu o máximo. Ferumbras aguarda.'}
-  ];
-  const MOBS=[
-    {name:'Jardineiro Abissal',icon:'👹',hp:520,damage:34,res:62,gold:[900,1500]},
-    {name:'Guardião das Raízes',icon:'🌳',hp:610,damage:39,res:68,gold:[1000,1700]},
-    {name:'Abominação Floral',icon:'🪻',hp:700,damage:45,res:72,gold:[1200,2000]},
-    {name:'Cavaleiro Corrompido',icon:'☠️',hp:820,damage:51,res:76,gold:[1400,2300]}
-  ];
-  const fmt=n=>new Intl.NumberFormat('pt-BR').format(Math.floor(Number(n)||0));
-  const rand=(a,b)=>Math.floor(a+Math.random()*(b-a+1));
-  const esc=v=>String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
-  const save=()=>{if(typeof persist==='function')persist();else{try{const all=JSON.parse(localStorage.getItem(STORE)||'{}');all[game.character]=game;localStorage.setItem(STORE,JSON.stringify(all))}catch{}}};
-  function ensure(){
-    if(!game)return null;
-    game.abyssal=game.abyssal&&typeof game.abyssal==='object'?game.abyssal:{};
-    const a=game.abyssal;
-    a.unlocked=!!a.unlocked;
-    a.popupSeen=!!a.popupSeen;
-    a.corruption=Math.max(0,Math.min(100,Number(a.corruption)||0));
-    a.room=Math.max(0,Math.min(ROOMS,Number(a.room)||0));
-    a.loot=a.loot&&typeof a.loot==='object'?a.loot:{};
-    a.loot.gold=Math.max(0,Number(a.loot.gold)||0);
-    Object.keys(MATERIALS).forEach(k=>a.loot[k]=Math.max(0,Number(a.loot[k])||0));
-    a.active=!!a.active;
-    a.event=a.event||'';
-    return a;
-  }
-  function forge(){
-    if(typeof window.arenaForgeV2==='object')return window.arenaForgeV2;
-    return null;
-  }
-  function hasDemonProof(){
-    const a=ensure();
-    if(!a)return false;
-    return !!game.demonDefeated||!!a.demonDefeated;
-  }
-  function detectUnlock(){
-    const a=ensure();if(!a)return;
-    const text=document.getElementById('battleArea')?.textContent||'';
-    if(/Demon derrotado/i.test(text)){game.demonDefeated=true;a.demonDefeated=true;save()}
-    const eligible=Number(game.level||0)>=150&&hasDemonProof();
-    if(eligible&&!a.unlocked){a.unlocked=true;save();showUnlockPopup()}
-    if(a.unlocked&&!a.popupSeen&&eligible)showUnlockPopup();
-  }
-  function showUnlockPopup(){
-    const a=ensure();if(!a||document.getElementById('abyssalUnlockModal'))return;
-    const modal=document.createElement('div');modal.id='abyssalUnlockModal';modal.className='abyssal-modal';
-    modal.innerHTML=`<div class="abyssal-modal-box"><div class="abyssal-sigil">☠</div><div class="eyebrow">UMA NOVA AMEAÇA</div><h3>Abyssal Gardens</h3><p>Além do Abismo Demoníaco existe uma região onde a própria natureza foi corrompida. Lá não há XP. Só Gold, materiais raros e uma coisa: risco.</p><div class="abyssal-unlock-grid"><div><b>100%</b><span>Corrupção máxima</span></div><div><b>0 XP</b><span>Conteúdo de endgame</span></div><div><b>5 TIERS</b><span>Progressão da Forja</span></div></div><button class="btn active" id="abyssalUnlockBtn">ENTRAR NOS ABYSSAL GARDENS</button><button class="btn" id="abyssalUnlockClose">Depois</button></div>`;
-    document.body.appendChild(modal);
-    a.popupSeen=true;save();
-    modal.querySelector('#abyssalUnlockBtn').onclick=()=>{modal.remove();scrollToDungeon();render()};
-    modal.querySelector('#abyssalUnlockClose').onclick=()=>modal.remove();
-    modal.onclick=e=>{if(e.target===modal)modal.remove()};
-  }
-  function scrollToDungeon(){document.getElementById('abyssalGardens')?.scrollIntoView({behavior:'smooth',block:'center'})}
-  function stage(c){return STAGES.find(x=>c>=x.min&&c<=x.max)||STAGES[0]}
-  function rarityAt(c){
-    const boost=Math.max(0,Math.min(3,(c-50)/40));
-    const weights={common:70-boost*15,uncommon:23+boost*3,rare:6+boost*7,epic:.9+boost*3.5,legendary:.1+boost*1.5};
-    const total=Object.values(weights).reduce((a,b)=>a+b,0);let r=Math.random()*total;
-    for(const x of RARITIES){r-=weights[x.id];if(r<=0)return x.id}return 'common';
-  }
-  function materialFor(rarity){
-    const map={common:['essence'],uncommon:['essence','fragment'],rare:['fragment','core'],epic:['core','fragment'],legendary:['heart','core']};
-    const pool=map[rarity]||map.common;return pool[rand(0,pool.length-1)];
-  }
-  function addLoot(a,final=false){
-    const c=a.corruption;
-    a.loot.gold+=final?rand(18000,45000):rand(650,1400)+Math.floor(c*8);
-    const rolls=final?rand(8,13):rand(1,3);
-    for(let i=0;i<rolls;i++){
-      const rarity=rarityAt(c);
-      const key=materialFor(rarity);
-      const qty=rarity==='common'?rand(8,22):rarity==='uncommon'?rand(4,10):rarity==='rare'?rand(2,5):rarity==='epic'?rand(1,2):1;
-      a.loot[key]+=qty;
-    }
-  }
-  function resetRun(){const a=ensure();a.corruption=0;a.room=0;a.active=true;a.event='';a.loot={gold:0,essence:0,fragment:0,core:0,heart:0};save()}
-  function loseRun(){const a=ensure();a.active=false;a.corruption=0;a.room=0;a.event='';a.loot={gold:0,essence:0,fragment:0,core:0,heart:0};save();toast?.('Você morreu nos Abyssal Gardens. A run foi perdida.');render()}
-  function completeRun(){const a=ensure();addLoot(a,true);a.active=false;a.room=ROOMS;a.corruption=100;save();showChest()}
-  function showChest(){const a=ensure();const modal=document.createElement('div');modal.className='abyssal-modal';modal.innerHTML=`<div class="abyssal-modal-box chest-box"><div class="abyssal-sigil">🗝</div><div class="eyebrow">FERUMBRAS DERROTADO</div><h3>Baú dos Jardins Abissais</h3><p>Você atravessou a corrupção e chegou ao fim. Todo o loot da run foi convertido em recompensa agora.</p><div class="loot-grid"><div><b>🪙 ${fmt(a.loot.gold)}</b><span>Gold</span></div>${Object.keys(MATERIALS).map(k=>`<div><b>${MATERIALS[k].icon} ${fmt(a.loot[k])}</b><span>${MATERIALS[k].name}</span></div>`).join('')}</div><button class="btn active" id="claimAbyssal">ABRIR BAÚ</button></div>`;document.body.appendChild(modal);modal.querySelector('#claimAbyssal').onclick=()=>{game.gold+=a.loot.gold;game.forgeMaterials=game.forgeMaterials||{};Object.keys(MATERIALS).forEach(k=>game.forgeMaterials[k]=(Number(game.forgeMaterials[k])||0)+a.loot[k]);a.loot={gold:0,essence:0,fragment:0,core:0,heart:0};a.corruption=0;a.room=0;save();modal.remove();render();toast?.('Loot recebido. A Forja está esperando.')}}
-  function roomMechanic(){const a=ensure(),c=a.corruption;
-    if(c>=90)return {title:'Abyssal Collapse',desc:'A rota está colapsando. A próxima sala é obrigatória e um inimigo adicional pode aparecer.',kind:'danger',options:[['AVANÇAR','seguir'] ]};
-    if(c>=80)return {title:'Corruption Hunt',desc:'Uma criatura corrompida percebeu você. Derrote-a para preservar a run.',kind:'danger',options:[['ENFRENTAR','fight'] ]};
-    if(c>=70)return {title:'Reality Rift',desc:'Uma fenda divide a rota. O caminho seguro é mais longo; o caminho corrompido aumenta o risco e a recompensa.',kind:'choice',options:[['FECHAR A FENDA','safe'],['ATRAVESSAR','risk']]};
-    if(c>=60)return {title:'Corrupted Elite',desc:'Um elite aparece nesta sala. Ele tem pouca vida, mas resistência muito alta e um modificador especial.',kind:'fight',options:[['ENFRENTAR ELITE','fight']]};
-    if(c>=50)return {title:'Corruption Choice',desc:'A corrupção oferece poder em troca de risco.',kind:'choice',options:[['RESISTIR','safe'],['ABRAÇAR A CORRUPÇÃO','risk']]};
-    if(c>=40)return {title:'Blood Sacrifice',desc:'Um altar oferece recompensa em troca de parte do seu HP atual.',kind:'choice',options:[['IGNORAR','safe'],['SACRIFICAR 12% HP','sac']]};
-    if(c>=30)return {title:'Corrupted Spawn',desc:'O próximo inimigo pode nascer em uma forma corrompida, com resistência ainda maior.',kind:'fight',options:[['ENFRENTAR','fight']]};
-    if(c>=20)return {title:'Corrupted Ground',desc:'O chão está contaminado. Atravessar é possível, mas causa dano ao chegar à próxima sala.',kind:'choice',options:[['CONTORNAR','safe'],['ATRAVESSAR','risk']]};
-    return {title:'Jardins Abissais',desc:'A vegetação ainda parece silenciosa. A corrupção está apenas começando.',kind:'fight',options:[['AVANÇAR','fight']]};
-  }
-  let combat=null;
-  function playerStats(){
-    let attack=20+Number(game.level||1)*2,defense=15,hp=180+Number(game.level||1)*5;
-    const eq=game.shopEquipped||{};
-    if(typeof SHOP_ITEMS!=='undefined')Object.entries(eq).forEach(([slot,id])=>{const item=SHOP_ITEMS.find(x=>x.id===id);if(!item)return;const tier=Number(game.forge?.tiers?.[id]||0);const mult=[0,.05,.10,.17,.25,.35][tier]||0;attack+=Number(item.attack||0)*(1+mult);defense+=Number(item.defense||0)*(1+mult);hp+=Number(item.defense||0)*2*(1+mult)});
-    const forgeAttack=typeof window.arenaForgeV2?.getTotalAttack==='function'?window.arenaForgeV2.getTotalAttack():0;
-    const forgeDefense=typeof window.arenaForgeV2?.getTotalDefense==='function'?window.arenaForgeV2.getTotalDefense():0;
-    return {attack:Math.floor(attack+forgeAttack),defense:Math.floor(defense+forgeDefense),maxHp:Math.floor(hp)};
-  }
-  function startMob(elite=false){
-    const a=ensure(),base=MOBS[rand(0,MOBS.length-1)],s=stage(a.corruption);let hp=base.hp+Math.floor(a.corruption*2);let res=Math.min(92,base.res+Math.floor(a.corruption*.12)+(elite?8:0));let dmg=base.damage+Math.floor(a.corruption*.25)+(elite?18:0);if(a.corruption>=30)res=Math.min(94,res+5);combat={kind:'mob',name:elite?'Elite '+base.name:base.name,icon:elite?'☠️':base.icon,maxHp:hp,hp,damage:dmg,res,playerHp:playerStats().maxHp,playerMax:playerStats().maxHp,log:[],busy:false};
-    combat.stats=playerStats();combat.log.unshift(`${s.name}: ${s.desc}`);render();
-  }
-  function startBoss(){const a=ensure(),s=playerStats();combat={kind:'boss',name:'Ferumbras',icon:'👿',maxHp:5200,hp:5200,damage:95,res:58,playerHp:s.maxHp,playerMax:s.maxHp,log:['Ferumbras encara você. A arena é parte da batalha.'],busy:false,phase:1,stats:s};render()}
-  function attack(){if(!combat||combat.busy)return;combat.busy=true;const c=ensure(),s=combat.stats;let raw=Math.max(1,Math.floor(s.attack*(.9+Math.random()*.2)));let dealt=Math.max(1,Math.floor(raw*(1-combat.res/100)));combat.hp=Math.max(0,combat.hp-dealt);combat.log.unshift(`Você causou <b>${fmt(dealt)}</b> de dano após a resistência.`);if(combat.kind==='boss'&&combat.hp<=3500&&combat.phase===1){combat.phase=2;combat.res=Math.min(85,combat.res+10);combat.log.unshift('<b>FASE 2:</b> a arena foi tomada pela corrupção. Ferumbras ficou mais resistente.')}if(combat.hp<=0){combat=null;nextRoom(true);return}let incoming=Math.max(1,combat.damage+rand(-8,8)-Math.floor(s.defense*.35));if(c.corruption>=80)incoming+=rand(4,12);if(combat.kind==='boss'&&combat.phase===2)incoming+=18;combat.playerHp=Math.max(0,combat.playerHp-incoming);combat.log.unshift(`${esc(combat.name)} causou <b>${fmt(incoming)}</b> de dano.`);if(combat.playerHp<=0){combat=null;loseRun();return}combat.busy=false;render()}
-  function nextRoom(won){const a=ensure();if(!won)return;if(a.room>=ROOMS){completeRun();return}a.room++;a.corruption=Math.min(100,a.room*10);addLoot(a,false);save();if(a.room===ROOMS){startBoss();return}const mech=roomMechanic();a.event=mech.title;save();if(mech.kind==='fight'||mech.kind==='danger'&&mech.options[0][1]==='fight')startMob(mech.title==='Corrupted Elite'||a.corruption>=60);else render()}
-  function choose(kind){const a=ensure();if(kind==='safe'){a.corruption=Math.max(0,a.corruption-3);a.event='Você escolheu o caminho seguro.'}if(kind==='risk'){a.corruption=Math.min(100,a.corruption+7);addLoot(a,false);a.event='A corrupção foi abraçada. A recompensa potencial aumentou.'}if(kind==='sac'){const loss=Math.max(1,Math.floor(combat?.playerHp||playerStats().maxHp)*.12);a.event=`O altar tomou ${fmt(loss)} HP.`}if(kind==='fight'){startMob(a.corruption>=60);return}save();nextRoom(true)}
-  function start(){const a=ensure();if(!a||!a.unlocked)return;resetRun();nextRoom(true)}
-  function render(){
-    const host=document.getElementById('abyssalGardens');if(!host)return;const a=ensure();if(!a)return;
-    if(!a.unlocked){host.innerHTML=`<div class="abyssal-locked"><div class="abyssal-sigil">☠</div><h3>Abyssal Gardens</h3><p>Derrote o Demon e alcance o nível 150 para descobrir este conteúdo.</p><button class="btn" disabled>Bloqueado</button></div>`;return}
-    const s=stage(a.corruption),pct=a.corruption;
-    let body='';
-    if(combat){const hp=Math.max(0,combat.hp/combat.maxHp*100),php=Math.max(0,combat.playerHp/combat.playerMax*100);body=`<div class="abyssal-combat"><div class="abyssal-combat-head"><div><span class="abyssal-stage">${esc(s.name)}</span><h3>${combat.icon} ${esc(combat.name)}</h3></div><span class="abyssal-res">Resistência ${combat.res}%</span></div><div class="abyssal-bars"><div><span>Inimigo · ${fmt(combat.hp)} / ${fmt(combat.maxHp)}</span><i><b style="width:${hp}%"></b></i></div><div><span>Você · ${fmt(combat.playerHp)} / ${fmt(combat.playerMax)}</span><i class="player"><b style="width:${php}%"></b></i></div></div><div class="abyssal-log">${combat.log.slice(0,5).join('<br>')}</div><button class="btn active big" id="abyssalAttack">ATACAR</button></div>`;
-    }else if(a.room>=ROOMS&&a.corruption>=100){body=`<div class="abyssal-final"><div class="abyssal-sigil">👿</div><h3>Ferumbras aguarda.</h3><p>100% de corrupção. Não há mais caminho para trás.</p><button class="btn active big" id="abyssalBoss">ENFRENTAR FERUMBRAS</button></div>`}else{const mech=roomMechanic();body=`<div class="abyssal-event"><span class="abyssal-stage">Sala ${a.room} / ${ROOMS}</span><h3>${esc(mech.title)}</h3><p>${esc(mech.desc)}</p><div class="abyssal-options">${mech.options.map(o=>`<button class="btn ${o[1]==='risk'?'danger':''}" data-abyss-option="${o[1]}">${esc(o[0])}</button>`).join('')}</div></div>`}
-    host.innerHTML=`<div class="abyssal-head"><div><div class="eyebrow">ENDGAME · SEM XP</div><h2>☠ Abyssal Gardens</h2><p>Uma Dungeon pós-jogo onde a corrupção aumenta, as mecânicas mudam e o loot só é seu quando Ferumbras cair.</p></div><div class="abyssal-entry"><b>${fmt(game.gold)}</b><span>Gold</span></div></div><div class="abyssal-corruption"><div class="corruption-copy"><span>Corrupção</span><strong>${pct}% · ${esc(s.name)}</strong></div><div class="corruption-track"><i style="width:${pct}%"></i></div><div class="corruption-meta"><span>0%</span><span>${esc(s.desc)}</span><span>100%</span></div></div><div class="abyssal-map">${Array.from({length:ROOMS},(_,i)=>`<div class="abyssal-node ${i<a.room?'done':''} ${i===a.room?'current':''}"><span>${i+1}</span></div>`).join('')}</div><div class="abyssal-run-stats"><div><span>Progresso</span><b>${a.room}/${ROOMS}</b></div><div><span>Loot em risco</span><b>${fmt(a.loot.gold)} Gold</b></div><div><span>Materiais</span><b>${fmt(Object.values(a.loot).reduce((x,y)=>x+y,0)-a.loot.gold)}</b></div></div>${body}<div class="abyssal-warning">Morrer zera a run inteira. O loot só é entregue ao abrir o baú depois de derrotar Ferumbras.</div></div>`;
-    host.querySelector('#abyssalAttack')?.addEventListener('click',attack);
-    host.querySelector('#abyssalBoss')?.addEventListener('click',startBoss);
-    host.querySelectorAll('[data-abyss-option]').forEach(b=>b.onclick=()=>choose(b.dataset.abyssOption));
-  }
-  function addPanel(){
-    if(document.getElementById('abyssalGardens'))return;
-    const sec=document.createElement('section');sec.id='abyssalGardens';sec.className='abyssal-section';
-    const activities=document.querySelector('.activities');if(activities)activities.insertAdjacentElement('beforebegin',sec);else document.querySelector('main')?.appendChild(sec);
-  }
-  function hookDemon(){
-    const area=document.getElementById('battleArea');if(!area||area.__abyssalHook)return;area.__abyssalHook=true;
-    new MutationObserver(()=>detectUnlock()).observe(area,{childList:true,subtree:true,characterData:true});
-  }
-  function boot(){addPanel();hookDemon();detectUnlock();render()}
-  const timer=setInterval(()=>{if(typeof game!=='undefined'&&game){boot()}},700);setTimeout(()=>clearInterval(timer),180000);boot();
-  window.arenaDungeon={ensure,render,start,loseRun,stage,RARITIES,MATERIALS};
+if(window.__arenaDungeon)return;window.__arenaDungeon=true;
+const ROOMS=10, STORE='malupados_arena_v1';
+const RARITIES={common:{name:'Essência Corrompida',icon:'◆',base:70},uncommon:{name:'Fragmento Abissal',icon:'✦',base:23},rare:{name:'Núcleo Abissal',icon:'◈',base:6},epic:{name:'Coração Abissal',icon:'♥',base:.9},legendary:{name:'Coração de Ferumbras',icon:'☠',base:.1}};
+const STAGES=[['Contaminação',0,19,'A corrupção ainda está adormecida.'],['Infecção',20,39,'A Dungeon começa a reagir à sua presença.'],['Degradação',40,59,'As rotas ficam instáveis e surgem escolhas perigosas.'],['Abismo',60,79,'Elites e fendas corrompidas passam a dominar as salas.'],['Colapso',80,99,'A própria Dungeon tenta impedir sua chegada ao fim.'],['Ascensão',100,100,'A corrupção atingiu o máximo. Ferumbras aguarda.']];
+const MOBS=[['Jardineiro Abissal','👹',520,34,62],['Guardião das Raízes','🌳',610,39,68],['Abominação Floral','🪻',700,45,72],['Cavaleiro Corrompido','☠️',820,51,76]];
+const fmt=n=>new Intl.NumberFormat('pt-BR').format(Math.floor(Number(n)||0)),rand=(a,b)=>Math.floor(a+Math.random()*(b-a+1)),esc=v=>String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
+const save=()=>typeof persist==='function'?persist():null;
+function ensure(){if(!game)return null;game.abyssal=game.abyssal&&typeof game.abyssal==='object'?game.abyssal:{};const a=game.abyssal;a.unlocked=!!a.unlocked;a.popupSeen=!!a.popupSeen;a.demonDefeated=!!a.demonDefeated;a.corruption=Math.max(0,Math.min(100,Number(a.corruption)||0));a.room=Math.max(0,Math.min(ROOMS,Number(a.room)||0));a.active=!!a.active;a.loot=a.loot&&typeof a.loot==='object'?a.loot:{};Object.keys(RARITIES).forEach(k=>a.loot[k]=Math.max(0,Number(a.loot[k])||0));a.loot.gold=Math.max(0,Number(a.loot.gold)||0);return a}
+function stage(c){const s=STAGES.find(x=>c>=x[1]&&c<=x[2])||STAGES[0];return{name:s[0],desc:s[3]}}
+function unlockCheck(){const a=ensure();if(!a)return;const text=document.getElementById('battleArea')?.textContent||'';if(/Demon derrotado/i.test(text)){game.demonDefeated=true;a.demonDefeated=true;save()}if(Number(game.level||0)>=150&&(game.demonDefeated||a.demonDefeated)){if(!a.unlocked){a.unlocked=true;save()}if(!a.popupSeen)popup()}}
+function popup(){const a=ensure();if(!a||document.getElementById('abyssalUnlockModal'))return;a.popupSeen=true;save();const m=document.createElement('div');m.id='abyssalUnlockModal';m.className='abyssal-modal';m.innerHTML=`<div class="abyssal-modal-box"><div class="abyssal-sigil">☠</div><div class="eyebrow">UMA NOVA AMEAÇA</div><h3>Abyssal Gardens</h3><p>Além do Abismo Demoníaco existe um jardim onde a própria natureza foi corrompida. Não há XP aqui. Só Gold, materiais raros e risco.</p><div class="abyssal-unlock-grid"><div><b>0 → 100%</b><span>Corrupção</span></div><div><b>0 XP</b><span>Endgame</span></div><div><b>T1 → T5</b><span>Forja</span></div></div><button class="btn active" id="abyssalEnter">ENTRAR</button><button class="btn" id="abyssalLater">Depois</button></div>`;document.body.appendChild(m);m.querySelector('#abyssalEnter').onclick=()=>{m.remove();document.getElementById('abyssalGardens')?.scrollIntoView({behavior:'smooth',block:'center'});render()};m.querySelector('#abyssalLater').onclick=()=>m.remove();m.onclick=e=>{if(e.target===m)m.remove()}}
+function rarity(c){const boost=Math.max(0,Math.min(3,(c-50)/40)),w={common:70-15*boost,uncommon:23+3*boost,rare:6+7*boost,epic:.9+3.5*boost,legendary:.1+1.5*boost};let r=Math.random()*Object.values(w).reduce((a,b)=>a+b,0);for(const k of Object.keys(w)){r-=w[k];if(r<=0)return k}return'common'}
+function loot(a,final=false){a.loot.gold+=(final?rand(18000,45000):rand(650,1400)+Math.floor(a.corruption*8));const rolls=final?rand(8,13):rand(1,3);for(let i=0;i<rolls;i++){const k=rarity(a.corruption),q=k==='common'?rand(8,22):k==='uncommon'?rand(4,10):k==='rare'?rand(2,5):k==='epic'?rand(1,2):1;a.loot[k]+=q}}
+function reset(){const a=ensure();a.active=true;a.room=0;a.corruption=0;a.loot={gold:0,common:0,uncommon:0,rare:0,epic:0,legendary:0};save()}
+function lose(){const a=ensure();a.active=false;a.room=0;a.corruption=0;a.loot={gold:0,common:0,uncommon:0,rare:0,epic:0,legendary:0};save();toast?.('Você morreu nos Abyssal Gardens. A run inteira foi perdida.');combat=null;render()}
+function finish(){const a=ensure();loot(a,true);a.active=false;a.corruption=100;save();const m=document.createElement('div');m.className='abyssal-modal';m.innerHTML=`<div class="abyssal-modal-box chest-box"><div class="abyssal-sigil">🗝</div><div class="eyebrow">FERUMBRAS DERROTADO</div><h3>Baú dos Jardins Abissais</h3><p>Você chegou ao fim. Agora o loot da run pode ser aberto.</p><div class="loot-grid"><div><b>🪙 ${fmt(a.loot.gold)}</b><span>Gold</span></div>${Object.keys(RARITIES).map(k=>`<div><b>${RARITIES[k].icon} ${fmt(a.loot[k])}</b><span>${RARITIES[k].name}</span></div>`).join('')}</div><button class="btn active" id="abyssalClaim">ABRIR BAÚ</button></div>`;document.body.appendChild(m);m.querySelector('#abyssalClaim').onclick=()=>{game.gold+=a.loot.gold;game.forgeMaterials=game.forgeMaterials||{};Object.keys(RARITIES).forEach(k=>game.forgeMaterials[k]=(Number(game.forgeMaterials[k])||0)+a.loot[k]);a.loot={gold:0,common:0,uncommon:0,rare:0,epic:0,legendary:0};a.room=0;a.corruption=0;save();m.remove();render();toast?.('Loot recebido. A Forja está pronta.')}}
+let combat=null;
+function stats(){let atk=20+Number(game.level||1)*2,def=15,hp=180+Number(game.level||1)*5;const eq=game.shopEquipped||{};if(typeof SHOP_ITEMS!=='undefined')Object.values(eq).forEach(id=>{const x=SHOP_ITEMS.find(i=>i.id===id);if(!x)return;const t=Number(game.forge?.tiers?.[x.id]||0),b=[0,.05,.10,.17,.25,.35][t]||0;atk+=Number(x.attack||0)*(1+b);def+=Number(x.defense||0)*(1+b);hp+=Number(x.defense||0)*2*(1+b)});return{atk:Math.floor(atk+(window.arenaForgeV2?.getTotalAttack?.()||0)),def:Math.floor(def+(window.arenaForgeV2?.getTotalDefense?.()||0)),hp:Math.floor(hp+(window.arenaForgeV2?.getTotalHP?.()||0))}}
+function mob(elite=false){const a=ensure(),m=MOBS[rand(0,MOBS.length-1)],s=stats(),r=stage(a.corruption),res=Math.min(94,m[4]+Math.floor(a.corruption*.12)+(elite?8:0));combat={boss:false,name:elite?'Elite '+m[0]:m[0],icon:elite?'☠️':m[1],maxHp:m[2]+a.corruption*2,hp:m[2]+a.corruption*2,damage:m[3]+Math.floor(a.corruption*.25)+(elite?18:0),res,playerHp:s.hp,playerMax:s.hp,stats:s,log:[`${r.name}: ${r.desc}`],phase:1};render()}
+function boss(){const s=stats();combat={boss:true,name:'Ferumbras',icon:'👿',maxHp:5200,hp:5200,damage:95,res:58,playerHp:s.hp,playerMax:s.hp,stats:s,log:['Ferumbras encara você. A arena é parte da batalha.'],phase:1};render()}
+function attack(){if(!combat||combat.busy)return;combat.busy=true;const a=ensure(),s=combat.stats;let raw=Math.max(1,Math.floor(s.atk*(.9+Math.random()*.2))),dmg=Math.max(1,Math.floor(raw*(1-combat.res/100)));combat.hp=Math.max(0,combat.hp-dmg);combat.log.unshift(`Você causou <b>${fmt(dmg)}</b> após a resistência de ${combat.res}%.`);if(combat.boss&&combat.hp<=3500&&combat.phase===1){combat.phase=2;combat.res=68;combat.log.unshift('<b>FASE 2:</b> a arena foi tomada pela corrupção.')}if(combat.hp<=0){combat=null;next();return}let incoming=Math.max(1,combat.damage+rand(-8,8)-Math.floor(s.def*.35));if(a.corruption>=80)incoming+=rand(4,12);if(combat.boss&&combat.phase===2)incoming+=18;combat.playerHp=Math.max(0,combat.playerHp-incoming);combat.log.unshift(`${esc(combat.name)} causou <b>${fmt(incoming)}</b> de dano.`);if(combat.playerHp<=0){lose();return}combat.busy=false;render()}
+function mechanic(){const c=ensure().corruption;if(c>=90)return['Abyssal Collapse','A rota está colapsando. Avançar é obrigatório.','advance'];if(c>=80)return['Corruption Hunt','Uma criatura corrompida percebeu você. Derrote-a para continuar.','fight'];if(c>=70)return['Reality Rift','Escolha entre fechar a fenda ou atravessar a corrupção.','rift'];if(c>=60)return['Corrupted Elite','Elite com pouca vida e resistência extrema.','fight'];if(c>=50)return['Corruption Choice','A corrupção oferece poder em troca de risco.','choice'];if(c>=40)return['Blood Sacrifice','Um altar pode tomar 12% do seu HP atual em troca de uma rota mais segura.','sac'];if(c>=30)return['Corrupted Spawn','O próximo inimigo pode nascer em forma corrompida.','fight'];if(c>=20)return['Corrupted Ground','Contornar é seguro; atravessar aumenta o risco e a recompensa.','ground'];return['Jardins Abissais','A vegetação ainda parece silenciosa.','fight']}
+function choose(kind){const a=ensure();if(kind==='risk'){a.corruption=Math.min(100,a.corruption+7);loot(a,false)}else if(kind==='safe'){a.corruption=Math.max(0,a.corruption-3)}else if(kind==='sac'){const loss=Math.max(1,Math.floor(stats().hp*.12));a.temporaryHpLoss=loss}else if(kind==='fight'){mob(a.corruption>=60);return}else if(kind==='advance'){next();return}save();next()}
+function next(){const a=ensure();if(a.room>=ROOMS){finish();return}a.room++;a.corruption=Math.min(100,a.room*10);loot(a,false);save();if(a.room===ROOMS){boss();return}const m=mechanic();if(m[2]==='fight'||m[2]==='advance'||m[2]==='sac')mob(a.corruption>=60);else render()}
+function start(){const a=ensure();if(!a?.unlocked)return;reset();next()}
+function render(){const host=document.getElementById('abyssalGardens');if(!host||!game)return;const a=ensure();if(!a.unlocked){host.innerHTML='<div class="abyssal-locked"><div class="abyssal-sigil">☠</div><h3>Abyssal Gardens</h3><p>Derrote o Demon e alcance o nível 150 para desbloquear.</p></div>';return}const s=stage(a.corruption);let body='';if(combat){const hp=Math.max(0,combat.hp/combat.maxHp*100),php=Math.max(0,combat.playerHp/combat.playerMax*100);body=`<div class="abyssal-combat"><div class="abyssal-combat-head"><div><span class="abyssal-stage">${esc(s.name)}</span><h3>${combat.icon} ${esc(combat.name)}</h3></div><span class="abyssal-res">Resistência ${combat.res}%</span></div><div class="abyssal-bars"><div><span>Inimigo · ${fmt(combat.hp)} / ${fmt(combat.maxHp)}</span><i><b style="width:${hp}%"></b></i></div><div><span>Você · ${fmt(combat.playerHp)} / ${fmt(combat.playerMax)}</span><i class="player"><b style="width:${php}%"></b></i></div></div><div class="abyssal-log">${combat.log.slice(0,5).join('<br>')}</div><button class="btn active big" id="abyssalAttack">ATACAR</button></div>`}else if(a.room>=ROOMS){body='<div class="abyssal-final"><div class="abyssal-sigil">👿</div><h3>Ferumbras aguarda.</h3><p>100% de corrupção. Não há mais caminho para trás.</p><button class="btn active big" id="abyssalBoss">ENFRENTAR FERUMBRAS</button></div>'}else{const m=mechanic();let opts=m[2]==='ground'||m[2]==='rift'?'<button class="btn" data-abyss="safe">CAMINHO SEGURO</button><button class="btn danger" data-abyss="risk">ACEITAR CORRUPÇÃO</button>':m[2]==='choice'?'<button class="btn" data-abyss="safe">RESISTIR</button><button class="btn danger" data-abyss="risk">ABRAÇAR A CORRUPÇÃO</button>':m[2]==='sac'?'<button class="btn" data-abyss="safe">IGNORAR</button><button class="btn danger" data-abyss="sac">SACRIFICAR HP</button>':`<button class="btn active" data-abyss="${m[2]==='advance'?'advance':'fight'}">${m[2]==='advance'?'AVANÇAR':'ENTRAR EM COMBATE'}</button>`;body=`<div class="abyssal-event"><span class="abyssal-stage">Sala ${a.room}/${ROOMS}</span><h3>${esc(m[0])}</h3><p>${esc(m[1])}</p><div class="abyssal-options">${opts}</div></div>`}host.innerHTML=`<div class="abyssal-head"><div><div class="eyebrow">ENDGAME · SEM XP</div><h2>☠ Abyssal Gardens</h2><p>Uma Dungeon pós-jogo. A corrupção sobe até 100%, novas mecânicas aparecem e o loot só é seu ao abrir o baú.</p></div><div class="abyssal-entry"><b>${fmt(game.gold)}</b><span>Gold</span></div></div><div class="abyssal-corruption"><div class="corruption-copy"><span>Corrupção</span><strong>${a.corruption}% · ${esc(s.name)}</strong></div><div class="corruption-track"><i style="width:${a.corruption}%"></i></div><div class="corruption-meta"><span>0%</span><span>${esc(s.desc)}</span><span>100%</span></div></div><div class="abyssal-map">${Array.from({length:ROOMS},(_,i)=>`<div class="abyssal-node ${i<a.room?'done':''} ${i===a.room?'current':''}"><span>${i+1}</span></div>`).join('')}</div><div class="abyssal-run-stats"><div><span>Sala</span><b>${a.room}/${ROOMS}</b></div><div><span>Gold em risco</span><b>${fmt(a.loot.gold)}</b></div><div><span>Materiais em risco</span><b>${fmt(Object.keys(RARITIES).reduce((x,k)=>x+a.loot[k],0))}</b></div></div>${body}<div class="abyssal-warning">Morreu? A run inteira volta para o começo. Não existe XP e não existe limite de tentativas.</div></div>`;host.querySelector('#abyssalAttack')?.addEventListener('click',attack);host.querySelector('#abyssalBoss')?.addEventListener('click',boss);host.querySelectorAll('[data-abyss]').forEach(b=>b.onclick=()=>choose(b.dataset.abyss))}
+function addPanel(){if(document.getElementById('abyssalGardens'))return;const s=document.createElement('section');s.id='abyssalGardens';s.className='abyssal-section';const act=document.querySelector('.activities');if(act)act.insertAdjacentElement('beforebegin',s);else document.querySelector('main')?.appendChild(s)}
+function style(){if(document.getElementById('abyssalStyle'))return;const s=document.createElement('style');s.id='abyssalStyle';s.textContent=`.abyssal-section{margin:28px 0}.abyssal-head{padding:20px;border:1px solid #443047;background:radial-gradient(circle at 90% 0,#25142f,#0c0e10);display:flex;justify-content:space-between;gap:18px}.abyssal-head h2{font-family:Cinzel,serif;color:#ead9ec;margin:4px 0}.abyssal-head p{color:#83798a;font-size:.59rem;line-height:1.5;max-width:680px}.abyssal-entry{text-align:right;color:#d9a4dc;font-weight:900}.abyssal-entry span{display:block;color:#716976;font-size:.48rem}.abyssal-corruption{padding:14px;border:1px solid #3b2941;background:#100d12}.corruption-copy{display:flex;justify-content:space-between;color:#77707d;font-size:.52rem}.corruption-copy strong{color:#d8a8df}.corruption-track{height:10px;border:1px solid #4a2d50;background:#08090a;margin-top:7px}.corruption-track i{display:block;height:100%;background:linear-gradient(90deg,#503261,#b44ec6,#ef708e);transition:width .25s}.corruption-meta{display:flex;justify-content:space-between;color:#6e6872;font-size:.45rem;margin-top:5px}.abyssal-map{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin:10px 0}.abyssal-node{height:28px;border:1px solid #302b31;background:#111214;display:grid;place-items:center;color:#5f5a63;font-size:.48rem}.abyssal-node.done{background:#2b1832;border-color:#62416d;color:#c58dce}.abyssal-node.current{border-color:#e0a0df;color:#fff;box-shadow:0 0 12px rgba(205,100,211,.18)}.abyssal-run-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}.abyssal-run-stats div{padding:9px;border:1px solid #292b2f;background:#111315;text-align:center}.abyssal-run-stats span{display:block;color:#686e74;font-size:.45rem}.abyssal-run-stats b{display:block;color:#d7d2c8;font-size:.62rem;margin-top:3px}.abyssal-event,.abyssal-combat,.abyssal-final,.abyssal-locked{padding:18px;border:1px solid #3b3040;background:linear-gradient(145deg,#171218,#0c0e10)}.abyssal-stage{color:#b982c0;font-size:.48rem;text-transform:uppercase;letter-spacing:.08em}.abyssal-event h3,.abyssal-combat h3,.abyssal-final h3,.abyssal-locked h3{font-family:Cinzel,serif;color:#e6d9e8;margin:5px 0}.abyssal-event p,.abyssal-final p,.abyssal-locked p{color:#807782;font-size:.58rem;line-height:1.5}.abyssal-options{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.abyssal-options .btn{flex:1;min-width:150px}.abyssal-combat-head{display:flex;justify-content:space-between;gap:10px}.abyssal-res{color:#d18ad9;font-size:.5rem}.abyssal-bars{display:grid;gap:8px;margin:12px 0}.abyssal-bars span{display:block;color:#787d82;font-size:.48rem;margin-bottom:4px}.abyssal-bars i{display:block;height:9px;background:#211519;border:1px solid #3b252c}.abyssal-bars i b{display:block;height:100%;background:#a84758}.abyssal-bars i.player{background:#12201a}.abyssal-bars i.player b{background:#4e986c}.abyssal-log{min-height:45px;padding:9px;border:1px solid #292d30;background:#090b0c;color:#90969a;font-size:.51rem;line-height:1.5;margin-bottom:9px}.abyssal-final{text-align:center}.abyssal-sigil{font-size:2.7rem;text-align:center;margin-bottom:6px}.abyssal-warning{padding:9px;border:1px solid #352c38;background:#0d0e10;color:#6f6874;font-size:.48rem;line-height:1.45;margin-top:8px}.abyssal-modal{position:fixed;inset:0;background:rgba(3,2,5,.82);display:grid;place-items:center;z-index:10000;padding:18px}.abyssal-modal-box{width:min(520px,100%);padding:24px;border:1px solid #69426f;background:radial-gradient(circle at 50% 0,#211329,#0d0e10);box-shadow:0 30px 100px #000}.abyssal-modal-box h3{font-family:Cinzel,serif;color:#ead9ec;text-align:center;font-size:1.35rem;margin:5px 0 8px}.abyssal-modal-box p{color:#918796;font-size:.58rem;line-height:1.55;text-align:center}.abyssal-unlock-grid,.loot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:14px 0}.loot-grid{grid-template-columns:repeat(3,1fr)}.abyssal-unlock-grid div,.loot-grid div{padding:9px;border:1px solid #34263a;background:#111015;text-align:center}.abyssal-unlock-grid b,.loot-grid b{display:block;color:#d8a8dd;font-size:.64rem}.abyssal-unlock-grid span,.loot-grid span{display:block;color:#706975;font-size:.45rem;margin-top:3px}.abyssal-modal-box .btn{width:100%;margin-top:6px}.abyssal-modal-box .abyssal-sigil{color:#c56bd0}@media(max-width:760px){.abyssal-head{display:block}.abyssal-entry{text-align:left;margin-top:8px}.abyssal-map{grid-template-columns:repeat(5,1fr)}.abyssal-run-stats{grid-template-columns:1fr}.abyssal-unlock-grid,.loot-grid{grid-template-columns:1fr 1fr}}
+`;document.head.appendChild(s)}
+function boot(){if(!game)return;ensure();addPanel();style();unlockCheck();render()}
+const t=setInterval(boot,900);setTimeout(()=>clearInterval(t),180000);boot();window.arenaDungeon={ensure,start,lose,render,RARITIES};
 })();
