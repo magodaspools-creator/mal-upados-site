@@ -5,7 +5,6 @@
   const CHALLENGE_BUCKETS='malupados_arena_challenge_buckets_v2';
   let lastCharacter='';
   let lastDay='';
-  let bestiaryObserver=null;
 
   const day=()=>{
     const d=new Date();
@@ -145,28 +144,11 @@
     return true;
   }
 
-  function repairBestiaryRecording(){
-    const area=document.getElementById('battleArea');
-    if(!area||bestiaryObserver)return;
-    bestiaryObserver=new MutationObserver(()=>{
-      const result=area.querySelector('.battle-empty.result h3');
-      const text=result?.textContent?.trim()||'';
-      if(!result||!/derrotado!/i.test(text))return;
-      if(area.dataset.bestiaryResult===text)return;
-      area.dataset.bestiaryResult=text;
-      const match=text.match(/^(.*?)\s+derrotado!/i);
-      const name=match?.[1]?.trim();
-      if(name&&typeof window.arenaRecordBestiaryKill==='function')window.arenaRecordBestiaryKill(name);
-    });
-    bestiaryObserver.observe(area,{childList:true,subtree:true,characterData:true});
-  }
-
   function boot(){
     repairChallenge();
     bindChallenge();
     repairMap();
     repairForgeLifesteal();
-    repairBestiaryRecording();
   }
 
   const observer=new MutationObserver(()=>{
@@ -174,7 +156,6 @@
     repairMap();
     repairChallenge();
     repairForgeLifesteal();
-    repairBestiaryRecording();
   });
   observer.observe(document.body,{childList:true,subtree:true});
 
