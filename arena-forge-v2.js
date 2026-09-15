@@ -12,7 +12,6 @@
     {tier:4,cost:180000,cores:11,chance:.40,attack:34,hp:95,defense:7,lifesteal:2},
     {tier:5,cost:350000,cores:16,chance:.25,attack:48,hp:140,defense:10,lifesteal:3}
   ];
-
   const DUNGEON=[
     {name:'Forjador Corrompido',icon:'⚒️',hp:850,damage:115,gold:[1800,2600],drop:'Fragmento Infernal',dropChance:.22,cores:1},
     {name:'Guardião de Cinzas',icon:'🗿',hp:1250,damage:145,gold:[2300,3400],drop:'Núcleo Instável',dropChance:.25,cores:1},
@@ -20,10 +19,8 @@
     {name:'Colosso Derretido',icon:'🔥',hp:2350,damage:225,gold:[3800,5400],drop:'Essência da Forja',dropChance:.30,cores:2},
     {name:'Mestre da Forja Abissal',icon:'☠️',hp:3200,damage:275,gold:[5000,7200],drop:'Núcleo Abissal',dropChance:.35,cores:3}
   ];
-
   const fmt=n=>new Intl.NumberFormat('pt-BR').format(Math.floor(Number(n)||0));
   const rand=(a,b)=>Math.floor(a+Math.random()*(b-a+1));
-
   const getForge=()=>{
     game.forge=game.forge&&typeof game.forge==='object'?game.forge:{};
     game.forge.weapon=Math.max(0,Math.min(5,Number(game.forge.weapon)||0));
@@ -32,251 +29,36 @@
     game.forge.unlocked=!!game.forge.unlocked;
     return game.forge;
   };
-
-  const tierBonus=(type,field)=>{
-    const level=getForge()[type]||0;
-    return TIERS.slice(0,level).reduce((sum,t)=>sum+(Number(t[field])||0),0);
-  };
-
+  const tierBonus=(type,field)=>{const level=getForge()[type]||0;return TIERS.slice(0,level).reduce((sum,t)=>sum+(Number(t[field])||0),0)};
   const materialLabel=()=>`${fmt(getForge().cores)} Núcleos da Forja`;
-
-  function style(){
-    if(document.getElementById('arenaForgeV2Style'))return;
-    const s=document.createElement('style');s.id='arenaForgeV2Style';s.textContent=`
-      .forge-v2-lock{border:1px solid #4b3a27;background:linear-gradient(145deg,#15120e,#0d0f10);padding:20px;margin-bottom:14px}.forge-v2-lock strong{display:block;color:#dfc98f;font-family:Cinzel,serif;font-size:.85rem}.forge-v2-lock span{display:block;color:#777d82;font-size:.59rem;line-height:1.5;margin-top:6px}.forge-v2-material{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:11px 13px;border:1px solid #34302a;background:#0d1011;margin-bottom:12px}.forge-v2-material span{font-size:.55rem;color:#858b90}.forge-v2-material b{font-size:.68rem;color:#d8b86d}.forge-v2-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.forge-v2-card{border:1px solid #353536;background:linear-gradient(145deg,#151719,#0c0f10);padding:15px}.forge-v2-card h4{font-family:Cinzel,serif;color:#e1d9c7;margin:0 0 4px}.forge-v2-card p{font-size:.57rem;color:#747b81;line-height:1.45;margin:0 0 12px}.forge-v2-tier{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.forge-v2-tier b{color:#d5b66c;font-size:.7rem}.forge-v2-tier span{color:#777e83;font-size:.53rem}.forge-v2-bar{height:7px;border:1px solid #2d3032;background:#080a0b;display:flex;gap:2px;margin-bottom:12px}.forge-v2-bar i{flex:1;background:#272a2c}.forge-v2-bar i.on{background:linear-gradient(90deg,#765b26,#d5b86d)}.forge-v2-info{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:11px}.forge-v2-info div{padding:7px;border:1px solid #292c2e;background:#101315}.forge-v2-info span{display:block;color:#686f75;font-size:.48rem;text-transform:uppercase}.forge-v2-info b{display:block;color:#d5d7d8;font-size:.62rem;margin-top:2px}.forge-v2-action{width:100%;border:1px solid #765e2d;background:linear-gradient(180deg,#292115,#17130e);color:#dfc27b;padding:10px;cursor:pointer;font-weight:800;font-size:.58rem}.forge-v2-action:disabled{opacity:.32;cursor:not-allowed}.forge-v2-warning{font-size:.52rem;color:#8a7d62;text-align:center;margin-top:8px;line-height:1.4}.forge-v2-result{margin:0 0 12px;padding:11px;border:1px solid #3b352a;background:#101213;color:#aaa;font-size:.59rem}.forge-v2-result.success{border-color:#6a5b35;color:#dfc77f}.forge-v2-result.fail{border-color:#493434;color:#c28e8e}.forge-v2-roll{animation:forgeRoll .35s ease}.forge-v2-lock-icon{font-size:1.6rem;float:left;margin-right:10px}.forge-v2-tag{display:inline-block;border:1px solid #51432a;padding:4px 7px;color:#bca064;font-size:.48rem;letter-spacing:.08em;margin-bottom:8px}
-      .forge-v2-power{margin:8px 0 12px;padding:9px;border:1px solid #292c2e;background:#0b0e0f;color:#aeb3b7;font-size:.52rem;line-height:1.55}.forge-v2-power b{color:#dfc77f}.forge-v2-dungeon-btn{margin-bottom:12px;border-color:#704d2b;background:linear-gradient(180deg,#24170f,#120d0a);color:#e1a85f}.forge-v2-dungeon-btn:hover{filter:brightness(1.15)}
-      .forge-dungeon-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:12px 0}.forge-dungeon-step{height:5px;background:#282b2d}.forge-dungeon-step.on{background:#9c7534}.forge-dungeon-step.done{background:#66532f}.forge-dungeon-enemy{text-align:center;padding:15px;border:1px solid #39302a;background:radial-gradient(circle at 50% 0,#241a12,#0d1011)}.forge-dungeon-icon{font-size:3rem;line-height:1.1;margin:8px}.forge-dungeon-hp{height:9px;background:#211416;border:1px solid #4a2929;margin:8px 0}.forge-dungeon-hp i{display:block;height:100%;background:#a44747}.forge-dungeon-log{min-height:45px;padding:9px;border:1px solid #292d30;background:#0a0d0e;color:#8d9499;font-size:.54rem;line-height:1.5;margin:10px 0}.forge-dungeon-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}.forge-dungeon-stats div{padding:7px;border:1px solid #292d30;background:#111416;text-align:center}.forge-dungeon-stats span{display:block;color:#686f75;font-size:.46rem}.forge-dungeon-stats b{display:block;color:#d4d7d8;font-size:.6rem;margin-top:2px}.forge-dungeon-loot{padding:10px;border:1px solid #51452e;background:#14120e;color:#cbb47b;font-size:.55rem;line-height:1.55}.forge-dungeon-attack{width:100%;padding:12px;margin-top:8px;border:1px solid #875b2e;background:linear-gradient(180deg,#3a2414,#1a100a);color:#e4bd79;font-weight:900;cursor:pointer}.forge-dungeon-attack:disabled{opacity:.35;cursor:not-allowed}.forge-dungeon-chest{text-align:center;padding:22px 12px;border:1px solid #5d4b2b;background:radial-gradient(circle,#251d10,#0c0f10)}.forge-dungeon-chest-icon{font-size:3.4rem}.forge-dungeon-reward{margin-top:10px;color:#e0c47d;font-size:.65rem;line-height:1.6}.forge-dungeon-note{font-size:.5rem;color:#73797e;line-height:1.45;margin-top:8px}
-      @keyframes forgeRoll{0%{transform:scale(.98);opacity:.5}50%{transform:scale(1.02)}100%{transform:none;opacity:1}}
-      @media(max-width:760px){.forge-v2-grid{grid-template-columns:1fr}.forge-dungeon-grid{grid-template-columns:repeat(5,1fr)}}
-    `;document.head.appendChild(s);
-  }
-
-  function persistForge(){
-    if(typeof persist==='function')persist();
-    else{try{const all=JSON.parse(localStorage.getItem('malupados_arena_v1')||'{}');all[game.character]=game;localStorage.setItem('malupados_arena_v1',JSON.stringify(all))}catch{}}
-  }
-
-  function unlockAfterDemon(){
-    if(!game)return;
-    const f=getForge();
-    if(!f.unlocked){f.unlocked=true;persistForge();if(typeof toast==='function')toast('O Abismo da Forja foi desbloqueado.');}
-  }
-
-  function watchDemonVictory(){
-    const area=document.getElementById('battleArea');if(!area)return;
-    const obs=new MutationObserver(()=>{
-      if(!game)return;
-      const text=area.textContent||'';
-      if(/Demon derrotado/i.test(text)&&!area.dataset.forgeUnlocked){
-        area.dataset.forgeUnlocked='1';
-        unlockAfterDemon();
-      }
-    });
-    obs.observe(area,{childList:true,subtree:true,characterData:true});
-  }
-
-  function powerText(){
-    const wa=tierBonus('weapon','attack'),ah=tierBonus('armor','hp'),def=tierBonus('armor','defense'),ls=tierBonus('weapon','lifesteal')+tierBonus('armor','lifesteal');
-    return `<div class="forge-v2-power"><b>Poder acumulado:</b> +${wa} ATK · +${ah} HP · ${def}% redução de dano · ${ls}% roubo de vida.</div>`;
-  }
-
-  function open(){
-    document.getElementById('arenaForgeV2Modal')?.remove();
-    const f=getForge();
-    const modal=document.createElement('div');modal.id='arenaForgeV2Modal';modal.className='p4-modal';
-    modal.innerHTML=`<div class="p4-modal-box forge-v2-modal-box"><div class="eyebrow">FORJA · ENDGAME</div><h3>Forja do Abismo</h3><p>A forja foi criada para o trecho entre o <b>Demon</b> e o <b>Deathbringer</b>. Primeiro você desbloqueia o Abismo; depois farma uma masmorra <b>sem XP</b> para obter Gold e materiais e aposta tudo em tentativas de forja.</p><div class="forge-v2-tag">RISCO × RECOMPENSA</div>${!f.unlocked?`<div class="forge-v2-lock"><div class="forge-v2-lock-icon">☠</div><strong>Forja bloqueada</strong><span>Derrote o Demon pela primeira vez para desbloquear o Abismo da Forja.</span></div>`:`<button class="forge-v2-action forge-v2-dungeon-btn" id="forgeDungeonBtn">☠ ENTRAR NO ABISMO DA FORJA</button><div class="forge-v2-material"><span>Material raro</span><b>◆ ${materialLabel()}</b></div>${powerText()}<div id="forgeV2Result"></div><div class="forge-v2-grid">${card('weapon','⚔','Forja da Arma','ATK',f.weapon)}${card('armor','🛡','Forja da Armadura','HP',f.armor)}</div><div class="forge-v2-warning">Falhar consome Gold e Núcleos. O Tier não diminui. Os bônus são acumulativos. Quanto maior o Tier, menor a chance.</div>`}<button class="btn p4-close">Fechar</button></div>`;
-    document.body.appendChild(modal);
-    modal.querySelectorAll('[data-forge-v2]').forEach(b=>b.onclick=()=>attempt(b.dataset.forgeV2));
-    modal.querySelector('#forgeDungeonBtn')?.addEventListener('click',openDungeon);
-    modal.querySelector('.p4-close').onclick=()=>modal.remove();
-    modal.onclick=e=>{if(e.target===modal)modal.remove()};
-  }
-
-  function card(type,icon,title,stat,level){
-    if(level>=5)return `<article class="forge-v2-card"><h4>${icon} ${title}</h4><p>Limite máximo atingido.</p>${bar(level)}<div class="forge-v2-info"><div><span>Tier</span><b>5 / 5</b></div><div><span>Bônus</span><b>Máximo</b></div></div><button class="forge-v2-action" disabled>FORJA MÁXIMA</button></article>`;
-    const t=TIERS[level];
-    const bonus=type==='weapon'?`+${t.attack} ATK · +${t.lifesteal}% roubo de vida`:`+${t.hp} HP · +${t.defense}% defesa`;
-    return `<article class="forge-v2-card"><h4>${icon} ${title}</h4><p>Próximo tier: <b>${bonus}</b>. Tentativa de ${t.tier}º tier.</p>${bar(level)}<div class="forge-v2-tier"><b>Tier ${t.tier}</b><span>${Math.round(t.chance*100)}% de sucesso</span></div><div class="forge-v2-info"><div><span>Gold</span><b>${fmt(t.cost)}</b></div><div><span>Núcleos</span><b>${t.cores}</b></div></div><button class="forge-v2-action" data-forge-v2="${type}">TENTAR FORJAR</button></article>`;
-  }
-
+  function style(){if(document.getElementById('arenaForgeV2Style'))return;const s=document.createElement('style');s.id='arenaForgeV2Style';s.textContent=`
+      .forge-v2-lock{border:1px solid #4b3a27;background:linear-gradient(145deg,#15120e,#0d0f10);padding:20px;margin-bottom:14px}.forge-v2-lock strong{display:block;color:#dfc98f;font-family:Cinzel,serif;font-size:.85rem}.forge-v2-lock span{display:block;color:#777d82;font-size:.59rem;line-height:1.5;margin-top:6px}.forge-v2-material{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:11px 13px;border:1px solid #34302a;background:#0d1011;margin-bottom:12px}.forge-v2-material span{font-size:.55rem;color:#858b90}.forge-v2-material b{font-size:.68rem;color:#d8b86d}.forge-v2-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.forge-v2-card{border:1px solid #353536;background:linear-gradient(145deg,#151719,#0c0f10);padding:15px}.forge-v2-card h4{font-family:Cinzel,serif;color:#e1d9c7;margin:0 0 4px}.forge-v2-card p{font-size:.57rem;color:#747b81;line-height:1.45;margin:0 0 12px}.forge-v2-tier{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.forge-v2-tier b{color:#d5b66c;font-size:.7rem}.forge-v2-tier span{color:#777e83;font-size:.53rem}.forge-v2-bar{height:7px;border:1px solid #2d3032;background:#080a0b;display:flex;gap:2px;margin-bottom:12px}.forge-v2-bar i{flex:1;background:#272a2c}.forge-v2-bar i.on{background:linear-gradient(90deg,#765b26,#d5b86d)}.forge-v2-info{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:11px}.forge-v2-info div{padding:7px;border:1px solid #292c2e;background:#101315}.forge-v2-info span{display:block;color:#686f75;font-size:.48rem;text-transform:uppercase}.forge-v2-info b{display:block;color:#d5d7d8;font-size:.62rem;margin-top:2px}.forge-v2-action{width:100%;border:1px solid #765e2d;background:linear-gradient(180deg,#292115,#17130e);color:#dfc27b;padding:10px;cursor:pointer;font-weight:800;font-size:.58rem}.forge-v2-action:disabled{opacity:.32;cursor:not-allowed}.forge-v2-warning{font-size:.52rem;color:#8a7d62;text-align:center;margin-top:8px;line-height:1.4}.forge-v2-result{margin:0 0 12px;padding:11px;border:1px solid #3b352a;background:#101213;color:#aaa;font-size:.59rem}.forge-v2-result.success{border-color:#6a5b35;color:#dfc77f}.forge-v2-result.fail{border-color:#493434;color:#c28e8e}.forge-v2-roll{animation:forgeRoll .35s ease}.forge-v2-lock-icon{font-size:1.6rem;float:left;margin-right:10px}.forge-v2-tag{display:inline-block;border:1px solid #51432a;padding:4px 7px;color:#bca064;font-size:.48rem;letter-spacing:.08em;margin-bottom:8px}.forge-v2-power{margin:8px 0 12px;padding:9px;border:1px solid #292c2e;background:#0b0e0f;color:#aeb3b7;font-size:.52rem;line-height:1.55}.forge-v2-power b{color:#dfc77f}.forge-v2-dungeon-btn{margin-bottom:12px;border-color:#704d2b;background:linear-gradient(180deg,#24170f,#120d0a);color:#e1a85f}.forge-v2-dungeon-btn:hover{filter:brightness(1.15)}.forge-dungeon-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:12px 0}.forge-dungeon-step{height:5px;background:#282b2d}.forge-dungeon-step.on{background:#9c7534}.forge-dungeon-step.done{background:#66532f}.forge-dungeon-enemy{text-align:center;padding:15px;border:1px solid #39302a;background:radial-gradient(circle at 50% 0,#241a12,#0d1011)}.forge-dungeon-icon{font-size:3rem;line-height:1.1;margin:8px}.forge-dungeon-hp{height:9px;background:#211416;border:1px solid #4a2929;margin:8px 0}.forge-dungeon-hp i{display:block;height:100%;background:#a44747}.forge-dungeon-log{min-height:45px;padding:9px;border:1px solid #292d30;background:#0a0d0e;color:#8d9499;font-size:.54rem;line-height:1.5;margin:10px 0}.forge-dungeon-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}.forge-dungeon-stats div{padding:7px;border:1px solid #292d30;background:#111416;text-align:center}.forge-dungeon-stats span{display:block;color:#686f75;font-size:.46rem}.forge-dungeon-stats b{display:block;color:#d4d7d8;font-size:.6rem;margin-top:2px}.forge-dungeon-loot{padding:10px;border:1px solid #51452e;background:#14120e;color:#cbb47b;font-size:.55rem;line-height:1.55}.forge-dungeon-attack{width:100%;padding:12px;margin-top:8px;border:1px solid #875b2e;background:linear-gradient(180deg,#3a2414,#1a100a);color:#e4bd79;font-weight:900;cursor:pointer}.forge-dungeon-attack:disabled{opacity:.35;cursor:not-allowed}.forge-dungeon-chest{text-align:center;padding:22px 12px;border:1px solid #5d4b2b;background:radial-gradient(circle,#251d10,#0c0f10)}.forge-dungeon-chest-icon{font-size:3.4rem}.forge-dungeon-reward{margin-top:10px;color:#e0c47d;font-size:.65rem;line-height:1.6}.forge-dungeon-note{font-size:.5rem;color:#73797e;line-height:1.45;margin-top:8px}@keyframes forgeRoll{0%{transform:scale(.98);opacity:.5}50%{transform:scale(1.02)}100%{transform:none;opacity:1}}
+      @media(max-width:760px){.forge-v2-grid{grid-template-columns:1fr}.forge-dungeon-grid{grid-template-columns:repeat(5,1fr)}}`;document.head.appendChild(s)}
+  function persistForge(){if(typeof persist==='function')persist();else{try{const all=JSON.parse(localStorage.getItem('malupados_arena_v1')||'{}');all[game.character]=game;localStorage.setItem('malupados_arena_v1',JSON.stringify(all))}catch{}}}
+  function unlockAfterDemon(){if(!game)return;const f=getForge();if(!f.unlocked){f.unlocked=true;persistForge();if(typeof toast==='function')toast('O Abismo da Forja foi desbloqueado.')}}
+  function watchDemonVictory(){const area=document.getElementById('battleArea');if(!area)return;const obs=new MutationObserver(()=>{if(!game)return;const text=area.textContent||'';if(/Demon derrotado/i.test(text)&&!area.dataset.forgeUnlocked){area.dataset.forgeUnlocked='1';unlockAfterDemon()}});obs.observe(area,{childList:true,subtree:true,characterData:true})}
+  function powerText(){const wa=tierBonus('weapon','attack'),ah=tierBonus('armor','hp'),def=tierBonus('armor','defense'),ls=tierBonus('weapon','lifesteal')+tierBonus('armor','lifesteal');return `<div class="forge-v2-power"><b>Poder acumulado:</b> +${wa} ATK · +${ah} HP · ${def}% redução de dano · ${ls}% roubo de vida.</div>`}
+  function open(){document.getElementById('arenaForgeV2Modal')?.remove();const f=getForge();const modal=document.createElement('div');modal.id='arenaForgeV2Modal';modal.className='p4-modal';modal.innerHTML=`<div class="p4-modal-box forge-v2-modal-box"><div class="eyebrow">FORJA · ENDGAME</div><h3>Forja do Abismo</h3><p>A forja foi criada para o trecho entre o <b>Demon</b> e o <b>Deathbringer</b>. Primeiro você desbloqueia o Abismo; depois farma uma masmorra <b>sem XP</b> para obter Gold e materiais e aposta tudo em tentativas de forja.</p><div class="forge-v2-tag">RISCO × RECOMPENSA</div>${!f.unlocked?`<div class="forge-v2-lock"><div class="forge-v2-lock-icon">☠</div><strong>Forja bloqueada</strong><span>Derrote o Demon pela primeira vez para desbloquear o Abismo da Forja.</span></div>`:`<button class="forge-v2-action forge-v2-dungeon-btn" id="forgeDungeonBtn">☠ ENTRAR NO ABISMO DA FORJA</button><div class="forge-v2-material"><span>Material raro</span><b>◆ ${materialLabel()}</b></div>${powerText()}<div id="forgeV2Result"></div><div class="forge-v2-grid">${card('weapon','⚔','Forja da Arma','ATK',f.weapon)}${card('armor','🛡','Forja da Armadura','HP',f.armor)}</div><div class="forge-v2-warning">Falhar consome Gold e Núcleos. O Tier não diminui. Os bônus são acumulativos. Quanto maior o Tier, menor a chance.</div>`}<button class="btn p4-close">Fechar</button></div>`;document.body.appendChild(modal);modal.querySelectorAll('[data-forge-v2]').forEach(b=>b.onclick=()=>attempt(b.dataset.forgeV2));modal.querySelector('#forgeDungeonBtn')?.addEventListener('click',openDungeon);modal.querySelector('.p4-close').onclick=()=>modal.remove();modal.onclick=e=>{if(e.target===modal)modal.remove()}}
+  function card(type,icon,title,stat,level){if(level>=5)return `<article class="forge-v2-card"><h4>${icon} ${title}</h4><p>Limite máximo atingido.</p>${bar(level)}<div class="forge-v2-info"><div><span>Tier</span><b>5 / 5</b></div><div><span>Bônus</span><b>Máximo</b></div></div><button class="forge-v2-action" disabled>FORJA MÁXIMA</button></article>`;const t=TIERS[level];const bonus=type==='weapon'?`+${t.attack} ATK · +${t.lifesteal}% roubo de vida`:`+${t.hp} HP · +${t.defense}% defesa`;return `<article class="forge-v2-card"><h4>${icon} ${title}</h4><p>Próximo tier: <b>${bonus}</b>. Tentativa de ${t.tier}º tier.</p>${bar(level)}<div class="forge-v2-tier"><b>Tier ${t.tier}</b><span>${Math.round(t.chance*100)}% de sucesso</span></div><div class="forge-v2-info"><div><span>Gold</span><b>${fmt(t.cost)}</b></div><div><span>Núcleos</span><b>${t.cores}</b></div></div><button class="forge-v2-action" data-forge-v2="${type}">TENTAR FORJAR</button></article>`}
   function bar(level){return `<div class="forge-v2-bar">${[1,2,3,4,5].map(i=>`<i class="${i<=level?'on':''}"></i>`).join('')}</div>`}
-
-  function attempt(type){
-    if(!game)return;
-    const f=getForge();
-    if(!f.unlocked){open();return}
-    const level=f[type]||0;if(level>=5)return;
-    const t=TIERS[level];
-    if(Number(game.gold||0)<t.cost){showResult(`Gold insuficiente. Você precisa de ${fmt(t.cost)} Gold.`,'fail');return}
-    if(Number(f.cores||0)<t.cores){showResult(`Núcleos insuficientes. Você precisa de ${t.cores}.`,'fail');return}
-    game.gold-=t.cost;f.cores-=t.cores;
-    const success=Math.random()<t.chance;
-    if(success){f[type]++;persistForge();showResult(`FORJA BEM-SUCEDIDA! Tier ${t.tier} concluído. ${type==='weapon'?`+${t.attack} ATK e +${t.lifesteal}% roubo de vida`:`+${t.hp} HP e +${t.defense}% defesa`}.`,'success');if(typeof toast==='function')toast(`Forja bem-sucedida! Tier ${t.tier}.`)}
-    else{persistForge();showResult(`A forja falhou. Gold e Núcleos foram consumidos, mas seu Tier permaneceu intacto.`,'fail');if(typeof toast==='function')toast('A forja falhou. Os materiais foram perdidos.')}
-    if(typeof renderAll==='function')renderAll();
-    setTimeout(open,420);
-  }
-
-  function showResult(text,kind){
-    const box=document.getElementById('forgeV2Result');if(!box)return;
-    box.className='forge-v2-result '+kind+' forge-v2-roll';box.textContent=text;
-  }
-
+  function attempt(type){if(!game)return;const f=getForge();if(!f.unlocked){open();return}const level=f[type]||0;if(level>=5)return;const t=TIERS[level];if(Number(game.gold||0)<t.cost){showResult(`Gold insuficiente. Você precisa de ${fmt(t.cost)} Gold.`,'fail');return}if(Number(f.cores||0)<t.cores){showResult(`Núcleos insuficientes. Você precisa de ${t.cores}.`,'fail');return}game.gold-=t.cost;f.cores-=t.cores;const success=Math.random()<t.chance;if(success){f[type]++;persistForge();showResult(`FORJA BEM-SUCEDIDA! Tier ${t.tier} concluído. ${type==='weapon'?`+${t.attack} ATK e +${t.lifesteal}% roubo de vida`:`+${t.hp} HP e +${t.defense}% defesa`}.`,'success');if(typeof toast==='function')toast(`Forja bem-sucedida! Tier ${t.tier}.`)}else{persistForge();showResult(`A forja falhou. Gold e Núcleos foram consumidos, mas seu Tier permaneceu intacto.`,'fail');if(typeof toast==='function')toast('A forja falhou. Os materiais foram perdidos.')}if(typeof renderAll==='function')renderAll();setTimeout(open,420)}
+  function showResult(text,kind){const box=document.getElementById('forgeV2Result');if(!box)return;box.className='forge-v2-result '+kind+' forge-v2-roll';box.textContent=text}
   // Apply Forge V2 bonuses after all existing startBattle wrappers.
   // Phase 4's old forge values are removed from baseAttack/base HP before
   // the new cumulative V2 values are applied.
-  function installCombat(){
-    if(typeof window.startBattle!=='function'||window.__arenaForgeV2Combat)return false;
-    const original=window.startBattle;
-    window.startBattle=function(...args){
-      const r=original.apply(this,args);
-      try{
-        const f=getForge();
-        const b=window.__arenaBattleRef||(typeof battle!=='undefined'?battle:null);
-        if(!b)return r;
-        const oldAttack=f.weapon*2;
-        const oldHp=f.armor*6;
-        const currentBase=Number(b.baseAttack)||Number(b.attack)||0;
-        const cleanBase=Math.max(1,currentBase-oldAttack);
-        const atk=tierBonus('weapon','attack');
-        b.baseAttack=cleanBase+atk;
-        b.attack=b.baseAttack;
-        const cleanMax=Math.max(1,(Number(b.playerMax)||0)-oldHp);
-        const hpBonus=tierBonus('armor','hp');
-        b.playerMax=cleanMax+hpBonus;
-        b.playerHp=Math.min(b.playerMax,(Number(b.playerHp)||0)+hpBonus);
-        b.forgeDefense=tierBonus('armor','defense');
-        b.forgeLifesteal=tierBonus('weapon','lifesteal')+tierBonus('armor','lifesteal');
-        if(Number.isFinite(Number(b.damage))&&b.forgeDefense)b.damage=Math.max(1,Math.floor(Number(b.damage)*(1-b.forgeDefense/100)));
-      }catch{}
-      return r;
-    };
-    window.__arenaForgeV2Combat=true;
-    return true;
-  }
-
-  function installLifesteal(){
-    if(typeof window.attack!=='function'||window.__arenaForgeV2Attack)return false;
-    const original=window.attack;
-    window.attack=function(...args){
-      const b=window.__arenaBattleRef||(typeof battle!=='undefined'?battle:null);
-      const before=b?Number(b.enemyHp):null;
-      const result=original.apply(this,args);
-      try{
-        if(b&&window.__arenaBattleRef===b&&Number.isFinite(before)){
-          const after=Number(b.enemyHp);
-          const dealt=Math.max(0,before-after);
-          const ls=Number(b.forgeLifesteal)||0;
-          if(dealt>0&&ls>0&&Number.isFinite(Number(b.playerHp)))b.playerHp=Math.min(Number(b.playerMax)||b.playerHp,b.playerHp+Math.max(1,Math.floor(dealt*ls/100)));
-        }
-      }catch{}
-      return result;
-    };
-    window.__arenaForgeV2Attack=true;
-    return true;
-  }
-
-  function combatRetry(){
-    const a=installCombat(),b=installLifesteal();
-    if(!a||!b)setTimeout(combatRetry,100);
-  }
-
-  function openDungeon(){
-    document.getElementById('arenaForgeDungeonModal')?.remove();
-    const f=getForge();
-    const modal=document.createElement('div');modal.id='arenaForgeDungeonModal';modal.className='p4-modal';
-    modal.innerHTML=`<div class="p4-modal-box forge-dungeon-modal-box"><div class="eyebrow">CONTEÚDO · SEM XP</div><h3>Abismo da Forja</h3><p>Uma masmorra exclusiva para quem quer construir poder sem depender de Skill. <b>Nenhum inimigo concede XP.</b> Você ganha Gold e pode encontrar materiais raros.</p><div id="forgeDungeonBody"></div><button class="btn p4-close">Sair da masmorra</button></div>`;
-    document.body.appendChild(modal);
-    modal.querySelector('.p4-close').onclick=()=>{modal.remove();window.__forgeDungeon=null};
-    modal.onclick=e=>{if(e.target===modal){modal.remove();window.__forgeDungeon=null}};
-    startDungeon();
-  }
-
-  function dungeonPlayer(){
-    const f=getForge();
-    const level=Math.max(1,Number(game.level)||1);
-    let skill=1;try{skill=Number(window.arenaSkillMultiplier?.())||1}catch{}
-    const base=15+level*4;
-    return {
-      maxHp:110+level*12+tierBonus('armor','hp'),
-      hp:110+level*12+tierBonus('armor','hp'),
-      attack:Math.max(1,Math.floor((base+tierBonus('weapon','attack'))*skill)),
-      defense:tierBonus('armor','defense'),
-      lifesteal:tierBonus('weapon','lifesteal')+tierBonus('armor','lifesteal')
-    };
-  }
-
-  function startDungeon(){
-    if(!game)return;
-    window.__forgeDungeon={room:0,player:dungeonPlayer(),gold:0,cores:0,drops:[],done:false};
-    renderDungeon();
-  }
-
+  function installCombat(){if(typeof window.startBattle!=='function'||window.__arenaForgeV2Combat)return false;const original=window.startBattle;window.startBattle=function(...args){const r=original.apply(this,args);try{const f=getForge();const b=window.__arenaBattleRef||(typeof battle!=='undefined'?battle:null);if(!b)return r;const oldAttack=f.weapon*2,oldHp=f.armor*6,currentBase=Number(b.baseAttack)||Number(b.attack)||0,cleanBase=Math.max(1,currentBase-oldAttack),atk=tierBonus('weapon','attack);b.baseAttack=cleanBase+atk;b.attack=b.baseAttack;const cleanMax=Math.max(1,(Number(b.playerMax)||0)-oldHp),hpBonus=tierBonus('armor','hp');b.playerMax=cleanMax+hpBonus;b.playerHp=Math.min(b.playerMax,(Number(b.playerHp)||0)+hpBonus);b.forgeDefense=tierBonus('armor','defense');b.forgeLifesteal=tierBonus('weapon','lifesteal')+tierBonus('armor','lifesteal');if(Number.isFinite(Number(b.damage))&&b.forgeDefense)b.damage=Math.max(1,Math.floor(Number(b.damage)*(1-b.forgeDefense/100)))}catch{}return r};window.__arenaForgeV2Combat=true;return true}
+  function installLifesteal(){if(typeof window.attack!=='function'||window.__arenaForgeV2Attack)return false;const original=window.attack;window.attack=function(...args){const b=window.__arenaBattleRef||(typeof battle!=='undefined'?battle:null);const before=b?Number(b.hp):null;const result=original.apply(this,args);try{if(b&&window.__arenaBattleRef===b&&Number.isFinite(before)){const after=Number(b.hp),dealt=Math.max(0,before-after),ls=Number(b.forgeLifesteal)||0;if(dealt>0&&ls>0&&Number.isFinite(Number(b.playerHp)))b.playerHp=Math.min(Number(b.playerMax)||b.playerHp,b.playerHp+Math.max(1,Math.floor(dealt*ls/100)))}}catch{}return result};window.__arenaForgeV2Attack=true;return true}
+  function combatRetry(){const a=installCombat(),b=installLifesteal();if(!a||!b)setTimeout(combatRetry,100)}
+  function openDungeon(){document.getElementById('arenaForgeDungeonModal')?.remove();const f=getForge();const modal=document.createElement('div');modal.id='arenaForgeDungeonModal';modal.className='p4-modal';modal.innerHTML=`<div class="p4-modal-box forge-dungeon-modal-box"><div class="eyebrow">CONTEÚDO · SEM XP</div><h3>Abismo da Forja</h3><p>Uma masmorra exclusiva para quem quer construir poder sem depender de Skill. <b>Nenhum inimigo concede XP.</b> Você ganha Gold e pode encontrar materiais raros.</p><div id="forgeDungeonBody"></div><button class="btn p4-close">Sair da masmorra</button></div>`;document.body.appendChild(modal);modal.querySelector('.p4-close').onclick=()=>{modal.remove();window.__forgeDungeon=null};modal.onclick=e=>{if(e.target===modal){modal.remove();window.__forgeDungeon=null}};startDungeon()}
+  function dungeonPlayer(){const f=getForge(),level=Math.max(1,Number(game.level)||1);let skill=1;try{skill=Number(window.arenaSkillMultiplier?.())||1}catch{}const base=15+level*4;return {maxHp:110+level*12+tierBonus('armor','hp'),hp:110+level*12+tierBonus('armor','hp'),attack:Math.max(1,Math.floor((base+tierBonus('weapon','attack'))*skill)),defense:tierBonus('armor','defense'),lifesteal:tierBonus('weapon','lifesteal')+tierBonus('armor','lifesteal')}}
+  function startDungeon(){if(!game)return;window.__forgeDungeon={room:0,player:dungeonPlayer(),gold:0,cores:0,drops:[],done:false};renderDungeon()}
   function dungeonCurrent(){return window.__forgeDungeon&&DUNGEON[window.__forgeDungeon.room]}
-
-  function renderDungeon(){
-    const body=document.getElementById('forgeDungeonBody'),d=window.__forgeDungeon;if(!body||!d)return;
-    if(d.done){renderDungeonChest(body,d);return}
-    const e=dungeonCurrent(),pct=Math.max(0,Math.min(100,d.enemyHp/e.hp*100));
-    body.innerHTML=`<div class="forge-dungeon-grid">${DUNGEON.map((_,i)=>`<i class="forge-dungeon-step ${i<d.room?'done':i===d.room?'on':''}"></i>`).join('')}</div><div class="forge-dungeon-enemy"><div class="forge-dungeon-icon">${e.icon}</div><h4>${e.name}</h4><div class="forge-dungeon-hp"><i style="width:${pct}%"></i></div><div style="font-size:.53rem;color:#858b90">${fmt(Math.max(0,d.enemyHp))} / ${fmt(e.hp)} HP</div></div><div class="forge-dungeon-stats"><div><span>Seu HP</span><b>${fmt(d.player.hp)} / ${fmt(d.player.maxHp)}</b></div><div><span>Gold da run</span><b>${fmt(d.gold)}</b></div><div><span>Núcleos</span><b>${fmt(d.cores)}</b></div></div><div class="forge-dungeon-log">${d.log||'O Abismo aguarda. Derrote o inimigo para avançar.'}</div><button class="forge-dungeon-attack" id="forgeDungeonAttack">⚔ ATACAR</button><div class="forge-dungeon-note">Sala ${d.room+1}/5 · Sem XP · O dano da sua Skill continua valendo aqui.</div>`;
-    body.querySelector('#forgeDungeonAttack').onclick=dungeonAttack;
+  function renderDungeon(){const body=document.getElementById('forgeDungeonBody'),d=window.__forgeDungeon;if(!body||!d)return;if(d.done){renderDungeonChest(body,d);return}const e=dungeonCurrent();const pct=Math.max(0,Math.min(100,d.enemyHp/e.hp*100));
+    body.innerHTML=`<div class="forge-dungeon-grid">${DUNGEON.map((x,i)=>`<i class="forge-dungeon-step ${i<d.room?'done':i===d.room?'on':''}"></i>`).join('')}</div><div class="forge-dungeon-enemy"><div class="eyebrow">SALA ${d.room+1} / ${DUNGEON.length}</div><div class="forge-dungeon-icon">${e.icon}</div><strong>${e.name}</strong><div class="forge-dungeon-hp"><i style="width:${pct}%"></i></div><div class="forge-dungeon-stats"><div><span>HP</span><b>${fmt(d.enemyHp)} / ${fmt(e.hp)}</b></div><div><span>ATK</span><b>${fmt(e.damage)}</b></div><div><span>Seu ATK</span><b>${fmt(d.player.attack)}</b></div></div><div class="forge-dungeon-log">${d.log||'O inimigo aguarda.'}</div><button class="forge-dungeon-attack" id="forgeDungeonAttack">⚔ ATACAR</button></div><div class="forge-dungeon-loot">Gold da run: <b>${fmt(d.gold)}</b> · Núcleos: <b>${fmt(d.cores)}</b>${d.drops.length?` · Drops: <b>${d.drops.join(', ')}</b>`:''}</div>`;
+    const btn=document.getElementById('forgeDungeonAttack');if(btn)btn.onclick=dungeonAttack;
   }
-
-  function ensureEnemy(){
-    const d=window.__forgeDungeon;if(!d)return null;
-    if(Number.isFinite(d.enemyHp))return dungeonCurrent();
-    const e=dungeonCurrent();d.enemyHp=e.hp;return e;
-  }
-
-  function dungeonAttack(){
-    const d=window.__forgeDungeon;if(!d||d.done)return;
-    const e=ensureEnemy();
-    const damage=Math.max(1,Math.floor(d.player.attack*(.90+Math.random()*.25)));
-    d.enemyHp=Math.max(0,d.enemyHp-damage);
-    d.log=`Você causou <b>${fmt(damage)}</b> de dano em ${e.name}.`;
-    if(d.enemyHp<=0){
-      const earned=rand(e.gold[0],e.gold[1]);
-      d.gold+=earned;
-      if(Math.random()<e.dropChance){d.drops.push(e.drop);d.cores+=e.cores;d.log+=` <span style="color:#dfc77f">Drop: ${e.drop} (+${e.cores} Núcleo${e.cores>1?'s':''}).</span>`}
-      else d.log+=` <span style="color:#8b9195">Nenhum material caiu.</span>`;
-      d.room++;
-      d.enemyHp=null;
-      if(d.room>=DUNGEON.length){d.done=true;renderDungeon();return}
-      d.log+=` <span style="color:#a99a79">Próxima sala...</span>`;
-      renderDungeon();return;
-    }
-    const incoming=Math.max(1,Math.floor(e.damage*(.88+Math.random()*.18)*(1-d.player.defense/100)));
-    d.player.hp=Math.max(0,d.player.hp-incoming);
-    d.log+=` ${e.name} devolveu <b>${fmt(incoming)}</b> de dano.`;
-    if(d.player.hp<=0){
-      d.log+=` <span style="color:#c28e8e">Você foi derrotado. A run terminou e o loot não foi perdido, mas você não recebe a recompensa do baú.</span>`;
-      d.done=true;d.failed=true;renderDungeon();return;
-    }
-    renderDungeon();
-  }
-
-  function renderDungeonChest(body,d){
-    if(d.failed){
-      body.innerHTML=`<div class="forge-dungeon-chest"><div class="forge-dungeon-chest-icon">☠️</div><h4>Você caiu no Abismo</h4><div class="forge-dungeon-reward">A run terminou sem recompensa do baú.<br>Você manteve apenas o progresso material já obtido nesta tentativa.</div></div>`;
-      return;
-    }
-    const chestGold=rand(6500,9500);d.gold+=chestGold;
-    const bonusCore=Math.random()<.45?2:1;d.cores+=bonusCore;
-    const rare=Math.random()<.18;
-    if(rare)d.drops.push('Núcleo Abissal Raro');
-    game.gold+=d.gold;getForge().cores+=d.cores;persistForge();
-    body.innerHTML=`<div class="forge-dungeon-chest"><div class="forge-dungeon-chest-icon">🧰</div><h4>BAÚ DA FORJA</h4><div class="forge-dungeon-reward">+${fmt(d.gold)} Gold<br>+${fmt(d.cores)} Núcleos da Forja<br>${d.drops.length?d.drops.map(x=>`◆ ${x}`).join('<br>'):'Nenhum drop raro nesta run.'}${rare?'<br><b>RECOMPENSA RARA!</b>':''}</div><div class="forge-dungeon-note">A masmorra não concede XP. Ela existe para financiar e abastecer a Forja de Endgame.</div></div><button class="forge-v2-action" id="forgeDungeonAgain" style="margin-top:12px">ENTRAR NOVAMENTE</button>`;
-    body.querySelector('#forgeDungeonAgain').onclick=startDungeon;
-    if(typeof renderAll==='function')renderAll();
-  }
-
-  function intercept(){
-    document.addEventListener('click',e=>{
-      const b=e.target.closest?.('#p4ForgeBtn,#p4ForgeBtn2');
-      if(!b)return;
-      e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();open();
-    },true);
-  }
-
-  style();intercept();watchDemonVictory();combatRetry();
+  function dungeonAttack(){const d=window.__forgeDungeon;if(!d||d.done||!game)return;const e=dungeonCurrent();if(!e)return;const dealt=Math.max(1,d.player.attack+rand(-Math.max(1,Math.floor(d.player.attack*.12)),Math.max(1,Math.floor(d.player.attack*.12))));d.enemyHp-=dealt;if(d.enemyHp<=0){const gold=rand(e.gold[0],e.gold[1]);d.gold+=gold;if(Math.random()<e.dropChance){d.drops.push(e.drop);d.cores+=e.cores}if(d.room>=DUNGEON.length-1){d.done=true;game.gold+=d.gold;getForge().cores+=d.cores;persistForge();d.log=`Masmorra concluída. +${fmt(d.gold)} Gold e +${fmt(d.cores)} Núcleos.`}else{d.log=`${e.name} derrotado. +${fmt(gold)} Gold.`;d.room++;d.enemyHp=DUNGEON[d.room].hp}renderDungeon();return}const incoming=Math.max(1,Math.floor(e.damage*(1-d.player.defense/100)));d.player.hp-=incoming;d.log=`Você causou ${fmt(dealt)} de dano. ${e.name} respondeu com ${fmt(incoming)}.`;if(d.player.hp<=0){d.done=true;d.log='Você caiu no Abismo. Os ganhos desta run foram perdidos.'}renderDungeon()}
+  function renderDungeonChest(body,d){body.innerHTML=`<div class="forge-dungeon-chest"><div class="forge-dungeon-chest-icon">${d.done&&d.player.hp>0?'⚒️':'💀'}</div><h4>${d.player.hp>0?'Run concluída':'Run perdida'}</h4><div class="forge-dungeon-reward">${d.player.hp>0?`Você extraiu <b>${fmt(d.gold)} Gold</b> e <b>${fmt(d.cores)} Núcleos</b>.`:'Nenhuma recompensa foi extraída.'}</div><div class="forge-dungeon-note">${d.player.hp>0?'Os materiais foram adicionados à Forja.':'Tente novamente quando estiver preparado.'}</div></div>`}
+  function init(){style();combatRetry();watchDemonVictory();if(typeof window.phase4ForgeOpen==='function'&&!window.__arenaForgeButtonHook){window.__arenaForgeButtonHook=true;const old=window.phase4ForgeOpen;window.phase4ForgeOpen=function(){open()}}}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
