@@ -3,25 +3,6 @@
   if(window.__arenaUiFix)return;
   window.__arenaUiFix=true;
 
-  const setAccountLabel=async()=>{
-    const el=document.getElementById('playerName');
-    if(!el)return false;
-    el.textContent='Faça login para jogar';
-    const supabase=window.malUpadosSupabase;
-    if(!supabase?.auth)return false;
-    try{
-      const {data}=await supabase.auth.getUser();
-      const user=data?.user;
-      if(!user){el.textContent='Faça login para jogar';return true}
-      const username=String(user.user_metadata?.username||'').trim();
-      el.textContent=username||'Escolha seu nome';
-      return true;
-    }catch{
-      el.textContent='Faça login para jogar';
-      return true;
-    }
-  };
-
   const setHeaderLabel=()=>{
     const eyebrow=document.querySelector('.game-topbar>div:first-child .eyebrow');
     if(eyebrow)eyebrow.textContent='Sua conta';
@@ -72,12 +53,12 @@
   };
 
   const init=()=>{
-    setHeaderLabel();setAccountLabel();
-    window.addEventListener('mal-auth-changed',()=>setAccountLabel());
-    window.malUpadosSupabase?.auth?.onAuthStateChange?.(()=>setTimeout(setAccountLabel,0));
+    setHeaderLabel();
     let tries=0;
     const timer=setInterval(()=>{
-      tries++;setHeaderLabel();bindNav();setAccountLabel();
+      tries++;
+      setHeaderLabel();
+      bindNav();
       const skillReady=ensureSkillTraining();
       if(skillReady||tries>120)clearInterval(timer);
     },100);
