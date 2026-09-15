@@ -1,5 +1,5 @@
-// Avatar da vocação: este arquivo é a única camada responsável por manter o ícone visual da vocação.
-// O equipamento (luvas, armas etc.) não deve alterar o avatar principal.
+// Avatar da vocação: esta é a única camada visual que reforça o ícone da vocação.
+// Equipamentos, luvas e armas não podem trocar o avatar principal.
 (()=>{
   if(window.__arenaVocationAvatarFix)return;
   window.__arenaVocationAvatarFix=true;
@@ -22,8 +22,24 @@
     el.textContent=iconFor(member.vocation);
   }
 
-  // Mantém o avatar estável, mas não usa equipamento para decidir a imagem.
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});
-  else apply();
-  setInterval(apply,500);
+  // arena.js renderPlayer() também toca no avatar. Em vez de dois intervalos
+  // brigando pelo DOM, este módulo só reforça o avatar imediatamente depois do
+  // renderPlayer original e quando um personagem novo é criado.
+  const hookRenderPlayer=()=>{
+    if(typeof window.renderPlayer!=='function')return false;
+    if(window.__arenaVocationRenderHook)return true;
+    const original=window.renderPlayer;
+    window.renderPlayer=function(...args){
+      const result=original.apply(this,args);
+      apply();
+      return result;
+    };
+    window.__arenaVocationRenderHook=true;
+    apply();
+    return true;
+  };
+
+  const boot=()=>{if(hookRenderPlayer())return;setTimeout(boot,150)};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+  window.addEventListener('arena-character-created',()=>setTimeout(apply,0));
 })();
