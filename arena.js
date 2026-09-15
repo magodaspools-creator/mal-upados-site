@@ -6,7 +6,7 @@ let battle=null;
 const fmt=n=>new Intl.NumberFormat('pt-BR').format(Math.floor(Number(n)||0));
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const today=()=>new Date().toISOString().slice(0,10);
-const VOC_ICONS={Knight:'⚔',Paladin:'🏹',Sorcerer:'🔥',Druid:'❄️'};
+const VOC_ICONS={Knight:'⚔',Paladin:'🏹',Sorcerer:'🔥',Druid:'❄️',Monk:'🥊'};
 const ZONES=[
  {id:'forest',name:'Floresta Sombria',icon:'🌲',min:1,color:'Fácil',monsters:[['Rat','🐀',35,22,12,20],['Troll','👹',55,38,20,35],['Orc','👺',72,55,28,50]]},
  {id:'orcs',name:'Acampamento Orc',icon:'🏕️',min:5,color:'Médio',monsters:[['Orc Berserker','👺',115,72,45,85],['Orc Rider','🐗',145,92,55,105],['Cyclops','👁️',175,110,70,135]]},
@@ -53,7 +53,18 @@ function renderMilestones(){let list=[{l:1,t:'Aventureiro',d:'Entrou na Arena'},
 function renderRecords(){document.getElementById('records').innerHTML=`<div class="record"><span>Level máximo</span><strong>${fmt(game.level)}</strong></div><div class="record"><span>Melhor sequência</span><strong>${fmt(game.bestStreak)} vitórias</strong></div><div class="record"><span>Dano causado</span><strong>${fmt(game.damage)}</strong></div><div class="record"><span>Ouro guardado</span><strong>${fmt(game.gold)}</strong></div>`}
 function renderAll(){normalizeGame();renderPlayer();renderMap();renderChallenge();renderMilestones();renderRecords();if(!battle)showZone(game.zone);}
 async function load(){try{let r=await fetch(API+'?'+Date.now()),j=await r.json();members=j.guild?.members||[];members.sort((a,b)=>a.name.localeCompare(b.name));let select=document.getElementById('characterSelect');select.innerHTML=members.map(m=>`<option value="${esc(m.name)}">${esc(m.name)}</option>`).join('');if(!members.length)throw new Error('Sem membros');let store=loadStore();let saved=Object.keys(store)[0];let name=members.some(m=>m.name===saved)?saved:members[0].name;select.value=name;loadGame(name);select.onchange=()=>{battle=null;loadGame(select.value);renderAll()};renderAll()}catch(e){let fallback='Aventureiro';document.getElementById('characterSelect').innerHTML=`<option>${fallback}</option>`;loadGame(fallback);renderAll()}}
+async function bootArenaData(){
+  for(let i=0;i<40&&!window.malUpadosSupabase;i++)await new Promise(r=>setTimeout(r,100));
+  if(window.malUpadosSupabase?.auth){
+    const {data:{user}}=await window.malUpadosSupabase.auth.getUser();
+    if(user){
+      for(let i=0;i<50&&!window.arenaSyncCharacters;i++)await new Promise(r=>setTimeout(r,100));
+      if(window.arenaSyncCharacters){await window.arenaSyncCharacters();return;}
+    }
+  }
+  await load();
+}
 document.getElementById('spinBtn').onclick=spin;
 document.getElementById('challengeBtn').onclick=claimChallenge;
 document.getElementById('resetBtn').onclick=()=>{if(!confirm('Recomeçar este personagem na Arena? O progresso salvo neste navegador será apagado.'))return;let all=loadStore();all[game.character]=baseGame(game.character);localStorage.setItem(STORAGE,JSON.stringify(all));loadGame(game.character);battle=null;renderAll();toast('Personagem reiniciado.')};
-load();
+bootArenaData();
