@@ -85,6 +85,39 @@ function shopEnsure(){
   if(game.armor>0){const map={1:'knight-armor',2:'dragon-scale-mail',3:'demon-armor',4:'phoenix-plate'};if(map[game.armor])game.shopEquipped.armor=map[game.armor];game.armor=0}
 }
 function categoryLabel(id){return (SHOP_CATEGORIES.find(c=>c.id===id)||{label:id}).label}
+function arenaShopVocation(){
+  const member=typeof members!=='undefined'&&Array.isArray(members)?members.find(m=>m.name===game?.character):null;
+  const raw=String(member?.vocation||'').trim().toLowerCase();
+  if(/master\s+sorcerer|^sorcerer$/.test(raw))return 'Sorcerer';
+  if(/elder\s+druid|^druid$/.test(raw))return 'Druid';
+  if(/royal\s+paladin|^paladin$/.test(raw))return 'Paladin';
+  if(/elite\s+knight|^knight$/.test(raw))return 'Knight';
+  if(/^monk$/.test(raw))return 'Monk';
+  return member?.vocation||'';
+}
+function arenaShopItemVocation(item){
+  if(!item)return '';
+  const explicit=String(item.vocation||item.class||item.vocations||'').trim().toLowerCase();
+  if(explicit.includes('monk'))return 'Monk';
+  if(explicit.includes('sorcerer'))return 'Sorcerer';
+  if(explicit.includes('druid'))return 'Druid';
+  if(explicit.includes('paladin'))return 'Paladin';
+  if(explicit.includes('knight'))return 'Knight';
+  const category=String(item.category||'').toLowerCase();
+  const name=String(item.name||'').toLowerCase();
+  if(category==='wands'||/\bwand\b/.test(name))return 'Sorcerer';
+  if(category==='rods'||/\brod\b/.test(name))return 'Druid';
+  if(category==='weapons'){
+    if(/bow|crossbow|spear|star/.test(name))return 'Paladin';
+    if(/fist|knuckle|gauntlet/.test(name))return 'Monk';
+    return 'Knight';
+  }
+  return '';
+}
+function arenaShopVocationAllowed(item){
+  const required=arenaShopItemVocation(item),current=arenaShopVocation();
+  return !required||!current||required===current;
+}
 function shopRender(){
   shopEnsure();
   const box=document.getElementById('shopItems'),filters=document.getElementById('shopFilters'),balance=document.getElementById('shopGold');
@@ -93,20 +126,21 @@ function shopRender(){
   if(filters){filters.innerHTML=SHOP_CATEGORIES.map(c=>`<button class="shop-filter ${shopFilter===c.id?'active':''}" data-filter="${c.id}">${esc(c.label)}</button>`).join('');filters.querySelectorAll('.shop-filter').forEach(b=>b.onclick=()=>{shopFilter=b.dataset.filter;shopRender()})}
   const items=SHOP_ITEMS.filter(item=>shopFilter==='all'||item.category===shopFilter);
   box.innerHTML=items.map(item=>{
-    const owned=game.shopOwned.includes(item.id),equipped=Object.values(game.shopEquipped).includes(item.id),canBuy=game.gold>=item.price,levelOk=game.level>=item.minLevel;
-    const inSlot=game.shopEquipped[item.category==='weapons'||item.category==='wands'?'weapon':item.category];
+    const owned=game.shopOwned.includes(item.id),equipped=Object.values(game.shopEquipped).includes(item.id),canBuy=game.gold>=item.price,levelOk=game.level>=item.minLevel,vocationOk=arenaShopVocationAllowed(item);
+    const inSlot=game.shopEquipped[item.category==='weapons'||item.category==='wands'||item.category==='rods'?'weapon':item.category];
     const isEquipped=inSlot===item.id;
-    let label=isEquipped?'Equipado':owned?'Equipar':levelOk&&canBuy?`Comprar · ${fmt(item.price)} gold`:!levelOk?`Level ${item.minLevel}`:`${fmt(item.price)} gold`;
-    let disabled=isEquipped||(!owned&&(!canBuy||!levelOk));
-    return `<div class="shop-item ${isEquipped?'equipped':''} ${levelOk?'':'level-locked'}"><div class="shop-icon">${item.icon}</div><div class="shop-info"><strong>${esc(item.name)}</strong><span>${esc(categoryLabel(item.category))} · ${esc(item.bonus)}</span><small>Level ${item.minLevel}+ · ${fmt(item.price)} gold</small></div><button class="shop-btn ${isEquipped?'equipped-btn':''}" data-id="${item.id}" ${disabled?'disabled':''}>${label}</button></div>`;
+    let label=isEquipped?'Equipado':!vocationOk?`Exclusivo · ${esc(arenaShopItemVocation(item))}`:owned?'Equipar':levelOk&&canBuy?`Comprar · ${fmt(item.price)} gold`:!levelOk?`Level ${item.minLevel}`:`${fmt(item.price)} gold`;
+    let disabled=isEquipped||!vocationOk||(!owned&&(!canBuy||!levelOk));
+    return `<div class="shop-item ${isEquipped?'equipped':''} ${levelOk?'':'level-locked'} ${vocationOk?'':'vocation-locked'}"><div class="shop-icon">${item.icon}</div><div class="shop-info"><strong>${esc(item.name)}</strong><span>${esc(categoryLabel(item.category))} · ${esc(item.bonus)}</span><small>Level ${item.minLevel}+ · ${fmt(item.price)} gold</small></div><button class="shop-btn ${isEquipped?'equipped-btn':''}" data-id="${item.id}" ${disabled?'disabled':''}>${label}</button></div>`;
   }).join('')||'<div class="small">Nenhum item nesta categoria.</div>';
   box.querySelectorAll('.shop-btn').forEach(btn=>btn.onclick=()=>shopAction(btn.dataset.id));
   syncEquipmentDisplay();
 }
-function slotFor(item){return item.category==='weapons'||item.category==='wands'?'weapon':item.category}
+function slotFor(item){return item.category==='weapons'||item.category==='wands'||item.category==='rods'?'weapon':item.category}
 function shopAction(id){
   shopEnsure();
   const item=SHOP_ITEMS.find(x=>x.id===id);if(!item)return;
+  if(!arenaShopVocationAllowed(item)){toast(`Este equipamento é exclusivo do ${arenaShopItemVocation(item)}.`);return}
   if(game.level<item.minLevel){toast(`Você precisa do Arena Level ${item.minLevel}.`);return}
   if(game.shopOwned.includes(id)){
     const slot=slotFor(item);game.shopEquipped[slot]=id;persist();shopRender();toast(`${item.name} equipado.`);return;
