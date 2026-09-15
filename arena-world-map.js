@@ -38,22 +38,26 @@
     const map=document.getElementById('map');
     if(!map)return false;
 
-    const old=document.getElementById('arenaWorldMap');
-    if(old)old.remove();
-
     map.classList.add('world-map');
-    const current=Math.min(Math.max(Number(game.zone)||0,ZONES.length-1),ZONES.length-1);
-    const unlocked=ZONES.filter(z=>(Number(game.level)||1)>=Number(z.min||1)).length;
-    const wrap=document.createElement('section');
-    wrap.id='arenaWorldMap';
-    wrap.innerHTML=`<div class="world-head"><div><div class="world-title">🗺️ JORNADA DA ARENA</div><div class="world-sub">Escolha qualquer território já desbloqueado.</div></div><div class="world-status"><strong>Área atual:</strong> ${String(ZONES[current]?.name||'')}</div></div>`;
-    map.parentNode.insertBefore(wrap,map);
-    wrap.appendChild(map);
+    const current=Math.min(Math.max(Number(game.zone)||0,0),ZONES.length-1);
+    let wrap=document.getElementById('arenaWorldMap');
+
+    if(!wrap){
+      wrap=document.createElement('section');
+      wrap.id='arenaWorldMap';
+      wrap.innerHTML=`<div class="world-head"><div><div class="world-title">🗺️ JORNADA DA ARENA</div><div class="world-sub">Escolha qualquer território já desbloqueado.</div></div><div class="world-status"></div></div>`;
+      map.parentNode.insertBefore(wrap,map);
+      wrap.appendChild(map);
+    }
+
+    const status=wrap.querySelector('.world-status');
+    if(status)status.innerHTML=`<strong>Área atual:</strong> ${String(ZONES[current]?.name||'')}`;
 
     map.querySelectorAll('.zone').forEach((button,index)=>{
       button.classList.toggle('unlocked-node',!button.classList.contains('locked'));
       button.classList.toggle('current-node',index===current);
       if(index===current)button.setAttribute('aria-current','page');
+      else button.removeAttribute('aria-current');
 
       const original=button.onclick;
       if(!original||button.dataset.worldBound)return;
