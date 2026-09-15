@@ -2,7 +2,6 @@
   if(window.__arenaBugfixes20260915)return;
   window.__arenaBugfixes20260915=true;
 
-  const STORE='malupados_arena_v1';
   const CHALLENGE_BUCKETS='malupados_arena_challenge_buckets_v2';
   let lastCharacter='';
   let lastDay='';
@@ -37,16 +36,12 @@
     const previous=lastCharacter&&lastDay===today?buckets[lastCharacter]||{}:null;
 
     if(previous){
-      ['kills','gold','wins','zone'].forEach(type=>{
-        const key=numericKeys(type);
-        previous[type]=Number(localStorage.getItem(key)||0);
-      });
+      ['kills','gold','wins','zone'].forEach(type=>previous[type]=Number(localStorage.getItem(numericKeys(type))||0));
     }
 
     const bucket=buckets[character]&&buckets[character].day===today?buckets[character]:{day:today,kills:0,gold:0,wins:0,zone:0};
     ['kills','gold','wins','zone'].forEach(type=>{
-      const key=numericKeys(type);
-      if(force||character!==lastCharacter||today!==lastDay)localStorage.setItem(key,String(Number(bucket[type])||0));
+      if(force||character!==lastCharacter||today!==lastDay)localStorage.setItem(numericKeys(type),String(Number(bucket[type])||0));
     });
     buckets[character]=bucket;
     write(CHALLENGE_BUCKETS,buckets);
@@ -70,8 +65,8 @@
     const changed=character!==lastCharacter||today!==lastDay;
     syncChallengeBucket(character,changed);
 
-    // The original game picked the challenge once at character creation.
-    // Make it deterministic per character/day so it really rotates daily.
+    // Challenge rotation is deterministic per character/day instead of being
+    // permanently random from the day the character was first created.
     const expected=dailyChallengeIndex(character);
     if(Number(game.challengeIndex)!==expected||game.challengeDay!==today){
       game.challengeIndex=expected;
@@ -98,8 +93,8 @@
     const maxUnlocked=ZONES.reduce((max,z,i)=>game.level>=Number(z.min)?i:max,-1);
     if(maxUnlocked<0)return;
 
-    // Keep the player's manually selected zone. The core arena used to move
-    // the zone automatically on level-up, which made map selection inconsistent.
+    // Keep the manually selected area. The old core addXP() changed zone on
+    // every level-up, which contradicted the map's manual-selection behavior.
     if(!Number.isInteger(game.manualZone)||game.manualZone<0||game.manualZone>maxUnlocked){
       game.manualZone=Math.min(Math.max(0,Number(game.zone)||0),maxUnlocked);
     }
@@ -141,21 +136,43 @@
     }
   }
 
+  function repairForgeLifesteal(){
+    if(window.__arenaForgeLifestealBugfix)return true;
+    if(typeof window.attack!=='function')return false;
+    const original=window.attack;
+    window.attack=function(...args){
+      const b=(typeof battle!=='undefined'&&battle)||window.__arenaBattleRef||null;
+      const before=b?Number(b.hp):NaN;
+      const result=original.apply(this,args);
+      try{
+        const ls=b?Number(b.forgeLifesteal)||0:0;
+        const after=b?Number(b.hp):NaN;
+        // arena.js stores enemy health as battle.hp, not battle.enemyHp.
+        // Only heal while the same battle is still alive; a kill must proceed
+        // directly to the victory screen without post-kill healing.
+        if(b&&battle===b&&before>0&&Number.isFinite(after)&&after>0&&ls>0){
+          const dealt=Math.max(0,before-after);
+          if(dealt>0)b.playerHp=Math.min(Number(b.playerMax)||b.playerHp,b.playerHp+Math.max(1,Math.floor(dealt*ls/100)));
+        }
+      }catch{}
+      return result;
+    };
+    window.__arenaForgeLifestealBugfix=true;
+    return true;
+  }
+
   function boot(){
     repairChallenge();
     bindChallenge();
     repairMap();
-    if(typeof renderAll==='function'&&document.getElementById('map')){
-      // One controlled refresh removes the split implementation left by the
-      // old map-fix loader without touching combat state.
-      repairMap();
-    }
+    repairForgeLifesteal();
   }
 
   const observer=new MutationObserver(()=>{
     bindChallenge();
     repairMap();
     repairChallenge();
+    repairForgeLifesteal();
   });
   observer.observe(document.body,{childList:true,subtree:true});
 
