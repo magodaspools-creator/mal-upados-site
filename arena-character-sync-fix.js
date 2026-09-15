@@ -45,9 +45,15 @@
       const local=all[current];
       const serverLevel=Number(server.level||1);
       const localLevel=Number(local?.level||1);
-      if(!local||localLevel<=serverLevel){
+
+      // Nunca sobrescreva um estado local do mesmo Level: o servidor pode estar
+      // alguns segundos atrasado e isso podia apagar gold, kills, XP ou equipamento.
+      // O estado remoto só assume o controle quando realmente está à frente.
+      if(!local||localLevel<serverLevel){
         game={...game,...server,character:current,gender:server.gender||record?.gender,vocation:server.vocation||record?.vocation};
         if(typeof persist==='function')persist();
+      }else{
+        game={...game,character:current,gender:game.gender||record?.gender,vocation:game.vocation||record?.vocation};
       }
     }
 
