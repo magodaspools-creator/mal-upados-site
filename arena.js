@@ -6,7 +6,7 @@ let battle=null;
 const fmt=n=>new Intl.NumberFormat('pt-BR').format(Math.floor(Number(n)||0));
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const today=()=>new Date().toISOString().slice(0,10);
-const VOC_ICONS={Knight:'⚔',Paladin:'🏹',Sorcerer:'🔥',Druid:'❄️',Monk:'🥊'};
+const VOC_ICONS={Knight:'⚔️',Paladin:'🏹',Sorcerer:'🔥',Druid:'❄️',Monk:'🖐️'};
 const ZONES=[
  {id:'forest',name:'Floresta Sombria',icon:'🌲',min:1,color:'Fácil',monsters:[['Rat','🐀',35,22,12,20],['Troll','👹',55,38,20,35],['Orc','👺',72,55,28,50]]},
  {id:'orcs',name:'Acampamento Orc',icon:'🏕️',min:5,color:'Médio',monsters:[['Orc Berserker','👺',115,72,45,85],['Orc Rider','🐗',145,92,55,105],['Cyclops','👁️',175,110,70,135]]},
@@ -50,21 +50,26 @@ function claimChallenge(){let c=getChallenge(),v=Math.min(c.target,challengeValu
 const HUNT_POOL=['Exotic Cave','Carnivora’s Rock','Asura Palace','Werelions','Mirror Nightmare','Glooth Tower','Buried Cathedral','Issavi Surface','Summer Court','Deathlings','Dragon Lords','Roshamuul','Oramond West','Grimvale','Edron Vampire Crypt'];
 function spin(){let btn=document.getElementById('spinBtn'),out=document.getElementById('rouletteResult');btn.disabled=true;out.classList.add('spinning');let n=0;let timer=setInterval(()=>{out.textContent=HUNT_POOL[Math.floor(Math.random()*HUNT_POOL.length)];n++;if(n>18){clearInterval(timer);let index=(game.level*13+game.wins*7+new Date().getDate())%HUNT_POOL.length;let result=HUNT_POOL[index];out.textContent=result;out.classList.remove('spinning');document.getElementById('rouletteMeta').textContent=`Boa sorte. Level ${game.level} · a Arena escolheu por você.`;btn.disabled=false}},70)}
 function renderMilestones(){let list=[{l:1,t:'Aventureiro',d:'Entrou na Arena'},{l:5,t:'Caçador',d:'Acampamento Orc'},{l:12,t:'Explorador',d:'Deserto Perdido'},{l:20,t:'Matador de Dragões',d:'Covil dos Dragões'},{l:35,t:'Senhor do Abismo',d:'Abismo Demoníaco'}];document.getElementById('milestones').innerHTML=list.map(x=>`<div class="milestone ${game.level>=x.l?'unlocked':''}"><strong>${game.level>=x.l?'✓':'🔒'} ${esc(x.t)}</strong><span>Level ${x.l} · ${esc(x.d)}</span></div>`).join('')}
-function renderRecords(){document.getElementById('records').innerHTML=`<div class="record"><span>Level máximo</span><strong>${fmt(game.level)}</strong></div><div class="record"><span>Melhor sequência</span><strong>${fmt(game.bestStreak)} vitórias</strong></div><div class="record"><span>Dano causado</span><strong>${fmt(game.damage)}</strong></div><div class="record"><span>Ouro guardado</span><strong>${fmt(game.gold)}</strong></div>`}
-function renderAll(){normalizeGame();renderPlayer();renderMap();renderChallenge();renderMilestones();renderRecords();if(!battle)showZone(game.zone);}
-async function load(){try{let r=await fetch(API+'?'+Date.now()),j=await r.json();members=j.guild?.members||[];members.sort((a,b)=>a.name.localeCompare(b.name));let select=document.getElementById('characterSelect');select.innerHTML=members.map(m=>`<option value="${esc(m.name)}">${esc(m.name)}</option>`).join('');if(!members.length)throw new Error('Sem membros');let store=loadStore();let saved=Object.keys(store)[0];let name=members.some(m=>m.name===saved)?saved:members[0].name;select.value=name;loadGame(name);select.onchange=()=>{battle=null;loadGame(select.value);renderAll()};renderAll()}catch(e){let fallback='Aventureiro';document.getElementById('characterSelect').innerHTML=`<option>${fallback}</option>`;loadGame(fallback);renderAll()}}
+function renderRecords(){document.getElementById('records').innerHTML=`<div class="record"><strong>${fmt(game.wins)}</strong><span>Vitórias</span></div><div class="record"><strong>${fmt(game.kills)}</strong><span>Abates</span></div><div class="record"><strong>${fmt(game.gold)}</strong><span>Gold</span></div><div class="record"><strong>${fmt(game.damage)}</strong><span>Dano causado</span></div>`}
+function renderAll(){if(!game)return;normalizeGame();renderPlayer();renderMap();renderMilestones();renderRecords();renderChallenge();if(window.__arenaCharacterDraw)window.__arenaCharacterDraw();if(typeof renderShop==='function')renderShop();if(typeof renderProfileUI==='function')renderProfileUI();if(typeof renderBackpackUI==='function')renderBackpackUI();if(typeof renderMonkShopFix==='function')renderMonkShopFix();}
+function load(){
+ fetch(API).then(r=>r.json()).then(data=>{members=data.guild?.members||[];if(!members.length)throw new Error('Guilda sem membros');let stored=loadStore();let names=members.map(m=>m.name);let existing=Object.keys(stored).find(n=>names.includes(n));loadGame(existing||names[0]);renderAll();showZone(game.zone);}).catch(err=>{members=[{name:'Demo Knight',vocation:'Knight'}];let stored=loadStore();let existing=Object.keys(stored)[0];loadGame(existing||members[0].name);renderAll();showZone(game.zone)});
+}
 async function bootArenaData(){
-  for(let i=0;i<40&&!window.malUpadosSupabase;i++)await new Promise(r=>setTimeout(r,100));
+  for(let i=0;i<40&&!window.malUpadosSupabase;i++)
+    await new Promise(r=>setTimeout(r,100));
+
   if(window.malUpadosSupabase?.auth){
     const {data:{user}}=await window.malUpadosSupabase.auth.getUser();
     if(user){
-      for(let i=0;i<50&&!window.arenaSyncCharacters;i++)await new Promise(r=>setTimeout(r,100));
-      if(window.arenaSyncCharacters){await window.arenaSyncCharacters();return;}
+      for(let i=0;i<50&&!window.arenaSyncCharacters;i++)
+        await new Promise(r=>setTimeout(r,100));
+      if(window.arenaSyncCharacters){
+        await window.arenaSyncCharacters();
+        return;
+      }
     }
   }
   await load();
 }
-document.getElementById('spinBtn').onclick=spin;
-document.getElementById('challengeBtn').onclick=claimChallenge;
-document.getElementById('resetBtn').onclick=()=>{if(!confirm('Recomeçar este personagem na Arena? O progresso salvo neste navegador será apagado.'))return;let all=loadStore();all[game.character]=baseGame(game.character);localStorage.setItem(STORAGE,JSON.stringify(all));loadGame(game.character);battle=null;renderAll();toast('Personagem reiniciado.')};
 bootArenaData();
