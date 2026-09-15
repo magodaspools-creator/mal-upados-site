@@ -76,37 +76,40 @@
   function renderBossBattle(){if(!battle?.isBoss){originalRenderBattle();return}const z=ZONES[battle.zoneIndex],b=bossFor(battle.zoneIndex),pct=Math.max(0,battle.hp/battle.maxHp*100),ppct=Math.max(0,battle.playerHp/battle.playerMax*100);document.getElementById('battleArea').innerHTML=`<div class="battle-card boss-battle-card"><div class="battle-head"><div><div class="battle-zone">${esc(z.name)} · BOSS</div><h3>${esc(battle.name)}</h3></div><button class="btn" id="fleeBtn">Fugir</button></div><div class="boss-battle-warning">${b.icon} Proteção ${esc(b.element)} ativa · Boss +${battle.bossKills*5}% de força · cooldown após a vitória: ${b.cooldown}s</div><div class="battle-enemies"><div class="fighter"><div class="fighter-icon">⚔️</div><h3>${esc(game.character)}</h3><div class="hp-track"><i style="width:${ppct}%"></i></div><div class="fighter-meta">HP ${fmt(battle.playerHp)} / ${fmt(battle.playerMax)}</div></div><div class="vs">VS</div><div class="fighter boss-fighter"><div class="fighter-icon boss-fighter-icon">${bossSprite(b)}</div><h3>${esc(battle.name)}</h3><div class="hp-track"><i style="width:${pct}%"></i></div><div class="fighter-meta">HP ${fmt(battle.hp)} / ${fmt(battle.maxHp)}</div></div></div><div class="battle-log">${battle.log.join('<br>')||'O Boss elemental encara você. A batalha começou.'}</div><div class="battle-actions"><button class="btn active big" id="attackBtn">ATACAR</button></div></div>`;document.getElementById('attackBtn').onclick=attack;document.getElementById('fleeBtn').onclick=()=>{battle=null;removeTemporaryBoss();showZone(game.zone)}}
   window.renderBattle=function(){if(battle?.isBoss)renderBossBattle();else originalRenderBattle()};
 
-  // Combate autoritativo dos Bosses: não passa pela cadeia de wrappers de attack().
-  // Isso garante que Skill, resistência elemental, lifesteal e dano real usem os
-  // mesmos valores durante toda a ação.
   function bossAttackDirect(){
-    if(!battle?.isBoss||window.__arenaCritRolling)return;
-    let base=Number(battle.baseAttack);
-    if(!Number.isFinite(base)||base<=0)base=Number(battle.attack)||0;
-    const skill=typeof window.arenaSkillCurrent==='function'?window.arenaSkillCurrent():null;
-    const value=Math.max(10,Number(skill?.value)||10);
-    const mult=typeof window.arenaSkillMultiplier==='function'?Number(window.arenaSkillMultiplier(value)):skillMultiplierFallback(value);
-    const effective=Math.max(1,Math.floor(base*(Number.isFinite(mult)?mult:1)));
-    battle.baseAttack=base;
-    battle.attack=effective;
-    const dmg=Math.max(1,effective+Math.floor(Math.random()*12)-6);
-    battle.hp=Math.max(0,battle.hp-dmg);
-    game.damage+=dmg;
-    battleLog(`Você causou <b>${dmg}</b> de dano. <span style="color:#d8b36a">Skill ${value} · x${Number(mult).toFixed(2)}</span>`);
-    if(battle.hp<=0){winBattle();return}
-    const rawIncoming=Math.max(1,battle.damage+Math.floor(Math.random()*10)-5);
-    const resistance=typeof window.arenaElementalState?.resistanceFor==='function'?Number(window.arenaElementalState.resistanceFor(battle.element))||0:0;
-    const finalIncoming=Math.max(1,Math.floor(rawIncoming*(1-resistance)));
-    battle.playerHp=Math.max(0,battle.playerHp-finalIncoming);
-    const elem=window.arenaElementalState?.ELEMENTS?.[battle.element]||{icon:'⚔️'};
-    const amulet=window.arenaElementalState?.currentAmulet?.();
-    if(resistance>0)battleLog(`${esc(battle.name)} ${elem.icon} causou <b>${finalIncoming}</b> de dano (${Math.round(resistance*100)}% resistido pelo ${esc(amulet?.name||'amuleto')}).`);
-    else battleLog(`${esc(battle.name)} ${elem.icon} causou <b>${finalIncoming}</b> de dano.`);
-    const trinkets=window.arenaTrinkets?.bonuses?.();
-    const lifesteal=Number(trinkets?.lifesteal)||0;
-    if(lifesteal>0&&dmg>0){const healed=Math.max(1,Math.floor(dmg*lifesteal/100));battle.playerHp=Math.min(battle.playerMax,battle.playerHp+healed);battleLog(`Roubo de vida: +${healed} HP`)}
-    if(battle.playerHp<=0){loseBattle();return}
-    renderBossBattle();
+    if(!battle?.isBoss||window.__arenaCritRolling||battle.busy)return;
+    const current=battle;
+    current.busy=true;
+    try{
+      let base=Number(current.baseAttack);
+      if(!Number.isFinite(base)||base<=0)base=Number(current.attack)||0;
+      const skill=typeof window.arenaSkillCurrent==='function'?window.arenaSkillCurrent():null;
+      const value=Math.max(10,Number(skill?.value)||10);
+      const mult=typeof window.arenaSkillMultiplier==='function'?Number(window.arenaSkillMultiplier(value)):skillMultiplierFallback(value);
+      const effective=Math.max(1,Math.floor(base*(Number.isFinite(mult)?mult:1)));
+      current.baseAttack=base;
+      current.attack=effective;
+      const dmg=Math.max(1,effective+Math.floor(Math.random()*12)-6);
+      current.hp=Math.max(0,current.hp-dmg);
+      game.damage+=dmg;
+      battleLog(`Você causou <b>${dmg}</b> de dano. <span style="color:#d8b36a">Skill ${value} · x${Number(mult).toFixed(2)}</span>`);
+      if(current.hp<=0){winBattle();return}
+      const rawIncoming=Math.max(1,current.damage+Math.floor(Math.random()*10)-5);
+      const resistance=typeof window.arenaElementalState?.resistanceFor==='function'?Number(window.arenaElementalState.resistanceFor(current.element))||0:0;
+      const finalIncoming=Math.max(1,Math.floor(rawIncoming*(1-resistance)));
+      current.playerHp=Math.max(0,current.playerHp-finalIncoming);
+      const elem=window.arenaElementalState?.ELEMENTS?.[current.element]||{icon:'⚔️'};
+      const amulet=window.arenaElementalState?.currentAmulet?.();
+      if(resistance>0)battleLog(`${esc(current.name)} ${elem.icon} causou <b>${finalIncoming}</b> de dano (${Math.round(resistance*100)}% resistido pelo ${esc(amulet?.name||'amuleto')}).`);
+      else battleLog(`${esc(current.name)} ${elem.icon} causou <b>${finalIncoming}</b> de dano.`);
+      const trinkets=window.arenaTrinkets?.bonuses?.();
+      const lifesteal=Number(trinkets?.lifesteal)||0;
+      if(lifesteal>0&&dmg>0){const healed=Math.max(1,Math.floor(dmg*lifesteal/100));current.playerHp=Math.min(current.playerMax,current.playerHp+healed);battleLog(`Roubo de vida: +${healed} HP`)}
+      if(current.playerHp<=0){loseBattle();return}
+      renderBossBattle();
+    }finally{
+      if(typeof battle!=='undefined'&&battle===current)current.busy=false;
+    }
   }
 
   function skillMultiplierFallback(value){
