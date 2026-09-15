@@ -633,8 +633,8 @@
   },
   "2026-09-15": {
     "Chines Protetor": {
-      "level": 501,
-      "experience": 2082543492,
+      "level": 502,
+      "experience": 2084859837,
       "experience_exact": true,
       "experience_vocation": "TibiaData/highscores"
     },
@@ -645,7 +645,7 @@
       "experience_vocation": null
     },
     "Lugas": {
-      "level": 273,
+      "level": 274,
       "experience": null,
       "experience_exact": false,
       "experience_vocation": null
