@@ -1,0 +1,107 @@
+/* ARENA MOBILE FIX — isolamento visual para telas pequenas.
+   Não altera lógica de combate, personagens, loja ou progressão. */
+@media(max-width:620px){
+  html,body{max-width:100%;overflow-x:hidden}
+  main{width:100%;box-sizing:border-box}
+
+  .arena-hero{padding:24px 14px 22px!important}
+  .arena-hero h1{font-size:clamp(2rem,10vw,2.8rem);line-height:1.05}
+  .arena-hero p{font-size:.72rem;line-height:1.5}
+
+  .arena-subnav{top:56px!important;width:calc(100% - 14px)!important;max-width:none!important;box-sizing:border-box;margin-bottom:12px!important;overflow-x:auto!important;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+  .arena-subnav button{min-height:36px;padding:8px 10px!important;white-space:nowrap}
+
+  .game-shell,.shop-section{width:calc(100% - 14px)!important;box-sizing:border-box;margin-left:auto!important;margin-right:auto!important}
+  .game-shell{padding:12px!important}
+  .game-topbar{gap:10px!important;margin-bottom:14px!important;padding-bottom:14px!important}
+  .game-topbar h2{font-size:1.15rem;overflow-wrap:anywhere}
+  .save-note{font-size:.57rem;line-height:1.35}
+
+  /* O grid de 100px + 1fr causava colisões entre avatar, seletor e dados.
+     No celular o perfil vira uma coluna única. */
+  .character-panel{display:block!important;width:100%;box-sizing:border-box;min-width:0;padding:13px!important}
+  .character-panel .avatar{width:78px!important;height:78px!important;margin:0 auto 12px!important}
+  .character-panel .character-picker{width:100%!important;margin-bottom:8px}
+  .character-picker-menu{max-height:240px!important}
+  .character-panel .class-line{text-align:center!important;margin:7px 0 13px!important}
+  .character-panel .stat-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important}
+  .character-panel .xp-wrap{margin:13px 0!important}
+  .character-panel .equipment{margin-top:14px!important}
+  .character-panel .reset-btn{width:100%!important}
+
+  .adventure-panel{width:100%;min-width:0;box-sizing:border-box}
+  .section-head{gap:9px!important;margin-bottom:10px!important}
+  .section-head h2{font-size:1.08rem;line-height:1.2}
+  .map-controls{display:none!important}
+
+  /* Jornada da Home: uma coluna estável, sem deslocamentos laterais. */
+  .map,#map.world-map{grid-template-columns:1fr!important;gap:7px!important;padding:8px 0!important;margin-bottom:12px!important;overflow:visible!important}
+  .map:before,#map.world-map:before{left:21px!important;right:auto!important;top:0!important;bottom:0!important;width:2px!important;height:auto!important;transform:none!important}
+  .map .zone,#map.world-map .zone{width:100%!important;box-sizing:border-box!important;grid-template-columns:42px minmax(0,1fr)!important;grid-template-rows:auto auto!important;min-height:70px!important;height:auto!important;margin:0!important;padding:10px 10px 10px 8px!important;text-align:left!important}
+  .map .zone:before,#map.world-map .zone:before{left:21px!important;top:50%!important;width:10px!important;height:10px!important}
+  .map .zone .zone-icon,#map.world-map .zone .zone-icon{grid-row:1/3!important;font-size:1.35rem!important;text-align:center!important;z-index:4}
+  .map .zone strong,#map.world-map .zone strong{font-size:.7rem!important;line-height:1.25!important;padding-right:8px}
+  .map .zone small,#map.world-map .zone small{font-size:.5rem!important;line-height:1.25!important;padding-right:8px}
+  .map .zone .lock,#map.world-map .zone .lock{right:7px!important;top:7px!important;font-size:.48rem!important;max-width:55px;text-align:right}
+  .map .zone:after{margin:0!important}
+
+  /* Batalha: os sprites desktop têm 116px e estouravam o container de 62px. */
+  .battle-area{padding:12px!important;min-height:280px!important;overflow:hidden!important}
+  .battle-card{gap:11px!important;min-width:0}
+  .battle-head{gap:8px;flex-wrap:wrap}
+  .battle-zone{font-size:.52rem!important;max-width:100%;overflow-wrap:anywhere}
+  .battle-enemies{display:grid!important;grid-template-columns:1fr!important;gap:10px!important;width:100%!important;max-width:none!important;margin:0!important}
+  .battle-enemies .fighter:first-child{order:1}
+  .battle-enemies .vs{order:2}
+  .battle-enemies .fighter:last-child{order:3}
+  .fighter{min-width:0;width:100%;overflow:hidden}
+  .fighter-icon{width:68px!important;height:68px!important;box-sizing:border-box!important;margin:auto!important}
+  .fighter-icon .fighter-sprite,.fighter-icon .enemy-sprite,.fighter-icon img{width:58px!important;height:58px!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important;transform:none!important}
+  .fighter h3{font-size:.85rem!important;margin:6px 0 3px!important;overflow-wrap:anywhere}
+  .fighter-meta{font-size:.55rem!important}
+  .hp-track{max-width:180px;margin:0 auto}
+  .vs{font-size:.9rem!important}
+  .battle-log{font-size:.62rem!important;line-height:1.45!important;max-height:82px!important}
+  .battle-actions .btn.big{width:100%!important;min-width:0!important;box-sizing:border-box!important;padding:11px 12px!important}
+
+  .monster-grid{grid-template-columns:1fr!important;gap:7px!important}
+  .monster-choice{padding:10px!important}
+
+  /* Loja: nunca deixar nome/preço empurrar o botão para fora da viewport. */
+  .shop-grid{grid-template-columns:1fr!important;gap:8px!important}
+  .shop-item{grid-template-columns:40px minmax(0,1fr)!important;gap:8px!important;padding:10px!important}
+  .shop-info{min-width:0!important}
+  .shop-info strong{font-size:.7rem!important}
+  .shop-btn{grid-column:1/-1!important;width:100%!important;box-sizing:border-box!important}
+
+  .challenge-box{padding:12px!important}
+  .challenge-reward{text-align:left!important}
+  .challenge-progress{flex-wrap:wrap}
+  .challenge-progress span{min-width:100px}
+
+  .milestones,.record-grid{grid-template-columns:1fr 1fr!important;gap:7px!important}
+  .milestone,.record{padding:10px!important;min-width:0}
+  .milestone strong,.record strong{font-size:.78rem!important}
+  .milestone span,.record span{font-size:.52rem!important}
+
+  /* Modal do mapa ilustrado ocupa a tela, não a largura do documento. */
+  .arena-world-modal{padding:6px!important;box-sizing:border-box}
+  .arena-world-box{width:100%!important;max-width:100%!important;max-height:96vh!important;box-sizing:border-box;padding:10px!important}
+  .arena-world-head{gap:8px!important;margin-bottom:9px!important}
+  .arena-world-head h2{font-size:1rem!important;line-height:1.2}
+  .arena-world-head p{font-size:.56rem!important}
+  .arena-world-close{flex:0 0 auto;padding:7px 9px!important;font-size:.58rem}
+  .arena-world-art img{width:100%!important;height:auto!important;min-height:0!important;object-fit:contain!important}
+  .arena-world-hotspots{grid-template-columns:1fr 1fr!important;gap:6px!important}
+  .arena-world-hotspot{min-width:0!important;padding:8px 7px!important}
+  .arena-world-hotspot strong{font-size:.55rem!important;overflow-wrap:anywhere}
+  .arena-world-hotspot span{font-size:.45rem!important}
+  .arena-world-info{padding:9px!important;gap:8px!important}
+  .arena-world-info strong{font-size:.6rem!important}
+  .arena-world-info span{font-size:.5rem!important}
+  .arena-world-go{width:100%!important;box-sizing:border-box}
+}
+
+@media(min-width:621px) and (max-width:900px){
+  .fighter-icon .fighter-sprite,.fighter-icon .enemy-sprite,.fighter-icon img{max-width:100%;max-height:100%;object-fit:contain}
+}
