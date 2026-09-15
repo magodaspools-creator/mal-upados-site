@@ -5,9 +5,18 @@
     const menu=document.getElementById('characterPickerMenu');
     const legacy=document.getElementById('characterSelect');
     if(!wrap||!btn||!menu)return;
+    const vocationIcon=vocation=>{
+      const v=String(vocation||'').toLowerCase();
+      if(v.includes('sorcerer'))return '🔥';
+      if(v.includes('druid'))return '❄️';
+      if(v.includes('knight'))return '⚔️';
+      if(v.includes('paladin'))return '🏹';
+      if(v.includes('monk'))return '🖐️';
+      return '⚔';
+    };
     const draw=()=>{
       if(typeof members==='undefined'||!Array.isArray(members)||members.length===0)return false;
-      menu.innerHTML=members.map(m=>{const selected=game&&m.name===game.character;return `<button type="button" class="character-option ${selected?'selected':''}" data-name="${esc(m.name)}" role="option"><span>${VOC_ICONS[m.vocation]||'⚔'}</span><span>${esc(m.name)}</span><small>${esc(m.vocation||'Aventureiro')}</small></button>`}).join('');
+      menu.innerHTML=members.map(m=>{const selected=game&&m.name===game.character;return `<button type="button" class="character-option ${selected?'selected':''}" data-name="${esc(m.name)}" role="option"><span>${vocationIcon(m.vocation)}</span><span>${esc(m.name)}</span><small>${esc(m.vocation||'Aventureiro')}</small></button>`}).join('');
       const current=game?.character||'';const label=document.getElementById('characterPickerName');if(label)label.textContent=current||'Escolher personagem';if(legacy)legacy.value=current;
       menu.querySelectorAll('.character-option').forEach(option=>option.addEventListener('click',e=>{e.stopPropagation();const name=option.dataset.name;if(!name||typeof loadGame!=='function')return;loadGame(name);if(legacy){legacy.value=name;legacy.dispatchEvent(new Event('change'))}wrap.classList.remove('open');btn.setAttribute('aria-expanded','false');draw()}));return true;
     };
