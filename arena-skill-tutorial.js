@@ -25,6 +25,8 @@
       .skill-tutorial-modal{position:fixed;inset:0;z-index:100010;display:flex;align-items:center;justify-content:center;padding:18px}
       .skill-tutorial-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.84);backdrop-filter:blur(5px)}
       .skill-tutorial-window{position:relative;width:min(560px,100%);max-height:92vh;overflow:auto;border:1px solid #806d38;background:linear-gradient(145deg,#1d1a15,#0e0f11);box-shadow:0 24px 90px rgba(0,0,0,.82);padding:26px;color:#d7d9dd;text-align:center}
+      .skill-tutorial-x{position:absolute;top:9px;right:10px;width:34px;height:34px;border:1px solid #3b3d40;background:#111316;color:#aeb3ba;font:800 1.1rem Inter,sans-serif;line-height:1;cursor:pointer;z-index:2}
+      .skill-tutorial-x:hover{border-color:#b99645;color:#e4c875;background:#19150f}
       .skill-tutorial-icon{font-size:48px;line-height:1;margin-bottom:12px}
       .skill-tutorial-window h2{margin:0 0 8px;font-family:Cinzel,serif;color:#e3c46e}
       .skill-tutorial-window p{margin:0 auto 14px;max-width:430px;color:#969ba3;font-size:.76rem;line-height:1.65}
@@ -55,6 +57,7 @@
     const m=document.createElement('div');
     m.id='skillTutorialModal';m.className='skill-tutorial-modal';
     m.innerHTML=`<div class="skill-tutorial-backdrop"></div><div class="skill-tutorial-window" role="dialog" aria-modal="true">
+      <button type="button" class="skill-tutorial-x" id="skillTutorialX" aria-label="Fechar tutorial">×</button>
       <div class="skill-tutorial-icon">⚔</div><div class="eyebrow">NOVO SISTEMA DESBLOQUEADO</div>
       <h2>Treinamento de Skill</h2>
       <p>Você derrotou sua primeira criatura. Agora sua <strong>Skill</strong> pode evoluir. Quanto maior sua Skill, mais forte fica seu personagem.</p>
@@ -71,6 +74,7 @@
     const close=()=>{m.remove();document.body.classList.remove('skill-tutorial-open');document.removeEventListener('keydown',esc)};
     const esc=e=>{if(e.key==='Escape')close()};
     m.querySelector('.skill-tutorial-backdrop').onclick=close;
+    m.querySelector('#skillTutorialX').onclick=close;
     m.querySelector('#skillTutorialGo').onclick=()=>{markDone();close();setTimeout(()=>document.getElementById('skillTrainBtn')?.click(),120)};
     m.querySelector('#skillTutorialSkip').onclick=()=>{markDone();close()};
     document.body.classList.add('skill-tutorial-open');document.addEventListener('keydown',esc);
