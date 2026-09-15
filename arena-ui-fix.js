@@ -36,16 +36,23 @@
     nav?.querySelectorAll('button[data-target]').forEach(b=>b.classList.toggle('active',b.dataset.target===activeTarget));
   };
 
+  // arena-skills.js is already loaded statically by arena.html. The old fix
+  // only retried it once and only after the subnav existed, so a timing race
+  // could leave TREINAR SKILL missing forever. Retry independently for a short
+  // window until the character panel and the skill module have both settled.
   const ensureSkillTraining=()=>{
-    const panel=document.querySelector('.character-panel');
-    if(!panel)return false;
     if(document.getElementById('skillTrainBtn'))return true;
-    const existing=document.querySelector('script[data-arena-skill-retry]');
-    if(existing)return false;
+    if(!document.querySelector('.character-panel'))return false;
+    const retry=document.querySelector('script[data-arena-skill-retry]');
+    if(retry)return false;
     const s=document.createElement('script');
-    s.src='arena-skills.js?v=skills-20260915';
+    s.src=`arena-skills.js?v=skills-retry-${Date.now()}`;
     s.setAttribute('data-arena-skill-retry','1');
     document.body.appendChild(s);
+    setTimeout(()=>{
+      s.remove();
+      if(!document.getElementById('skillTrainBtn'))ensureSkillTraining();
+    },700);
     return false;
   };
 
@@ -70,10 +77,9 @@
     window.malUpadosSupabase?.auth?.onAuthStateChange?.(()=>setTimeout(setAccountLabel,0));
     let tries=0;
     const timer=setInterval(()=>{
-      tries++;setHeaderLabel();const navReady=bindNav();setAccountLabel();
-      if(navReady&&!document.getElementById('skillTrainBtn'))ensureSkillTraining();
-      if(navReady&&document.getElementById('skillTrainBtn'))clearInterval(timer);
-      if(tries>120)clearInterval(timer);
+      tries++;setHeaderLabel();bindNav();setAccountLabel();
+      const skillReady=ensureSkillTraining();
+      if(skillReady||tries>120)clearInterval(timer);
     },100);
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
