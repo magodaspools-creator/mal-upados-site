@@ -1,15 +1,17 @@
 /* Arena UI fix — account header + clean section views. */
 
-/* The account name is the visual anchor of the Arena header. */
+/* Keep the account identity centered and the account tools on their own row. */
 .game-topbar{
   position:relative;
   display:grid!important;
   grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;
+  grid-template-rows:auto auto!important;
   align-items:center!important;
-  gap:14px!important;
+  gap:8px 14px!important;
 }
 .game-topbar>div:first-child{
   grid-column:2!important;
+  grid-row:1!important;
   text-align:center!important;
   min-width:0;
 }
@@ -22,6 +24,16 @@
   text-overflow:ellipsis;
 }
 #saveNote,.save-note{display:none!important}
+
+/* Perfil / Conquistas / Ranking belong below the account name, not beside it. */
+.game-topbar .arena-account-tools{
+  grid-column:1 / -1!important;
+  grid-row:2!important;
+  justify-content:center!important;
+  margin-top:0!important;
+  width:100%;
+}
+.game-topbar .arena-account-tools button{margin:0!important}
 
 /* Combat is a clean combat view; the other systems remain available from their own tabs. */
 main.arena-view-combat .game-shell,
@@ -73,7 +85,9 @@ main.arena-view-forge .progress-section,
 main.arena-view-forge .arena-ranking{display:none!important}
 
 @media(max-width:760px){
-  .game-topbar{grid-template-columns:1fr!important}
-  .game-topbar>div:first-child{grid-column:1!important}
+  .game-topbar{grid-template-columns:1fr!important;grid-template-rows:auto auto auto!important}
+  .game-topbar>div:first-child{grid-column:1!important;grid-row:1!important}
+  .game-topbar .arena-account-tools{grid-column:1!important;grid-row:2!important}
+  .game-topbar>.arena-start-btn{grid-column:1!important;grid-row:3!important;justify-self:center}
   #playerName{font-size:1rem}
 }
