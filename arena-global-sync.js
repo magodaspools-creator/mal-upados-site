@@ -10,7 +10,7 @@
     if(!supabase?.auth||typeof game==='undefined'||!game)return;
     const {data:{user}}=await supabase.auth.getUser();
     if(!user)return;
-    const character=Array.isArray(window.members)?window.members.find(m=>m.name===game.character):null;
+    const character=Array.isArray(members)?members.find(m=>m.name===game.character):null;
     const characterId=character?.characterId;
     if(!characterId)return;
 
