@@ -13,6 +13,7 @@
   function loadCharacterCreation(){loadScript('arena-character-creation.js?v=character-creation-20260914','data-arena-character-creation')}
   function loadCharacterSyncFix(){loadScript('arena-character-sync-fix.js?v=character-sync-fix-20260914','data-arena-character-sync-fix')}
   function loadCharacterCreationUI(){loadScript('arena-character-creation-ui.js?v=character-creation-ui-20260914','data-arena-character-creation-ui')}
+  function loadMapProgression(){loadScript('arena-map-progression-fix.js?v=map-progression-20260914','data-arena-map-progression')}
   function boot(){
     loadSiteAuth();
     loadCharacterCreation();
@@ -20,6 +21,7 @@
     loadCharacterCreationUI();
     loadPolish();
     loadSubnavFix();
+    loadMapProgression();
     setTimeout(loadViews,250);
     setTimeout(loadForgeV2,500);
     setTimeout(loadForgeBalance,850);
