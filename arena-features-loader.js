@@ -1,13 +1,9 @@
-// Loader isolado dos sistemas de campanha da Arena.
-// Não altera loja, armas, personagens ou motor de combate.
+// Obsoleto.
+// Este loader apontava para arena-campaign-timer.js e arena-bestiary.js,
+// módulos antigos que não fazem parte mais da arquitetura atual da Arena.
+// Os sistemas atuais são carregados pelo arena-startup-fix.js e pelos scripts
+// estáticos de arena.html. Mantemos o arquivo como no-op para evitar que uma
+// referência antiga reintroduza módulos quebrados ou duplicados.
 (()=>{
-  const load=(src)=>{
-    if(document.querySelector(`script[data-arena-feature="${src}"]`))return;
-    const s=document.createElement('script');
-    s.src=src;
-    s.dataset.arenaFeature=src;
-    document.body.appendChild(s);
-  };
-  load('arena-campaign-timer.js?v=timer-20260912');
-  load('arena-bestiary.js?v=bestiary-20260912');
+  window.__arenaFeaturesLoaderDisabled=true;
 })();
