@@ -30,6 +30,7 @@
     .arena-world-info strong{display:block;color:#dfceaa;font-size:.68rem}
     .arena-world-info span{display:block;margin-top:3px;color:#7f878d;font-size:.55rem}
     .arena-world-go{border:1px solid #69552d;background:#211b11;color:#d6b56b;padding:9px 13px;cursor:pointer;font-size:.55rem;font-weight:700;white-space:nowrap}
+    .arena-world-go:hover:not(:disabled){border-color:#c79c50;background:#2b2213;color:#f0d28b}
     .arena-world-go:disabled{opacity:.35;cursor:not-allowed}
     @media(max-width:760px){.arena-world-modal{padding:5px}.arena-world-box{padding:8px}.arena-world-head h2{font-size:1rem}.arena-world-head p{font-size:.54rem}.arena-map-hotspot{min-width:54px;width:16%;height:20%}.arena-map-tooltip{display:none}.arena-world-hotspots{grid-template-columns:1fr 1fr}.arena-world-info{align-items:flex-start;flex-direction:column}.arena-world-go{width:100%}}
   `;
@@ -48,14 +49,15 @@
 
   async function loadMapImage(img,loading){
     try{
-      const parts=await Promise.all([1,2,3,4].map(n=>fetch('/assets/arena-map/'+String(n).padStart(2,'0')+'.txt').then(r=>{if(!r.ok)throw new Error('asset '+n);return r.text()})));
-      const b64=parts.join('');
+      const r=await fetch('/assets/arena-map/map-final.b64?v=map-final-20260916');
+      if(!r.ok)throw new Error('map-final.b64 '+r.status);
+      const b64=(await r.text()).trim();
       const raw=atob(b64),bytes=new Uint8Array(raw.length);
       for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
       const url=URL.createObjectURL(new Blob([bytes],{type:'image/jpeg'}));
       img.onload=()=>{loading?.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)};
       img.src=url;
-    }catch(err){console.error('[Arena Map] Falha ao carregar mapa:',err);loading.textContent='MAPA INDISPONÍVEL';}
+    }catch(err){console.error('[Arena Map] Falha ao carregar mapa final:',err);loading.textContent='MAPA INDISPONÍVEL';}
   }
 
   function open(){
@@ -65,7 +67,7 @@
     modal.id='arenaWorldModal';modal.className='arena-world-modal';
     modal.innerHTML=`<div class="arena-world-box">
       <div class="arena-world-head"><div><div class="eyebrow">MUNDO DA ARENA</div><h2>As Terras dos Mal Upados</h2><p>Explore o mapa e clique diretamente nas regiões para selecioná-las.</p></div><button class="arena-world-close" type="button">Fechar</button></div>
-      <div class="arena-world-art"><img id="arenaWorldMapImage" src="arena-map.svg?v=map-fallback-20260916" alt="Mapa ilustrado do mundo da Arena"><div class="arena-map-loading">CARREGANDO MAPA...</div>
+      <div class="arena-world-art"><img id="arenaWorldMapImage" src="" alt="Mapa ilustrado do mundo da Arena"><div class="arena-map-loading">CARREGANDO MAPA...</div>
         ${zones.map((z,i)=>{const locked=level<z.min;return `<button type="button" aria-label="${z.name} — Level ${z.min}+" class="arena-map-hotspot ${i===current?'current ':''}${locked?'locked':''}" data-zone="${i}" style="left:${z.x}%;top:${z.y}%" ${locked?'disabled':''}></button><div class="arena-map-tooltip" style="left:${z.x}%;top:${Math.min(z.y+11,90)}%">${z.name}<small>${locked?'🔒 Level '+z.min+' necessário':'Level '+z.min+'+'}</small></div>`}).join('')}
       </div>
       <div class="arena-world-hotspots">${zones.map((z,i)=>{const locked=level<z.min;return `<button type="button" class="arena-world-hotspot ${i===current?'current ':''}${locked?'locked':''}" data-zone="${i}" ${locked?'disabled':''}><strong>${z.name}</strong><span>${locked?'🔒 Level '+z.min+' necessário':z.meta}</span></button>`}).join('')}</div>
