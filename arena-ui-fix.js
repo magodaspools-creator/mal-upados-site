@@ -1,7 +1,7 @@
-// Arena UI navigation: real view switcher for normal tabs. Map/Forge keep their own handlers.
+// Arena submenu controller: one owner for normal tabs; specialized modules keep Map and Forge.
 (()=>{
-  if(window.__arenaUiFixV3)return;
-  window.__arenaUiFixV3=true;
+  if(window.__arenaUiFixV4)return;
+  window.__arenaUiFixV4=true;
 
   const STYLE_ID='arenaRealTabsStyle';
 
@@ -61,26 +61,39 @@
     return true;
   }
 
-  function bindDelegatedNav(){
-    if(document.documentElement.dataset.arenaUiDelegated==='1')return;
-    document.documentElement.dataset.arenaUiDelegated='1';
-    document.addEventListener('click',(event)=>{
-      const btn=event.target.closest?.('#arenaSubnav button[data-target]');
-      if(!btn)return;
+  function neutralizeLegacyHandlers(nav){
+    // arena-ui-polish used to attach scroll-based onclick handlers.
+    // The submenu is now a real view switcher, so remove those handlers once.
+    nav.querySelectorAll('button[data-target]').forEach(btn=>{
+      btn.onclick=null;
+    });
+  }
+
+  function bindNav(){
+    const nav=document.getElementById('arenaSubnav');
+    if(!nav)return false;
+    if(nav.dataset.arenaTabsBound==='1')return true;
+    nav.dataset.arenaTabsBound='1';
+    neutralizeLegacyHandlers(nav);
+
+    // arena-illustrated-map.js is loaded before this controller and owns Map.
+    // Forge keeps its existing specialized handler. Normal tabs belong here.
+    nav.addEventListener('click',event=>{
+      const btn=event.target.closest?.('button[data-target]');
+      if(!btn||btn.parentElement!==nav)return;
       const target=btn.dataset.target;
-      // Map and Forge have dedicated modules with their own capture handlers.
-      // Do not cancel these events here or they become unreachable.
       if(target==='arenaMap'||target==='arenaForgeSection')return;
       event.preventDefault();
       event.stopImmediatePropagation();
       activate(target);
     },true);
+
+    return true;
   }
 
   function init(){
     setHeaderLabel();
     style();
-    bindDelegatedNav();
     ensureIds();
     activate('arenaCombatSection');
     let tries=0;
@@ -88,8 +101,9 @@
       tries++;
       setHeaderLabel();
       ensureIds();
-      if(document.getElementById('arenaSubnav'))activate('arenaCombatSection');
-      if(document.getElementById('arenaSubnav')||tries>150)clearInterval(timer);
+      const bound=bindNav();
+      if(bound)activate('arenaCombatSection');
+      if(bound||tries>300)clearInterval(timer);
     },100);
   }
 
