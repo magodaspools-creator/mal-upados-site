@@ -1,7 +1,18 @@
 (()=>{
   if(window.__arenaStartup)return;
   window.__arenaStartup=true;
-  function loadScript(src,attr){if(document.querySelector(`script[${attr}]`))return;const s=document.createElement('script');s.src=src;s.setAttribute(attr,'1');document.body.appendChild(s)}
+
+  function loadScript(src,attr){
+    const base=src.split('?')[0];
+    // Não use apenas o atributo como trava: vários módulos legados compartilham
+    // data-arena-feature e todos precisam ser carregados.
+    if(document.querySelector(`script[src^="${base}"]`))return;
+    const s=document.createElement('script');
+    s.src=src;
+    if(attr)s.setAttribute(attr,'1');
+    document.body.appendChild(s);
+  }
+
   const loadSiteAuth=()=>loadScript('site-auth.js?v=global-account-20260914','data-mal-site-auth');
   const loadPolish=()=>loadScript('arena-ui-polish.js?v=ui-polish-20260914a','data-arena-ui-polish');
   const loadSubnavFix=()=>loadScript('arena-subnav-fix.js?v=arena-subnav-fix-20260915c','data-arena-subnav-fix');
@@ -15,13 +26,39 @@
   const loadCharacterSync=()=>loadScript('arena-character-sync-fix.js?v=character-sync-fix-20260915a','data-arena-character-sync-fix');
   const loadCharacterCreationUI=()=>loadScript('arena-character-creation-ui.js?v=character-creation-ui-20260915','data-arena-character-creation-ui');
   const loadWorldMap=()=>loadScript('arena-world-map.js?v=world-map-20260914','data-arena-world-map');
+
   const loadLegacyFeatures=()=>{
-    const files=['arena-campaign-timer-fix.js?v=timer-fix-20260912c','arena-bestiary-platinum-popup.js?v=platinum-popup-20260912a','arena-combat-final-fix.js?v=combat-fix-20260912','arena-flee-fix.js?v=flee-fix-20260912','arena-gold-universal.js?v=gold-universal-20260912','arena-account-systems.js?v=account-systems-20260912a','arena-profile-advanced.js?v=profile-advanced-20260912b','arena-achievements-v2.js?v=achievements-v2-20260912a','arena-ranking-v2.js?v=ranking-v2-20260912c'];
+    const files=[
+      'arena-campaign-timer-fix.js?v=timer-fix-20260912c',
+      'arena-bestiary-platinum-popup.js?v=platinum-popup-20260912a',
+      'arena-combat-final-fix.js?v=combat-fix-20260912',
+      'arena-flee-fix.js?v=flee-fix-20260912',
+      'arena-gold-universal.js?v=gold-universal-20260912',
+      'arena-account-systems.js?v=account-systems-20260912a',
+      'arena-profile-advanced.js?v=profile-advanced-20260912b',
+      'arena-achievements-v2.js?v=achievements-v2-20260912a',
+      'arena-ranking-v2.js?v=ranking-v2-20260912c'
+    ];
     files.forEach(src=>loadScript(src,'data-arena-feature'));
   };
+
   function boot(){
-    loadSiteAuth();loadCharacterCreation();loadCharacterSync();loadCharacterCreationUI();loadGlobalSync();loadPolish();loadSubnavFix();loadWorldMap();loadIllustratedMap();loadUiFix();loadSkillCharacter();
-    setTimeout(loadForge,500);setTimeout(loadDungeon,750);setTimeout(loadLegacyFeatures,1200);
+    loadSiteAuth();
+    loadCharacterCreation();
+    loadCharacterSync();
+    loadCharacterCreationUI();
+    loadGlobalSync();
+    loadPolish();
+    loadSubnavFix();
+    loadWorldMap();
+    loadIllustratedMap();
+    loadUiFix();
+    loadSkillCharacter();
+    setTimeout(loadForge,500);
+    setTimeout(loadDungeon,750);
+    setTimeout(loadLegacyFeatures,1200);
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,0),{once:true});else setTimeout(boot,0);
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,0),{once:true});
+  else setTimeout(boot,0);
 })();
