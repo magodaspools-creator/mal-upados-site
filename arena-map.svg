@@ -1,42 +1,94 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 820" role="img" aria-labelledby="title desc">
   <title id="title">Mapa da Arena Mal Upados</title>
-  <desc id="desc">Mapa ilustrado das cinco regiões da Arena: Floresta Sombria, Acampamento Orc, Deserto Perdido, Covil dos Dragões e Abismo Demoníaco.</desc>
+  <desc id="desc">Mapa ilustrado das regiões da Arena: Floresta Sombria, Acampamento Orc, Deserto Perdido, Covil dos Dragões e Abismo Demoníaco.</desc>
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#101713"/><stop offset=".48" stop-color="#17191a"/><stop offset="1" stop-color="#0d0d12"/></linearGradient>
-    <linearGradient id="forest" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#203c2b"/><stop offset="1" stop-color="#12251b"/></linearGradient>
-    <linearGradient id="orc" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#4b4024"/><stop offset="1" stop-color="#282516"/></linearGradient>
-    <linearGradient id="desert" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#66502b"/><stop offset="1" stop-color="#332817"/></linearGradient>
-    <linearGradient id="dragon" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#263e49"/><stop offset="1" stop-color="#14252d"/></linearGradient>
-    <linearGradient id="death" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#3b293f"/><stop offset="1" stop-color="#1c1722"/></linearGradient>
-    <filter id="glow"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    <filter id="shadow"><feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#000" flood-opacity=".5"/></filter>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#101713"/><stop offset=".48" stop-color="#17191a"/><stop offset="1" stop-color="#0b0a10"/></linearGradient>
+    <linearGradient id="forest" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#294c32"/><stop offset="1" stop-color="#102219"/></linearGradient>
+    <linearGradient id="orc" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#514728"/><stop offset="1" stop-color="#252216"/></linearGradient>
+    <linearGradient id="desert" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#765b2d"/><stop offset="1" stop-color="#352817"/></linearGradient>
+    <linearGradient id="dragon" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#304b55"/><stop offset="1" stop-color="#12252d"/></linearGradient>
+    <linearGradient id="death" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#492d49"/><stop offset="1" stop-color="#19141f"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#000" flood-opacity=".55"/></filter>
+    <filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <pattern id="paper" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="5" cy="7" r="1" fill="#fff" opacity=".035"/><circle cx="23" cy="20" r="1" fill="#fff" opacity=".025"/></pattern>
   </defs>
-  <rect width="1600" height="820" fill="url(#bg)"/>
-  <path d="M0 610 C260 510 370 660 610 560 S990 500 1190 600 1430 530 1600 590 V820 H0Z" fill="#090d0b" opacity=".7"/>
-  <path d="M80 690 C300 580 420 650 610 570 S900 470 1110 575 1370 530 1510 610" fill="none" stroke="#80652f" stroke-width="12" opacity=".35"/>
-  <path d="M80 690 C300 580 420 650 610 570 S900 470 1110 575 1370 530 1510 610" fill="none" stroke="#c29a4e" stroke-width="3" stroke-dasharray="14 16" opacity=".75"/>
 
+  <rect width="1600" height="820" fill="url(#bg)"/>
+  <rect x="28" y="28" width="1544" height="764" rx="10" fill="url(#paper)"/>
+
+  <!-- Montanhas do norte -->
+  <g opacity=".65" fill="#303637" stroke="#59605d" stroke-width="2">
+    <path d="M60 135 L135 58 205 135 270 48 350 140 425 72 505 155 60 175Z"/>
+    <path d="M970 135 L1045 55 1115 140 1185 48 1260 142 1330 65 1410 150 970 170Z"/>
+  </g>
+  <g fill="#d7d9d0" opacity=".25">
+    <path d="M135 58l-24 48 25-13 19 18zM270 48l-28 55 31-16 22 20zM425 72l-26 43 29-14 18 17z"/>
+    <path d="M1045 55l-25 48 27-14 20 18zM1185 48l-26 52 31-15 21 20zM1330 65l-25 47 27-13 19 18z"/>
+  </g>
+
+  <!-- Regiões -->
   <g filter="url(#shadow)">
-    <path d="M65 105 L245 55 390 145 350 330 185 365 65 275Z" fill="url(#forest)" stroke="#6f9d6c" stroke-width="3"/>
+    <path d="M65 105 L245 55 390 145 350 330 185 365 65 275Z" fill="url(#forest)" stroke="#719b68" stroke-width="3"/>
     <path d="M365 145 L535 82 705 150 670 330 500 365 350 300Z" fill="url(#orc)" stroke="#b79b57" stroke-width="3"/>
     <path d="M680 150 L850 88 1030 155 1010 345 840 390 670 320Z" fill="url(#desert)" stroke="#d1a65b" stroke-width="3"/>
     <path d="M1010 155 L1185 95 1360 175 1320 360 1150 390 1005 325Z" fill="url(#dragon)" stroke="#78b6c7" stroke-width="3"/>
     <path d="M1335 175 L1535 115 1580 300 1490 455 1320 370Z" fill="url(#death)" stroke="#9d72a5" stroke-width="3"/>
   </g>
 
-  <g opacity=".8" fill="none" stroke="#8fc17e" stroke-width="7">
-    <path d="M115 210 l55 -65 45 70 48 -85 50 80 48 -48"/>
-    <path d="M150 290 l38 -52 36 45 45 -65 42 60"/>
+  <!-- Floresta -->
+  <g fill="#6f9d68" opacity=".9">
+    <path d="M95 285l28-65 28 65zM145 310l32-76 32 76zM205 285l29-70 29 70zM270 305l30-75 30 75z"/>
+    <path d="M110 145l24-57 24 57zM165 170l25-62 25 62zM280 150l24-58 24 58z"/>
   </g>
-  <g opacity=".7" fill="#d6b96d">
-    <circle cx="440" cy="205" r="7"/><circle cx="490" cy="230" r="5"/><circle cx="550" cy="185" r="6"/><circle cx="600" cy="245" r="5"/>
+  <g stroke="#a3c78d" stroke-width="4" opacity=".5" fill="none">
+    <path d="M105 255q55-55 120-5t105-25"/>
+    <path d="M120 330q70-35 135 0t80-30"/>
   </g>
-  <g fill="#c9a45a" opacity=".65">
-    <path d="M760 260 l45 -22 42 20 -42 22Z"/><path d="M860 205 l48 -18 35 22 -48 20Z"/><path d="M930 275 l38 -18 35 18 -38 20Z"/>
-  </g>
-  <g fill="#a8d6df" opacity=".55"><path d="M1080 260 q40 -65 80 0 q-40 45 -80 0Z"/><path d="M1180 220 q40 -60 75 5 q-35 45 -75 -5Z"/></g>
-  <g fill="#c18ac9" opacity=".45"><circle cx="1410" cy="250" r="25"/><circle cx="1490" cy="320" r="16"/><circle cx="1450" cy="390" r="9"/></g>
 
+  <!-- Acampamento Orc -->
+  <g stroke="#c3a762" stroke-width="3" fill="none" opacity=".7">
+    <path d="M410 285l45-75 45 75zM500 300l48-82 48 82zM590 285l42-72 42 72z"/>
+  </g>
+  <g fill="#cbb77a" opacity=".8"><circle cx="455" cy="215" r="6"/><circle cx="548" cy="215" r="6"/><circle cx="632" cy="213" r="6"/></g>
+  <g fill="#8b6e3e" opacity=".8"><rect x="430" y="310" width="12" height="25"/><rect x="615" y="300" width="12" height="30"/></g>
+
+  <!-- Deserto: dunas e ruínas -->
+  <g fill="none" stroke="#d4b66c" stroke-width="5" opacity=".45">
+    <path d="M710 285q55-55 115 0t125 0"/><path d="M700 325q80-60 145 0t145-5"/>
+  </g>
+  <g fill="#d8bc76" opacity=".75">
+    <path d="M785 245h18v70h-18zM770 245h48l-24-32z"/>
+    <path d="M900 285h16v45h-16zM888 285h40l-20-26z"/>
+  </g>
+
+  <!-- Covil dos Dragões: montanhas, gelo e lava -->
+  <g fill="#6e99a5" opacity=".55">
+    <path d="M1035 310l42-105 42 105zM1100 330l55-130 55 130zM1190 315l45-108 45 108zM1260 330l42-92 42 92z"/>
+  </g>
+  <g fill="#e5f5f5" opacity=".35">
+    <path d="M1077 205l-16 40 17-9 15 12zM1155 200l-20 48 22-11 17 15zM1235 207l-16 42 18-10 15 13z"/>
+  </g>
+  <path d="M1035 330q55-35 110 0t120-5" fill="none" stroke="#d87d45" stroke-width="5" opacity=".45"/>
+
+  <!-- Abismo -->
+  <g fill="#b86fc2" opacity=".38">
+    <circle cx="1400" cy="255" r="32"/><circle cx="1480" cy="315" r="22"/><circle cx="1435" cy="390" r="13"/>
+  </g>
+  <g fill="none" stroke="#d09ad7" stroke-width="3" opacity=".55">
+    <path d="M1370 220q50 25 0 70t65 70"/><path d="M1500 220q-45 35-5 70t-55 75"/>
+  </g>
+  <g fill="#7f527f" opacity=".8"><path d="M1360 330l22-80 22 80zM1510 360l20-70 20 70z"/></g>
+
+  <!-- Caminho de progressão -->
+  <path d="M120 585 C280 500 390 610 535 535 S805 475 950 555 1190 500 1350 570 1460 520 1510 500" fill="none" stroke="#17120c" stroke-width="25" opacity=".75"/>
+  <path d="M120 585 C280 500 390 610 535 535 S805 475 950 555 1190 500 1350 570 1460 520 1510 500" fill="none" stroke="#c29a4e" stroke-width="4" stroke-dasharray="12 15" opacity=".9"/>
+
+  <!-- Pontes e rio -->
+  <path d="M430 400 C520 450 600 405 680 455 S820 525 910 455 1060 390 1150 450 1280 505 1390 440" fill="none" stroke="#3b6870" stroke-width="18" opacity=".45"/>
+  <path d="M430 400 C520 450 600 405 680 455 S820 525 910 455 1060 390 1150 450 1280 505 1390 440" fill="none" stroke="#79aeb4" stroke-width="3" opacity=".7"/>
+  <g stroke="#a88750" stroke-width="6" opacity=".8"><path d="M600 425l55 45"/><path d="M1160 430l55 42"/></g>
+
+  <!-- Nomes -->
   <g font-family="Georgia,serif" text-anchor="middle">
     <text x="225" y="170" fill="#e8eadb" font-size="27" font-weight="700">I · FLORESTA SOMBRIA</text>
     <text x="225" y="205" fill="#a6b59d" font-size="15">A origem da jornada</text>
@@ -50,10 +102,15 @@
     <text x="1450" y="290" fill="#ad86b5" font-size="15">Onde poucos retornam</text>
   </g>
 
+  <!-- Marcador do jogador -->
   <g filter="url(#glow)">
-    <circle cx="225" cy="560" r="16" fill="#d8b66b"/><circle cx="225" cy="560" r="31" fill="none" stroke="#d8b66b" stroke-width="2" opacity=".6"/>
+    <circle cx="225" cy="560" r="16" fill="#d8b66b"/>
+    <circle cx="225" cy="560" r="31" fill="none" stroke="#d8b66b" stroke-width="2" opacity=".65"/>
     <path d="M210 560h30M225 545v30" stroke="#fff1c6" stroke-width="3"/>
   </g>
+  <text x="225" y="610" text-anchor="middle" fill="#e1c477" font-family="Inter,Arial,sans-serif" font-size="12" letter-spacing="2">VOCÊ ESTÁ AQUI</text>
+
+  <!-- Cabeçalho -->
   <g font-family="Inter,Arial,sans-serif">
     <text x="800" y="65" text-anchor="middle" fill="#d8cba9" font-size="17" letter-spacing="6">ARENA MAL UPADOS</text>
     <text x="800" y="96" text-anchor="middle" fill="#6e7478" font-size="12" letter-spacing="2">MAPA DA JORNADA</text>
