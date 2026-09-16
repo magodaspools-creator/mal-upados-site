@@ -1,19 +1,25 @@
 (()=>{
-  if(window.__arenaMapTabV1)return;
-  window.__arenaMapTabV1=true;
+  if(window.__arenaMapTabV2)return;
+  window.__arenaMapTabV2=true;
 
   const CSS=`
-    /* Mapa é uma aba real: enquanto ativa, o conteúdo de Combate some por completo. */
-    main.arena-view-map > *:not(.arena-map-tab-page){display:none!important}
-    main.arena-map-tab-active > *:not(.arena-map-tab-page){display:none!important}
-    .arena-map-tab-page{margin-top:10px;border:1px solid #665333;background:#080b0d;box-shadow:0 20px 70px rgba(0,0,0,.45);padding:14px}
+    /* Mapa é uma VIEW real da Arena. O menu permanece visível; Combate e outras views somem. */
+    main.arena-view-map .game-shell,
+    main.arena-view-map .shop-section,
+    main.arena-view-map .activities,
+    main.arena-view-map .progress-section,
+    main.arena-view-map .arena-ranking,
+    main.arena-view-map #arenaForgeSection,
+    main.arena-view-map #abyssalGardens{display:none!important}
+    main.arena-view-map .arena-map-tab-page{display:block!important}
+    .arena-map-tab-page{margin:10px auto 0;width:min(1180px,calc(100% - 28px));border:1px solid #665333;background:#080b0d;box-shadow:0 20px 70px rgba(0,0,0,.45);padding:14px}
     .arena-map-tab-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:10px}
     .arena-map-tab-head h2{font-family:Cinzel,serif;color:#eadfca;margin:2px 0 4px;font-size:1.35rem}
     .arena-map-tab-head p{margin:0;color:#899096;font-size:.63rem;line-height:1.45}
     .arena-map-tab-close{border:1px solid #383c3f;background:#111417;color:#b8bec2;padding:8px 12px;cursor:pointer}
     .arena-map-tab-close:hover{border-color:#c29b52;color:#e3c77f}
     .arena-map-tab-art{position:relative;isolation:isolate;overflow:hidden;border:1px solid #4a3d28;background:#050708;box-shadow:inset 0 0 60px rgba(0,0,0,.55);width:100%}
-    .arena-map-tab-art img{display:block;width:100%;height:auto;aspect-ratio:auto;object-fit:contain}
+    .arena-map-tab-art img{display:block;width:100%;height:auto;max-width:100%;object-fit:contain}
     .arena-map-tab-loading{position:absolute;inset:0;display:grid;place-items:center;color:#c7b17c;background:rgba(5,7,8,.9);font-size:.7rem;letter-spacing:.08em}
     .arena-map-tab-hotspot{position:absolute;z-index:4;transform:translate(-50%,-50%);width:13%;height:18%;min-width:90px;border:1px solid transparent;border-radius:10px;background:rgba(0,0,0,0);color:transparent;cursor:pointer;transition:.18s;outline:none}
     .arena-map-tab-hotspot:hover{background:rgba(232,193,105,.10);border-color:rgba(232,193,105,.72);box-shadow:0 0 30px rgba(232,193,105,.24),inset 0 0 25px rgba(232,193,105,.08)}
@@ -31,9 +37,16 @@
     .arena-map-tab-go{border:1px solid #69552d;background:#211b11;color:#d6b56b;padding:9px 13px;cursor:pointer;font-size:.55rem;font-weight:700;white-space:nowrap}
     .arena-map-tab-go:hover:not(:disabled){border-color:#c79c50;background:#2b2213;color:#f0d28b}
     .arena-map-tab-go:disabled{opacity:.35;cursor:not-allowed}
-    @media(max-width:760px){.arena-map-tab-page{padding:8px}.arena-map-tab-head h2{font-size:1rem}.arena-map-tab-head p{font-size:.54rem}.arena-map-tab-hotspot{min-width:54px;width:16%;height:20%}.arena-map-tab-hotspots{grid-template-columns:1fr 1fr}.arena-map-tab-info{align-items:flex-start;flex-direction:column}.arena-map-tab-go{width:100%}}
+    @media(max-width:760px){
+      .arena-map-tab-page{padding:8px;width:calc(100% - 14px)}
+      .arena-map-tab-head h2{font-size:1rem}.arena-map-tab-head p{font-size:.54rem}
+      .arena-map-tab-hotspot{min-width:54px;width:16%;height:20%}
+      .arena-map-tab-hotspots{grid-template-columns:1fr 1fr}
+      .arena-map-tab-info{align-items:flex-start;flex-direction:column}
+      .arena-map-tab-go{width:100%}
+    }
   `;
-  const style=document.createElement('style');style.id='arenaMapTabStyle';style.textContent=CSS;document.head.appendChild(style);
+  const style=document.createElement('style');style.id='arenaMapTabStyleV2';style.textContent=CSS;document.head.appendChild(style);
 
   const zones=[
     {name:'Floresta Sombria',meta:'Level 1+ · criaturas iniciais',min:1,x:25,y:20},
@@ -50,7 +63,7 @@
     const RAW='https://raw.githubusercontent.com/magodaspools-creator/mal-upados-site/main/assets/arena-map/';
     try{
       const parts=await Promise.all(['01','02','03','04'].map(async part=>{
-        const r=await fetch(`${RAW}${part}.txt?v=map-source-20260916a`,{cache:'no-store'});
+        const r=await fetch(`${RAW}${part}.txt?v=map-source-20260916b`,{cache:'no-store'});
         if(!r.ok)throw new Error(`arena-map/${part}.txt ${r.status}`);
         return (await r.text()).replace(/\s+/g,'');
       }));
@@ -60,12 +73,12 @@
       for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
       const blobUrl=URL.createObjectURL(new Blob([bytes],{type:'image/jpeg'}));
       img.onload=()=>{loading?.remove();setTimeout(()=>URL.revokeObjectURL(blobUrl),1000)};
-      img.onerror=()=>{URL.revokeObjectURL(blobUrl);throw new Error('JPEG do mapa original inválido')};
+      img.onerror=()=>{URL.revokeObjectURL(blobUrl);loading.textContent='MAPA INDISPONÍVEL'};
       img.src=blobUrl;
     }catch(err){
-      console.error('[Arena Map Tab] Falha ao carregar fonte original do mapa:',err);
+      console.error('[Arena Map Tab] Fonte original falhou:',err);
       try{
-        const r=await fetch(`${RAW}map-final.b64?v=map-final-fallback-20260916a`,{cache:'no-store'});
+        const r=await fetch(`${RAW}map-final.b64?v=map-final-fallback-20260916b`,{cache:'no-store'});
         if(!r.ok)throw new Error(`map-final.b64 ${r.status}`);
         const b64=(await r.text()).trim();
         if(!b64.startsWith('/9j/'))throw new Error('fallback não é JPEG em base64');
@@ -76,17 +89,19 @@
         img.onerror=()=>{URL.revokeObjectURL(blobUrl);loading.textContent='MAPA INDISPONÍVEL'};
         img.src=blobUrl;
       }catch(fallbackErr){
-        console.error('[Arena Map Tab] Fallback também falhou:',fallbackErr);
+        console.error('[Arena Map Tab] Fallback falhou:',fallbackErr);
         loading.textContent='MAPA INDISPONÍVEL';
       }
     }
   }
 
-  function closeMap(){
+  function restoreCombat(){
     const main=document.querySelector('main');
     if(!main)return;
     main.classList.remove('arena-map-tab-active','arena-view-map');
     main.querySelector('.arena-map-tab-page')?.remove();
+    document.getElementById('arenaWorldModal')?.remove();
+    document.getElementById('arenaMapModal')?.remove();
     const combat=document.querySelector('#arenaSubnav button[data-target="arenaCombatSection"]');
     if(combat)combat.click();
   }
@@ -94,18 +109,21 @@
   function render(){
     const main=document.querySelector('main');
     if(!main)return false;
+    document.getElementById('arenaWorldModal')?.remove();
+    document.getElementById('arenaMapModal')?.remove();
+    main.classList.remove('arena-view-combat','arena-view-shop','arena-view-daily','arena-view-progress','arena-view-ranking','arena-view-forge','arena-view-abyssal');
     main.classList.add('arena-map-tab-active','arena-view-map');
     main.querySelector('.arena-map-tab-page')?.remove();
-    const level=gameLevel(),current=currentZone();
+    const level=gameLevel(),current=Math.min(Math.max(currentZone(),0),zones.length-1);
     const page=document.createElement('section');
     page.className='arena-map-tab-page';
-    page.innerHTML=`<div class="arena-map-tab-head"><div><div class="eyebrow">MUNDO DA ARENA</div><h2>As Terras dos Mal Upados</h2><p>Explore o mapa e clique diretamente nas regiões para selecioná-las.</p></div><button class="arena-map-tab-close" type="button">Voltar</button></div>
+    page.innerHTML=`<div class="arena-map-tab-head"><div><div class="eyebrow">MUNDO DA ARENA</div><h2>As Terras dos Mal Upados</h2><p>Mapa completo da Arena. A imagem mantém a proporção original, sem esticar.</p></div><button class="arena-map-tab-close" type="button">Voltar</button></div>
       <div class="arena-map-tab-art"><img id="arenaMapTabImage" src="" alt="Mapa ilustrado do mundo da Arena"><div class="arena-map-tab-loading">CARREGANDO MAPA...</div>
         ${zones.map((z,i)=>{const locked=level<z.min;return `<button type="button" aria-label="${z.name} — Level ${z.min}+" class="arena-map-tab-hotspot ${i===current?'current ':''}${locked?'locked':''}" data-zone="${i}" style="left:${z.x}%;top:${z.y}%" ${locked?'disabled':''}></button>`}).join('')}
       </div>
       <div class="arena-map-tab-hotspots">${zones.map((z,i)=>{const locked=level<z.min;return `<button type="button" class="arena-map-tab-hotspot-card ${i===current?'current ':''}${locked?'locked':''}" data-zone="${i}" ${locked?'disabled':''}><strong>${z.name}</strong><span>${locked?'🔒 Level '+z.min+' necessário':z.meta}</span></button>`}).join('')}</div>
       <div class="arena-map-tab-info"><div><strong id="arenaMapTabInfoTitle">${zones[current].name}</strong><span id="arenaMapTabInfoMeta">${zones[current].meta} · Level mínimo ${zones[current].min}</span></div><button type="button" class="arena-map-tab-go" id="arenaMapTabGo">IR PARA ESTA ÁREA</button></div>`;
-    main.prepend(page);
+    main.appendChild(page);
     loadMapImage(page.querySelector('#arenaMapTabImage'),page.querySelector('.arena-map-tab-loading'));
 
     let selected=current;
@@ -119,29 +137,33 @@
     page.querySelectorAll('[data-zone]:not(:disabled)').forEach(b=>b.addEventListener('click',()=>select(Number(b.dataset.zone))));
     page.querySelector('#arenaMapTabGo').onclick=()=>{
       const homeZone=document.querySelector(`.zone[data-zone="${selected}"]`);
-      if(homeZone){homeZone.click();closeMap()}
+      if(homeZone){homeZone.click();restoreCombat()}
     };
-    page.querySelector('.arena-map-tab-close').onclick=closeMap;
+    page.querySelector('.arena-map-tab-close').onclick=restoreCombat;
     return true;
   }
 
   function activate(){
     const main=document.querySelector('main');
     if(!main)return false;
-    main.classList.add('arena-map-tab-active','arena-view-map');
+    render();
     const btn=document.querySelector('#arenaSubnav button[data-target="arenaMap"]');
     if(btn)document.querySelectorAll('#arenaSubnav button[data-target]').forEach(b=>b.classList.toggle('active',b===btn));
-    return render();
+    return true;
   }
 
   document.addEventListener('click',event=>{
     const btn=event.target.closest?.('#arenaSubnav button[data-target]');
     if(!btn)return;
     if(btn.dataset.target==='arenaMap'){
-      event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
       activate();
       return;
     }
+    document.getElementById('arenaWorldModal')?.remove();
+    document.getElementById('arenaMapModal')?.remove();
     document.querySelector('main')?.classList.remove('arena-map-tab-active','arena-view-map');
     document.querySelector('main .arena-map-tab-page')?.remove();
   },true);
@@ -150,9 +172,10 @@
     if(event.key!=='Escape')return;
     if(document.querySelector('main.arena-map-tab-active')){
       event.preventDefault();
-      closeMap();
+      event.stopPropagation();
+      restoreCombat();
     }
   },true);
 
-  window.arenaMapTab={activate,render,close:closeMap};
+  window.arenaMapTab={activate,render,close:restoreCombat};
 })();
