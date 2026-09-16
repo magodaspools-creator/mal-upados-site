@@ -24,6 +24,12 @@ if(typeof SHOP_ITEMS!=='undefined'){
 
 function arenaWeaponClass(){
   const member=(typeof members!=='undefined'&&Array.isArray(members))?members.find(m=>m.name===game?.character):null;
+  const raw=String(member?.vocation||'').trim().toLowerCase();
+  if(/master\s+sorcerer|^sorcerer$/.test(raw))return 'Sorcerer';
+  if(/elder\s+druid|^druid$/.test(raw))return 'Druid';
+  if(/royal\s+paladin|^paladin$/.test(raw))return 'Paladin';
+  if(/elite\s+knight|^knight$/.test(raw))return 'Knight';
+  if(/^monk$/.test(raw))return 'Monk';
   return member?.vocation||'';
 }
 
