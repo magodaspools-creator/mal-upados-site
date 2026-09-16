@@ -8,19 +8,33 @@
     if(eyebrow)eyebrow.textContent='Sua conta';
   };
 
+  const ensureSectionIds=()=>{
+    const shop=document.querySelector('.game-shell~.shop-section')||document.querySelector('.shop-section');
+    const acts=document.querySelector('.activities');
+    const prog=document.querySelector('.progress-section');
+    const rank=document.querySelector('.arena-ranking');
+    if(shop&&!shop.id)shop.id='arenaShopSection';
+    if(acts&&!acts.id)acts.id='arenaActivitiesSection';
+    if(prog&&!prog.id)prog.id='arenaProgressSection';
+    if(rank&&!rank.id)rank.id='arenaRankingSection';
+    return {shop,acts,prog,rank};
+  };
+
   const applyView=(view,activeTarget)=>{
     const main=document.querySelector('main');
     if(!main)return;
+    ensureSectionIds();
     main.classList.remove('arena-view-combat','arena-view-shop','arena-view-daily','arena-view-progress','arena-view-ranking','arena-view-forge');
     main.classList.add(`arena-view-${view}`);
     const nav=document.getElementById('arenaSubnav');
     nav?.querySelectorAll('button[data-target]').forEach(b=>b.classList.toggle('active',b.dataset.target===activeTarget));
-
+    if(activeTarget==='arenaCombatSection'){
+      window.scrollTo({top:0,behavior:'smooth'});
+      return;
+    }
     const id=activeTarget==='arenaForgeSection'?'forgePanel':activeTarget;
     const target=document.getElementById(id);
-    if(target&&activeTarget!=='arenaCombatSection'){
-      requestAnimationFrame(()=>target.scrollIntoView({behavior:'smooth',block:'start'}));
-    }
+    if(target)requestAnimationFrame(()=>target.scrollIntoView({behavior:'smooth',block:'start'}));
   };
 
   const refreshSkill=()=>{
@@ -30,6 +44,7 @@
   const bindNav=()=>{
     const nav=document.getElementById('arenaSubnav');
     if(!nav)return false;
+    ensureSectionIds();
     if(nav.dataset.uiFixBound==='1')return true;
     nav.dataset.uiFixBound='1';
     const views={arenaCombatSection:'combat',arenaActivitiesSection:'daily',arenaShopSection:'shop',arenaProgressSection:'progress',arenaRankingSection:'ranking',arenaForgeSection:'forge'};
@@ -48,14 +63,16 @@
 
   const init=()=>{
     setHeaderLabel();
+    ensureSectionIds();
     refreshSkill();
     let tries=0;
     const timer=setInterval(()=>{
       tries++;
       setHeaderLabel();
+      ensureSectionIds();
       bindNav();
       refreshSkill();
-      if((document.getElementById('skillTrainBtn')&&bindNav())||tries>120)clearInterval(timer);
+      if((document.getElementById('arenaSubnav')&&bindNav())||tries>120)clearInterval(timer);
     },100);
   };
 
