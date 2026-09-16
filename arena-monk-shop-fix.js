@@ -1,6 +1,9 @@
 // Integração das armas Monk na loja.
-// O filtro de vocação é controlado pelo arena-knight-loadout.js.
+// Este módulo só registra as armas Monk; carregamento de campanha é centralizado no arena-startup.js.
 (()=>{
+  if(window.__arenaMonkShopFix)return;
+  window.__arenaMonkShopFix=true;
+
   const MONK_WEAPONS=[
     {id:'iron-knuckle',name:'Iron Knuckle',icon:'🥊',category:'weapons',vocation:'Monk',class:'Monk',hands:2,price:300,attack:12,defense:0,minLevel:3,bonus:'+12 ataque · 2 mãos · Monk'},
     {id:'tiger-claw',name:'Tiger Claw',icon:'🐯',category:'weapons',vocation:'Monk',class:'Monk',hands:2,price:650,attack:18,defense:0,minLevel:8,bonus:'+18 ataque · 2 mãos · Monk'},
@@ -20,18 +23,4 @@
     });
     if(typeof shopRender==='function')shopRender();
   }
-
-  // Carrega os módulos de campanha independentemente da loja.
-  const modules=[
-    'arena-demon-final-fix.js?v=final-boss-20260912b',
-    'arena-campaign-timer.js?v=campaign-timer-20260912c',
-    'arena-bestiary.js?v=bestiary-20260912c'
-  ];
-  modules.forEach(src=>{
-    const base=src.split('?')[0];
-    if(document.querySelector(`script[src^="${base}"]`))return;
-    const s=document.createElement('script');
-    s.src=src;
-    document.body.appendChild(s);
-  });
 })();
