@@ -15,6 +15,7 @@
   const loadPolish=()=>loadScript('arena-ui-polish.js?v=ui-polish-20260914a','data-arena-ui-polish');
   const loadSubnavFix=()=>loadScript('arena-subnav-fix.js?v=arena-subnav-fix-20260915c','data-arena-subnav-fix');
   const loadIllustratedMap=()=>loadScript('arena-illustrated-map.js?v=illustrated-map-20260916b','data-arena-illustrated-map');
+  const loadMapTab=()=>loadScript('arena-map-tab.js?v=map-tab-20260916a','data-arena-map-tab');
   const loadUiFix=()=>loadScript('arena-ui-fix.js?v=ui-fix-20260916g','data-arena-ui-fix');
   const loadGlobalSync=()=>loadScript('arena-global-sync.js?v=global-sync-20260915','data-arena-global-sync');
   const loadSkillCharacter=()=>loadScript('arena-skill-character-fix.js?v=skill-character-fix-20260915','data-arena-skill-character-fix');
@@ -47,6 +48,7 @@
     loadSubnavFix();
     loadWorldMap();
     loadIllustratedMap();
+    loadMapTab();
     loadUiFix();
     loadSkillCharacter();
     setTimeout(loadForge,500);
