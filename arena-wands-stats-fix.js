@@ -1,4 +1,6 @@
 (()=>{
+  if(window.__arenaWandsStatsFix)return;
+  window.__arenaWandsStatsFix=true;
   if(typeof SHOP_ITEMS==='undefined')return;
 
   const LEGACY_WAND_IDS=new Set([
@@ -15,7 +17,7 @@
   rods.forEach((rod,i)=>{if(ATK_VALUES[i]!==undefined)rod.attack=ATK_VALUES[i];});
   wands.forEach((wand,i)=>{if(ATK_VALUES[i]!==undefined)wand.attack=ATK_VALUES[i];});
 
-  const VOCATIONS=new Set(['Knight','Paladin','Sorcerer','Druid']);
+  const VOCATIONS=new Set(['Knight','Paladin','Sorcerer','Druid','Monk']);
   SHOP_ITEMS.forEach(item=>{
     if(!item||!Number(item.attack))return;
     if(item.category==='weapons'&&!VOCATIONS.has(item.class)){
@@ -37,18 +39,25 @@
     Object.assign(soul,{category:'wands',class:'Sorcerer',price:5000,attack:68,defense:0,minLevel:40,bonus:'+68 ataque · Sorcerer'});
   }
 
-  function vocation(){
-    const member=(typeof members!=='undefined'&&Array.isArray(members))?members.find(m=>m.name===game?.character):null;
-    return member?.vocation||'';
+  function canonicalVocation(value){
+    const v=String(value||'').trim().toLowerCase();
+    if(v.includes('knight'))return 'Knight';
+    if(v.includes('paladin'))return 'Paladin';
+    if(v.includes('sorcerer'))return 'Sorcerer';
+    if(v.includes('druid'))return 'Druid';
+    if(v.includes('monk'))return 'Monk';
+    return '';
   }
 
-  // Apenas limpa uma arma incompatível que já esteja equipada.
-  // A loja continua exibindo todos os itens; a restrição de equipar/comprar
-  // será tratada separadamente para não apagar categorias inteiras da loja.
+  function vocation(){
+    const member=(typeof members!=='undefined'&&Array.isArray(members))?members.find(m=>m.name===game?.character):null;
+    return canonicalVocation(member?.vocation||game?.vocation);
+  }
+
   function sanitize(){
     if(typeof game==='undefined'||!game||!game.shopEquipped)return;
     const v=vocation(),id=game.shopEquipped.weapon,item=SHOP_ITEMS.find(x=>x.id===id);
-    if(v&&item?.class&&item.class!==v)game.shopEquipped.weapon=null;
+    if(v&&item?.class&&canonicalVocation(item.class)!==v)game.shopEquipped.weapon=null;
   }
 
   sanitize();
