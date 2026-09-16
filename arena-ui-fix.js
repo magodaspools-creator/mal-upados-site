@@ -25,17 +25,20 @@
   };
 
   const targetElement=(targetId)=>{
-    ensureSectionIds();
+    const refs=ensureSectionIds();
     if(targetId==='arenaCombatSection')return document.getElementById('arenaCombatSection')||document.querySelector('.game-shell');
-    if(targetId==='arenaForgeSection')return document.getElementById('forgePanel')||document.getElementById('arenaForgeSection');
+    if(targetId==='arenaForgeSection')return document.getElementById('forgePanel')||document.getElementById('arenaForgeSection')||document.querySelector('.forge-section');
+    if(targetId==='arenaShopSection')return refs.shop;
+    if(targetId==='arenaActivitiesSection')return refs.acts;
+    if(targetId==='arenaProgressSection')return refs.prog;
+    if(targetId==='arenaRankingSection')return refs.rank;
     return document.getElementById(targetId);
   };
 
-  const scrollToTarget=(targetId)=>{
+  const go=(targetId)=>{
     const target=targetElement(targetId);
     if(!target)return false;
-    const top=target.getBoundingClientRect().top+window.scrollY-84;
-    window.scrollTo({top:Math.max(0,top),behavior:'smooth'});
+    target.scrollIntoView({behavior:'smooth',block:'start'});
     return true;
   };
 
@@ -43,23 +46,24 @@
     nav.querySelectorAll('button[data-target]').forEach(b=>b.classList.toggle('active',b===button));
   };
 
-  const bindNav=()=>{
-    const nav=document.getElementById('arenaSubnav');
-    if(!nav)return false;
+  const handleClick=(e)=>{
+    const btn=e.target.closest?.('#arenaSubnav button[data-target]');
+    if(!btn)return;
+    const nav=btn.closest('#arenaSubnav');
+    if(!nav)return;
+    const target=btn.dataset.target;
+    if(target==='arenaMap')return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    if(go(target))setActive(nav,btn);
+  };
+
+  const bind=()=>{
     ensureSectionIds();
-    if(nav.dataset.uiFixBound==='1')return true;
-    nav.dataset.uiFixBound='1';
-
-    nav.querySelectorAll('button[data-target]').forEach(btn=>{
-      btn.addEventListener('click',e=>{
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        const target=btn.dataset.target;
-        if(scrollToTarget(target))setActive(nav,btn);
-      },true);
-    });
-
-    setActive(nav,nav.querySelector('button[data-target="arenaCombatSection"]'));
+    if(document.documentElement.dataset.arenaNavFinalBound==='1')return true;
+    document.documentElement.dataset.arenaNavFinalBound='1';
+    document.addEventListener('click',handleClick,true);
     return true;
   };
 
@@ -67,14 +71,14 @@
     setHeaderLabel();
     ensureSectionIds();
     refreshSkill();
+    bind();
     let tries=0;
     const timer=setInterval(()=>{
       tries++;
       setHeaderLabel();
       ensureSectionIds();
-      bindNav();
-      refreshSkill();
-      if(tries>120||document.getElementById('arenaSubnav')?.dataset.uiFixBound==='1')clearInterval(timer);
+      bind();
+      if(tries>120)clearInterval(timer);
     },100);
   };
 
