@@ -1,6 +1,5 @@
 /* Arena UI fix — account header + clean section views. */
 
-/* Keep the account identity centered and the account tools on their own row. */
 .game-topbar{
   position:relative;
   display:grid!important;
@@ -9,80 +8,68 @@
   align-items:center!important;
   gap:8px 14px!important;
 }
-.game-topbar>div:first-child{
-  grid-column:2!important;
-  grid-row:1!important;
-  text-align:center!important;
-  min-width:0;
-}
-.game-topbar>div:first-child .eyebrow{
-  text-align:center!important;
-}
-#playerName{
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
+.game-topbar>div:first-child{grid-column:2!important;grid-row:1!important;text-align:center!important;min-width:0}
+.game-topbar>div:first-child .eyebrow{text-align:center!important}
+#playerName{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #saveNote,.save-note{display:none!important}
-
-/* Perfil / Conquistas / Ranking belong below the account name, not beside it. */
-.game-topbar .arena-account-tools{
-  grid-column:1 / -1!important;
-  grid-row:2!important;
-  justify-content:center!important;
-  margin-top:0!important;
-  width:100%;
-}
+.game-topbar .arena-account-tools{grid-column:1 / -1!important;grid-row:2!important;justify-content:center!important;margin-top:0!important;width:100%}
 .game-topbar .arena-account-tools button{margin:0!important}
 
-/* Combat is a clean combat view; the other systems remain available from their own tabs. */
 main.arena-view-combat .game-shell,
 main.arena-view-combat .adventure-panel,
 main.arena-view-combat .adventure-panel .section-head,
 main.arena-view-combat .adventure-panel .map,
-main.arena-view-combat .adventure-panel .battle-area{
-  display:block!important;
-}
-main.arena-view-combat .adventure-panel .map{
-  display:grid!important;
-}
+main.arena-view-combat .adventure-panel .battle-area{display:block!important}
+main.arena-view-combat .adventure-panel .map{display:grid!important}
+
 main.arena-view-combat .shop-section,
 main.arena-view-combat .activities,
 main.arena-view-combat .progress-section,
 main.arena-view-combat .arena-ranking,
-main.arena-view-combat #arenaForgeSection{
-  display:none!important;
-}
+main.arena-view-combat #arenaForgeSection,
+main.arena-view-combat #abyssalGardens{display:none!important}
 
 main.arena-view-shop .game-shell,
 main.arena-view-shop .activities,
 main.arena-view-shop .progress-section,
 main.arena-view-shop .arena-ranking,
-main.arena-view-shop #arenaForgeSection{display:none!important}
+main.arena-view-shop #arenaForgeSection,
+main.arena-view-shop #abyssalGardens{display:none!important}
 
 main.arena-view-daily .game-shell,
 main.arena-view-daily .shop-section,
 main.arena-view-daily .progress-section,
 main.arena-view-daily .arena-ranking,
-main.arena-view-daily #arenaForgeSection{display:none!important}
+main.arena-view-daily #arenaForgeSection,
+main.arena-view-daily #abyssalGardens{display:none!important}
 
 main.arena-view-progress .game-shell,
 main.arena-view-progress .shop-section,
 main.arena-view-progress .activities,
 main.arena-view-progress .arena-ranking,
-main.arena-view-progress #arenaForgeSection{display:none!important}
+main.arena-view-progress #arenaForgeSection,
+main.arena-view-progress #abyssalGardens{display:none!important}
 
 main.arena-view-ranking .game-shell,
 main.arena-view-ranking .shop-section,
 main.arena-view-ranking .activities,
 main.arena-view-ranking .progress-section,
-main.arena-view-ranking #arenaForgeSection{display:none!important}
+main.arena-view-ranking #arenaForgeSection,
+main.arena-view-ranking #abyssalGardens{display:none!important}
 
 main.arena-view-forge .game-shell,
 main.arena-view-forge .shop-section,
 main.arena-view-forge .activities,
 main.arena-view-forge .progress-section,
-main.arena-view-forge .arena-ranking{display:none!important}
+main.arena-view-forge .arena-ranking,
+main.arena-view-forge #abyssalGardens{display:none!important}
+
+main.arena-view-abyssal .game-shell,
+main.arena-view-abyssal .shop-section,
+main.arena-view-abyssal .activities,
+main.arena-view-abyssal .progress-section,
+main.arena-view-abyssal .arena-ranking,
+main.arena-view-abyssal #arenaForgeSection{display:none!important}
 
 @media(max-width:760px){
   .game-topbar{grid-template-columns:1fr!important;grid-template-rows:auto auto auto!important}
