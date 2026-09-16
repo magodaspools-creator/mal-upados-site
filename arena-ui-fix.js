@@ -1,4 +1,4 @@
-// UI-only Arena fixes: account header, clean combat view and skill-training visibility.
+// UI-only Arena fixes: account header, navigation and skill-training visibility.
 (()=>{
   if(window.__arenaUiFix)return;
   window.__arenaUiFix=true;
@@ -15,6 +15,12 @@
     main.classList.add(`arena-view-${view}`);
     const nav=document.getElementById('arenaSubnav');
     nav?.querySelectorAll('button[data-target]').forEach(b=>b.classList.toggle('active',b.dataset.target===activeTarget));
+
+    const id=activeTarget==='arenaForgeSection'?'forgePanel':activeTarget;
+    const target=document.getElementById(id);
+    if(target&&activeTarget!=='arenaCombatSection'){
+      requestAnimationFrame(()=>target.scrollIntoView({behavior:'smooth',block:'start'}));
+    }
   };
 
   const refreshSkill=()=>{
@@ -30,7 +36,11 @@
     nav.querySelectorAll('button[data-target]').forEach(btn=>{
       const target=btn.dataset.target;
       if(target==='arenaMap'||!views[target])return;
-      btn.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();applyView(views[target],target)},true);
+      btn.addEventListener('click',e=>{
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        applyView(views[target],target);
+      },true);
     });
     applyView('combat','arenaCombatSection');
     return true;
