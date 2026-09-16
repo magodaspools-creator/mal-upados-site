@@ -55,6 +55,9 @@
 
   window.arenaElementalState={ELEMENTS,ZONE_ELEMENTS,currentAmulet,resistanceFor,elementForZone,elementLabel};
 
+  // The canonical skill multiplier is applied by arena-skills.js during
+  // startBattle. This subsystem must only handle elemental damage so the
+  // skill is never multiplied twice on every normal attack.
   if(typeof startBattle==='function'){
     startBattle=function(zoneIndex,monsterIndex){
       const m=ZONES[zoneIndex].monsters[monsterIndex];
@@ -82,34 +85,10 @@
 
   if(typeof attack==='function'){
     attack=function(){
-      // O motor elemental substitui o attack() do core; portanto o lock do
-      // motor base precisa existir aqui também para impedir double-clicks.
       if(!battle||battle.busy)return;
       battle.busy=true;
 
-      let attackPower=Number(battle.attack)||0;
-      // Quando o módulo de Skill está presente, ele já escalou battle.attack
-      // antes deste wrapper. Nesse caso não multiplique novamente.
-      if(!window.__arenaSkillPowerFix&&!window.__arenaCritRolling&&typeof window.arenaSkillCurrent==='function'){
-        try{
-          const skill=window.arenaSkillCurrent();
-          const value=Math.max(10,Number(skill?.value)||10);
-          let mult=1;
-          if(value<=20)mult=1+(value-10)*0.03;
-          else if(value<=30)mult=1.3+(value-20)*0.04;
-          else if(value<=40)mult=1.7+(value-30)*0.05;
-          else if(value<=50)mult=2.2+(value-40)*0.06;
-          else if(value<=60)mult=2.8+(value-50)*0.07;
-          else if(value<=70)mult=3.5+(value-60)*0.08;
-          else if(value<=80)mult=4.3+(value-70)*0.09;
-          else if(value<=90)mult=5.2+(value-80)*0.10;
-          else mult=6.2+(value-90)*0.11;
-          const base=Number(battle.baseAttack)||attackPower;
-          attackPower=Math.max(1,Math.floor(base*mult));
-          battle.attack=attackPower;
-        }catch{}
-      }
-
+      const attackPower=Math.max(1,Number(battle.attack)||0);
       let dmg=Math.max(1,attackPower+Math.floor(Math.random()*12)-6);
       battle.hp=Math.max(0,battle.hp-dmg);
       game.damage+=dmg;
