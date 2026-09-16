@@ -1,7 +1,7 @@
-// Arena submenu controller: one owner for normal tabs; specialized modules keep Map and Forge.
+// Arena submenu controller: one owner for normal tabs; Map and Forge stay specialized.
 (()=>{
-  if(window.__arenaUiFixV4)return;
-  window.__arenaUiFixV4=true;
+  if(window.__arenaUiFixV5)return;
+  window.__arenaUiFixV5=true;
 
   const STYLE_ID='arenaRealTabsStyle';
 
@@ -47,6 +47,7 @@
     ];
     const targetPane=panes.find(([id])=>id===target);
     if(!targetPane||!targetPane[1])return false;
+
     style();
     panes.forEach(([id,el])=>{
       if(!el)return;
@@ -54,40 +55,33 @@
       el.classList.toggle('arena-tab-hidden',!active);
       el.classList.toggle('arena-tab-visible',active);
     });
+
     setActiveButton(target);
+
     if(target==='arenaShopSection'&&typeof window.shopRender==='function')window.shopRender();
     if(target==='arenaActivitiesSection'&&typeof window.renderArenaActivities==='function')window.renderArenaActivities();
     if(typeof window.arenaSkillRender==='function')window.arenaSkillRender();
     return true;
   }
 
-  function neutralizeLegacyHandlers(nav){
-    // arena-ui-polish used to attach scroll-based onclick handlers.
-    // The submenu is now a real view switcher, so remove those handlers once.
-    nav.querySelectorAll('button[data-target]').forEach(btn=>{
-      btn.onclick=null;
-    });
-  }
-
   function bindNav(){
     const nav=document.getElementById('arenaSubnav');
     if(!nav)return false;
-    if(nav.dataset.arenaTabsBound==='1')return true;
-    nav.dataset.arenaTabsBound='1';
-    neutralizeLegacyHandlers(nav);
+    if(nav.dataset.arenaTabsBound==='5')return true;
 
-    // arena-illustrated-map.js is loaded before this controller and owns Map.
-    // Forge keeps its existing specialized handler. Normal tabs belong here.
-    nav.addEventListener('click',event=>{
-      const btn=event.target.closest?.('button[data-target]');
-      if(!btn||btn.parentElement!==nav)return;
+    nav.querySelectorAll('button[data-target]').forEach(btn=>{
       const target=btn.dataset.target;
       if(target==='arenaMap'||target==='arenaForgeSection')return;
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      activate(target);
-    },true);
 
+      // Direct ownership. No document capture, no stopPropagation and no
+      // competing delegated handler. Map/Forge keep their specialized modules.
+      btn.onclick=(event)=>{
+        event.preventDefault();
+        activate(target);
+      };
+    });
+
+    nav.dataset.arenaTabsBound='5';
     return true;
   }
 
@@ -96,13 +90,13 @@
     style();
     ensureIds();
     activate('arenaCombatSection');
+
     let tries=0;
     const timer=setInterval(()=>{
       tries++;
       setHeaderLabel();
       ensureIds();
       const bound=bindNav();
-      if(bound)activate('arenaCombatSection');
       if(bound||tries>300)clearInterval(timer);
     },100);
   }
