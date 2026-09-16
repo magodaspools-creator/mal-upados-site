@@ -38,12 +38,10 @@
   const zones=[
     {name:'Floresta Sombria',meta:'Level 1+ · criaturas iniciais',min:1,x:25,y:20},
     {name:'Acampamento Orc',meta:'Level 10+ · caçada intermediária',min:10,x:37,y:47},
-    {name:'Deserto Perdido',meta:'Level 20+ · ruínas e escorpiões',min:52,y:25},
-    {name:'Covil dos Dragões',meta:'Level 35+ · dragões e fogo',min:71,x:25},
-    {name:'Abismo Demoníaco',meta:'Level 50+ · conteúdo extremo',min:88,x:31}
+    {name:'Deserto Perdido',meta:'Level 20+ · ruínas e escorpiões',min:20,x:52,y:25},
+    {name:'Covil dos Dragões',meta:'Level 35+ · dragões e fogo',min:35,x:71,y:25},
+    {name:'Abismo Demoníaco',meta:'Level 50+ · conteúdo extremo',min:50,x:88,y:31}
   ];
-  zones[2].x=52;
-  zones[3].y=25;
 
   const gameLevel=()=>Number(document.getElementById('arenaLevel')?.textContent||1);
   const currentZone=()=>Number(document.querySelector('.zone.selected')?.dataset.zone||0);
