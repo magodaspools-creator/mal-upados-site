@@ -3,6 +3,9 @@
   window.__arenaMapTabV1=true;
 
   const CSS=`
+    /* Mapa é uma aba real: enquanto ativa, o conteúdo de Combate some por completo. */
+    main.arena-view-map > *:not(.arena-map-tab-page){display:none!important}
+    main.arena-map-tab-active > *:not(.arena-map-tab-page){display:none!important}
     .arena-map-tab-page{margin-top:10px;border:1px solid #665333;background:#080b0d;box-shadow:0 20px 70px rgba(0,0,0,.45);padding:14px}
     .arena-map-tab-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:10px}
     .arena-map-tab-head h2{font-family:Cinzel,serif;color:#eadfca;margin:2px 0 4px;font-size:1.35rem}
@@ -82,7 +85,7 @@
   function closeMap(){
     const main=document.querySelector('main');
     if(!main)return;
-    main.classList.remove('arena-map-tab-active');
+    main.classList.remove('arena-map-tab-active','arena-view-map');
     main.querySelector('.arena-map-tab-page')?.remove();
     const combat=document.querySelector('#arenaSubnav button[data-target="arenaCombatSection"]');
     if(combat)combat.click();
@@ -91,7 +94,7 @@
   function render(){
     const main=document.querySelector('main');
     if(!main)return false;
-    main.classList.add('arena-map-tab-active');
+    main.classList.add('arena-map-tab-active','arena-view-map');
     main.querySelector('.arena-map-tab-page')?.remove();
     const level=gameLevel(),current=currentZone();
     const page=document.createElement('section');
@@ -125,7 +128,7 @@
   function activate(){
     const main=document.querySelector('main');
     if(!main)return false;
-    main.classList.add('arena-map-tab-active');
+    main.classList.add('arena-map-tab-active','arena-view-map');
     const btn=document.querySelector('#arenaSubnav button[data-target="arenaMap"]');
     if(btn)document.querySelectorAll('#arenaSubnav button[data-target]').forEach(b=>b.classList.toggle('active',b===btn));
     return render();
@@ -139,7 +142,7 @@
       activate();
       return;
     }
-    document.querySelector('main')?.classList.remove('arena-map-tab-active');
+    document.querySelector('main')?.classList.remove('arena-map-tab-active','arena-view-map');
     document.querySelector('main .arena-map-tab-page')?.remove();
   },true);
 
