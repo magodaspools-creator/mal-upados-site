@@ -65,7 +65,7 @@
   }
   function patch(){
     if(typeof startBattle==='function'&&!window.__arenaSkillBattlePatch){window.__arenaSkillBattlePatch=true;const old=startBattle;window.startBattle=function(...a){old(...a);if(battle){const x=ensure();battle.baseAttack=Number(battle.attack)||0;battle.attack=Math.floor(battle.baseAttack*skillMultiplier(x.value));}};}
-    if(typeof attack==='function'&&!window.__arenaSkillAttackPatch){window.__arenaSkillAttackPatch=true;const old=attack;window.attack=function(...a){if(!battle)return old(...a);const hp=battle.hp;const r=old(...a);if(hp>battle.hp)train(2);return r;};}
+    if(typeof attack==='function'&&!window.__arenaSkillAttackPatch){window.__arenaSkillAttackPatch=true;const old=attack;window.attack=function(...a){const activeBattle=(typeof battle!=='undefined')?battle:null;const hp=activeBattle?Number(activeBattle.hp):null;const r=old(...a);if(activeBattle&&hp!==null&&hp>Number(activeBattle.hp))train(2);return r;};}
   }
   window.arenaSkillBonus=bonus;
   window.arenaSkillMultiplier=skillMultiplier;
