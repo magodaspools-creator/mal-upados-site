@@ -46,7 +46,9 @@
     const updatePreview=()=>{const n=nameInput.value.trim()||'Novo personagem';document.getElementById('arenaCharPreviewName').textContent=n;document.getElementById('arenaCharPreviewMeta').textContent=`${GENDER[gender]} · ${vocation}`;document.getElementById('arenaCharPreviewAvatar').textContent=VOCATIONS[vocation].icon};
     modal.querySelectorAll('[data-gender]').forEach(b=>b.onclick=()=>{gender=b.dataset.gender;modal.querySelectorAll('[data-gender]').forEach(x=>x.classList.toggle('selected',x===b));updatePreview()});
     modal.querySelectorAll('[data-vocation]').forEach(b=>b.onclick=()=>{vocation=b.dataset.vocation;modal.querySelectorAll('[data-vocation]').forEach(x=>x.classList.toggle('selected',x===b));updatePreview()});
-    nameInput.addEventListener('input',updatePreview);document.getElementById('arenaCharCancel').onclick=close;document.getElementById('arenaCharCreate').onclick=()=>createCharacter(nameInput.value.trim(),gender,vocation,msg);
+    nameInput.addEventListener('input',updatePreview);
+    document.getElementById('arenaCharCancel').onclick=close;
+    document.getElementById('arenaCharCreate').onclick=()=>createCharacter(nameInput.value.trim(),gender,vocation,msg);
     modal.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();close()}if(e.key==='Enter'&&e.target===nameInput){e.preventDefault();document.getElementById('arenaCharCreate').click()}});
     setTimeout(()=>nameInput.focus(),30);
   }
@@ -55,42 +57,46 @@
     if(!supabaseReady()){msg.textContent='Conta ainda não está pronta. Tente novamente.';msg.className='arena-char-msg error';return}
     if(name.length<3||name.length>24){msg.textContent='O nome precisa ter entre 3 e 24 caracteres.';msg.className='arena-char-msg error';return}
     if(!/^[\p{L}_ -]+$/u.test(name)){msg.textContent='Use apenas letras, espaços, _ ou - no nome.';msg.className='arena-char-msg error';return}
-    const {data:{user}}=await window.malUpadosSupabase.auth.getUser();if(!user){msg.textContent='Faça login novamente para criar o personagem.';msg.className='arena-char-msg error';return}
-    const btn=document.getElementById('arenaCharCreate');btn.disabled=true;msg.textContent='Criando personagem...';msg.className='arena-char-msg';
-    const initial=baseState(name);initial.gender=gender;initial.vocation=vocation;
-    const {data,error}=await window.malUpadosSupabase.from('arena_characters').insert({user_id:user.id,name,gender,vocation,game_state:initial}).select().single();
-    if(error){msg.textContent=error.code==='23505'?'Esse nome de personagem já está em uso. Escolha outro.':error.message;msg.className='arena-char-msg error';btn.disabled=false;return}
-    if(typeof members!=='undefined'&&Array.isArray(members)){members.length=0;members.push({name:data.name,vocation:data.vocation,gender:data.gender,characterId:data.id})}
-    if(typeof loadGame==='function')loadGame(data.name);
-    if(typeof game!=='undefined'&&game){game.gender=gender;game.vocation=vocation;if(typeof persist==='function')persist()}
-    close();
-    if(typeof renderAll==='function')renderAll();
-    if(typeof showZone==='function')showZone(typeof game!=='undefined'?game.zone:0);
-    window.dispatchEvent(new CustomEvent('arena-character-created',{detail:{character:data}}));
-  }
 
-  async function syncCharacters(){
-    if(!supabaseReady())return;
-    const {data:{user}}=await window.malUpadosSupabase.auth.getUser();
-    if(!user)return;
-    const {data,error}=await window.malUpadosSupabase.from('arena_characters').select('id,name,gender,vocation,game_state').order('created_at',{ascending:true});
-    if(error){console.error('Arena characters:',error);return}
-    if(!data?.length){openCreate();return}
-    if(typeof members==='undefined'||!Array.isArray(members))return;
-    members.length=0;members.push(...data.map(c=>({name:c.name,vocation:c.vocation,gender:c.gender,characterId:c.id})));
-    let all={};try{all=JSON.parse(localStorage.getItem('malupados_arena_v1')||'{}')}catch{}
-    const current=game?.character&&data.some(c=>c.name===game.character)?game.character:data[0].name;
-    if(typeof loadGame==='function')loadGame(current);
-    const server=data.find(c=>c.name===current)?.game_state;
-    if(server&&typeof server==='object'&&server.level&&typeof game!=='undefined'){
-      const local=all[current];
-      if(!local||Number(local.level||1)<=Number(server.level||1)){game={...game,...server,character:current,gender:server.gender||data.find(c=>c.name===current)?.gender,vocation:server.vocation||data.find(c=>c.name===current)?.vocation};if(typeof persist==='function')persist()}
+    const btn=document.getElementById('arenaCharCreate');
+    if(!btn)return;
+    btn.disabled=true;msg.textContent='Verificando conta...';msg.className='arena-char-msg';
+    try{
+      const {data:{user}}=await window.malUpadosSupabase.auth.getUser();
+      if(!user)throw new Error('Faça login novamente para criar o personagem.');
+
+      const initial=baseState(name);initial.gender=gender;initial.vocation=vocation;
+      msg.textContent='Criando personagem...';
+      const {data,error}=await window.malUpadosSupabase.from('arena_characters').insert({user_id:user.id,name,gender,vocation,game_state:initial}).select('id,name,gender,vocation,game_state').single();
+      if(error)throw error;
+      if(!data?.id||!data?.name)throw new Error('O personagem foi criado, mas o servidor não retornou os dados esperados. Atualize a página para sincronizar.');
+
+      if(typeof members!=='undefined'&&Array.isArray(members)){
+        members.length=0;
+        members.push({name:data.name,vocation:data.vocation,gender:data.gender,characterId:data.id});
+      }
+      if(typeof loadGame==='function')loadGame(data.name);
+      if(typeof game!=='undefined'&&game){game.gender=gender;game.vocation=vocation;if(typeof persist==='function')persist()}
+      close();
+      if(typeof renderAll==='function')renderAll();
+      if(typeof showZone==='function')showZone(typeof game!=='undefined'?game.zone:0);
+      window.dispatchEvent(new CustomEvent('arena-character-created',{detail:{character:data}}));
+    }catch(error){
+      console.error('Arena character creation:',error);
+      const code=error?.code||'';
+      msg.textContent=code==='23505'?'Esse nome de personagem já está em uso. Escolha outro.':(error?.message||'Não foi possível criar o personagem. Tente novamente.');
+      msg.className='arena-char-msg error';
+      btn.disabled=false;
     }
-    if(typeof window.__arenaCharacterDraw==='function')window.__arenaCharacterDraw();
-    if(typeof renderAll==='function')renderAll();
   }
 
-  async function init(){style();for(let i=0;i<80&&!supabaseReady();i++)await new Promise(r=>setTimeout(r,250));if(!supabaseReady())return;const {data:{user}}=await window.malUpadosSupabase.auth.getUser();if(user)syncCharacters();window.malUpadosSupabase.auth.onAuthStateChange((event)=>{if(event==='SIGNED_IN')setTimeout(syncCharacters,250);if(event==='SIGNED_OUT')close()})}
+  async function init(){
+    style();
+    // A sincronização oficial de personagens fica no arena-character-sync-fix.js.
+    // Este módulo não registra um segundo listener de autenticação nem faz uma
+    // segunda consulta, evitando corrida ao abrir a Arena/criar personagem.
+  }
+
   window.arenaOpenCharacterCreator=openCreate;
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
