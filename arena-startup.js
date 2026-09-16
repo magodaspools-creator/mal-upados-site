@@ -30,7 +30,7 @@
       'arena-campaign-timer-fix.js?v=timer-fix-20260912c',
       'arena-bestiary-platinum-popup.js?v=platinum-popup-20260912a',
       'arena-combat-final-fix.js?v=combat-fix-20260912',
-      'arena-flee-fix.js?v=flee-fix-20260912',
+      'arena-flee-fix.js?v=flee-fix-20260915b',
       'arena-gold-universal.js?v=gold-universal-20260912',
       'arena-account-systems.js?v=account-systems-20260912a',
       'arena-profile-advanced.js?v=profile-advanced-20260912b',
