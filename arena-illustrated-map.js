@@ -11,7 +11,7 @@
     .arena-world-close{border:1px solid #383c3f;background:#111417;color:#b8bec2;padding:8px 12px;cursor:pointer}
     .arena-world-close:hover{border-color:#c29b52;color:#e3c77f}
     .arena-world-art{position:relative;isolation:isolate;overflow:hidden;border:1px solid #4a3d28;background:#050708;box-shadow:inset 0 0 60px rgba(0,0,0,.55)}
-    .arena-world-art img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}
+    .arena-world-art img{display:block;width:100%;height:auto;aspect-ratio:auto;object-fit:contain}
     .arena-map-loading{position:absolute;inset:0;display:grid;place-items:center;color:#c7b17c;background:rgba(5,7,8,.9);font-size:.7rem;letter-spacing:.08em}
     .arena-map-hotspot{position:absolute;z-index:4;transform:translate(-50%,-50%);width:13%;height:18%;min-width:90px;border:1px solid transparent;border-radius:10px;background:rgba(0,0,0,0);color:transparent;cursor:pointer;transition:.18s;outline:none}
     .arena-map-hotspot:hover{background:rgba(232,193,105,.10);border-color:rgba(232,193,105,.72);box-shadow:0 0 30px rgba(232,193,105,.24),inset 0 0 25px rgba(232,193,105,.08)}
@@ -49,14 +49,17 @@
 
   async function loadMapImage(img,loading){
     try{
-      const r=await fetch('/assets/arena-map/map-final.b64?v=map-final-20260916');
+      const url='https://raw.githubusercontent.com/magodaspools-creator/mal-upados-site/main/assets/arena-map/map-final.b64?v=map-final-20260916b';
+      const r=await fetch(url,{cache:'no-store'});
       if(!r.ok)throw new Error('map-final.b64 '+r.status);
       const b64=(await r.text()).trim();
+      if(!b64.startsWith('/9j/'))throw new Error('asset não é JPEG em base64');
       const raw=atob(b64),bytes=new Uint8Array(raw.length);
       for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
-      const url=URL.createObjectURL(new Blob([bytes],{type:'image/jpeg'}));
-      img.onload=()=>{loading?.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)};
-      img.src=url;
+      const blobUrl=URL.createObjectURL(new Blob([bytes],{type:'image/jpeg'}));
+      img.onload=()=>{loading?.remove();setTimeout(()=>URL.revokeObjectURL(blobUrl),1000)};
+      img.onerror=()=>{URL.revokeObjectURL(blobUrl);throw new Error('imagem JPEG inválida')};
+      img.src=blobUrl;
     }catch(err){console.error('[Arena Map] Falha ao carregar mapa final:',err);loading.textContent='MAPA INDISPONÍVEL';}
   }
 
