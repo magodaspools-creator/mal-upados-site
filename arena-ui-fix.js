@@ -1,7 +1,7 @@
-// Arena UI navigation: the submenu is a real view switcher, not page scrolling.
+// Arena UI navigation: real view switcher for normal tabs. Map/Forge keep their own handlers.
 (()=>{
-  if(window.__arenaUiFixV2)return;
-  window.__arenaUiFixV2=true;
+  if(window.__arenaUiFixV3)return;
+  window.__arenaUiFixV3=true;
 
   const STYLE_ID='arenaRealTabsStyle';
 
@@ -33,9 +33,7 @@
   }
 
   function setActiveButton(target){
-    document.querySelectorAll('#arenaSubnav button[data-target]').forEach(btn=>{
-      btn.classList.toggle('active',btn.dataset.target===target);
-    });
+    document.querySelectorAll('#arenaSubnav button[data-target]').forEach(btn=>btn.classList.toggle('active',btn.dataset.target===target));
   }
 
   function activate(target){
@@ -49,7 +47,6 @@
     ];
     const targetPane=panes.find(([id])=>id===target);
     if(!targetPane||!targetPane[1])return false;
-
     style();
     panes.forEach(([id,el])=>{
       if(!el)return;
@@ -58,25 +55,10 @@
       el.classList.toggle('arena-tab-visible',active);
     });
     setActiveButton(target);
-
     if(target==='arenaShopSection'&&typeof window.shopRender==='function')window.shopRender();
     if(target==='arenaActivitiesSection'&&typeof window.renderArenaActivities==='function')window.renderArenaActivities();
     if(typeof window.arenaSkillRender==='function')window.arenaSkillRender();
     return true;
-  }
-
-  function openSpecial(target){
-    if(target==='arenaMap'){
-      const btn=document.getElementById('p4ScrollMap');
-      if(btn){btn.click();setActiveButton(target);return true;}
-      return false;
-    }
-    if(target==='arenaForgeSection'){
-      const btn=document.getElementById('p4ForgeBtn')||document.getElementById('p4ForgeBtn2');
-      if(btn){btn.click();setActiveButton(target);return true;}
-      return false;
-    }
-    return activate(target);
   }
 
   function bindDelegatedNav(){
@@ -85,9 +67,13 @@
     document.addEventListener('click',(event)=>{
       const btn=event.target.closest?.('#arenaSubnav button[data-target]');
       if(!btn)return;
+      const target=btn.dataset.target;
+      // Map and Forge have dedicated modules with their own capture handlers.
+      // Do not cancel these events here or they become unreachable.
+      if(target==='arenaMap'||target==='arenaForgeSection')return;
       event.preventDefault();
       event.stopImmediatePropagation();
-      openSpecial(btn.dataset.target);
+      activate(target);
     },true);
   }
 
@@ -96,17 +82,14 @@
     style();
     bindDelegatedNav();
     ensureIds();
-    // Start in Combat, but do not scroll the document.
     activate('arenaCombatSection');
-
     let tries=0;
     const timer=setInterval(()=>{
       tries++;
       setHeaderLabel();
       ensureIds();
-      const nav=document.getElementById('arenaSubnav');
-      if(nav)activate('arenaCombatSection');
-      if(nav||tries>150)clearInterval(timer);
+      if(document.getElementById('arenaSubnav'))activate('arenaCombatSection');
+      if(document.getElementById('arenaSubnav')||tries>150)clearInterval(timer);
     },100);
   }
 
