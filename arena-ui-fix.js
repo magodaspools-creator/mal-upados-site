@@ -90,7 +90,13 @@
   }
 
   function closeOverlays(){
-    const ids=['arenaWorldModal','arenaMapModal','arenaForgeModal','arenaCharacterCreateModal','arenaAccountModal'];
+    const characterModal=document.getElementById('arenaCharacterCreateModal');
+    if(characterModal){
+      if(typeof window.arenaCloseCharacterCreator==='function')return window.arenaCloseCharacterCreator();
+      characterModal.remove();
+      return true;
+    }
+    const ids=['arenaWorldModal','arenaMapModal','arenaForgeModal','arenaAccountModal'];
     for(const id of ids){
       const el=document.getElementById(id);
       if(el){el.remove();return true;}
@@ -109,7 +115,7 @@
     close.textContent='✕ FECHAR';
     box.style.position='relative';
     close.style.cssText='position:absolute;right:18px;top:18px;z-index:2;margin:0;';
-    close.onclick=e=>{e.preventDefault();e.stopPropagation();modal.remove()};
+    close.onclick=e=>{e.preventDefault();e.stopPropagation();if(typeof window.arenaCloseCharacterCreator==='function')window.arenaCloseCharacterCreator();else modal.remove()};
     box.insertBefore(close,box.firstChild);
   }
 
