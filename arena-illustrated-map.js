@@ -11,7 +11,8 @@
     .arena-world-close{border:1px solid #383c3f;background:#111417;color:#b8bec2;padding:8px 12px;cursor:pointer}
     .arena-world-close:hover{border-color:#c29b52;color:#e3c77f}
     .arena-world-art{position:relative;isolation:isolate;overflow:hidden;border:1px solid #4a3d28;background:#050708;box-shadow:inset 0 0 60px rgba(0,0,0,.55)}
-    .arena-world-art img{display:block;width:100%;height:auto;aspect-ratio:500/213;object-fit:cover}
+    .arena-world-art img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}
+    .arena-map-loading{position:absolute;inset:0;display:grid;place-items:center;color:#c7b17c;background:rgba(5,7,8,.9);font-size:.7rem;letter-spacing:.08em}
     .arena-map-hotspot{position:absolute;z-index:4;transform:translate(-50%,-50%);width:13%;height:18%;min-width:90px;border:1px solid transparent;border-radius:10px;background:rgba(0,0,0,0);color:transparent;cursor:pointer;transition:.18s;outline:none}
     .arena-map-hotspot:hover{background:rgba(232,193,105,.10);border-color:rgba(232,193,105,.72);box-shadow:0 0 30px rgba(232,193,105,.24),inset 0 0 25px rgba(232,193,105,.08)}
     .arena-map-hotspot.current{background:rgba(49,137,255,.08);border-color:rgba(65,155,255,.85);box-shadow:0 0 28px rgba(65,155,255,.28),inset 0 0 22px rgba(65,155,255,.08)}
@@ -29,7 +30,6 @@
     .arena-world-info strong{display:block;color:#dfceaa;font-size:.68rem}
     .arena-world-info span{display:block;margin-top:3px;color:#7f878d;font-size:.55rem}
     .arena-world-go{border:1px solid #69552d;background:#211b11;color:#d6b56b;padding:9px 13px;cursor:pointer;font-size:.55rem;font-weight:700;white-space:nowrap}
-    .arena-world-go:hover:not(:disabled){border-color:#c79c50;background:#2b2213;color:#f0d28b}
     .arena-world-go:disabled{opacity:.35;cursor:not-allowed}
     @media(max-width:760px){.arena-world-modal{padding:5px}.arena-world-box{padding:8px}.arena-world-head h2{font-size:1rem}.arena-world-head p{font-size:.54rem}.arena-map-hotspot{min-width:54px;width:16%;height:20%}.arena-map-tooltip{display:none}.arena-world-hotspots{grid-template-columns:1fr 1fr}.arena-world-info{align-items:flex-start;flex-direction:column}.arena-world-go{width:100%}}
   `;
@@ -46,6 +46,18 @@
   const gameLevel=()=>Number(document.getElementById('arenaLevel')?.textContent||1);
   const currentZone=()=>Number(document.querySelector('.zone.selected')?.dataset.zone||0);
 
+  async function loadMapImage(img,loading){
+    try{
+      const parts=await Promise.all([1,2,3,4].map(n=>fetch('/assets/arena-map/'+String(n).padStart(2,'0')+'.txt').then(r=>{if(!r.ok)throw new Error('asset '+n);return r.text()})));
+      const b64=parts.join('');
+      const raw=atob(b64),bytes=new Uint8Array(raw.length);
+      for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
+      const url=URL.createObjectURL(new Blob([bytes],{type:'image/jpeg'}));
+      img.onload=()=>{loading?.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+      img.src=url;
+    }catch(err){console.error('[Arena Map] Falha ao carregar mapa:',err);loading.textContent='MAPA INDISPONÍVEL';}
+  }
+
   function open(){
     if(document.getElementById('arenaWorldModal'))return;
     const level=gameLevel(),current=currentZone();
@@ -53,14 +65,14 @@
     modal.id='arenaWorldModal';modal.className='arena-world-modal';
     modal.innerHTML=`<div class="arena-world-box">
       <div class="arena-world-head"><div><div class="eyebrow">MUNDO DA ARENA</div><h2>As Terras dos Mal Upados</h2><p>Explore o mapa e clique diretamente nas regiões para selecioná-las.</p></div><button class="arena-world-close" type="button">Fechar</button></div>
-      <div class="arena-world-art">
-        <img src="arena-world-map.jpg?v=map-final-20260916" alt="Mapa ilustrado das Terras dos Mal Upados">
+      <div class="arena-world-art"><img id="arenaWorldMapImage" src="arena-map.svg?v=map-fallback-20260916" alt="Mapa ilustrado do mundo da Arena"><div class="arena-map-loading">CARREGANDO MAPA...</div>
         ${zones.map((z,i)=>{const locked=level<z.min;return `<button type="button" aria-label="${z.name} — Level ${z.min}+" class="arena-map-hotspot ${i===current?'current ':''}${locked?'locked':''}" data-zone="${i}" style="left:${z.x}%;top:${z.y}%" ${locked?'disabled':''}></button><div class="arena-map-tooltip" style="left:${z.x}%;top:${Math.min(z.y+11,90)}%">${z.name}<small>${locked?'🔒 Level '+z.min+' necessário':'Level '+z.min+'+'}</small></div>`}).join('')}
       </div>
       <div class="arena-world-hotspots">${zones.map((z,i)=>{const locked=level<z.min;return `<button type="button" class="arena-world-hotspot ${i===current?'current ':''}${locked?'locked':''}" data-zone="${i}" ${locked?'disabled':''}><strong>${z.name}</strong><span>${locked?'🔒 Level '+z.min+' necessário':z.meta}</span></button>`}).join('')}</div>
       <div class="arena-world-info"><div><strong id="arenaWorldInfoTitle">${zones[current].name}</strong><span id="arenaWorldInfoMeta">${zones[current].meta} · Level mínimo ${zones[current].min}</span></div><button type="button" class="arena-world-go" id="arenaWorldGo">IR PARA ESTA ÁREA</button></div>
     </div>`;
     document.body.appendChild(modal);
+    loadMapImage(modal.querySelector('#arenaWorldMapImage'),modal.querySelector('.arena-map-loading'));
 
     let selected=current;
     const select=i=>{
