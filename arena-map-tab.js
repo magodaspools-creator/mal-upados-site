@@ -3,8 +3,6 @@
   window.__arenaMapTabV1=true;
 
   const CSS=`
-    main.arena-map-tab-active > *:not(.arena-map-tab-page){display:none!important}
-    main.arena-map-tab-active > .arena-map-tab-page{display:block!important}
     .arena-map-tab-page{margin-top:10px;border:1px solid #665333;background:#080b0d;box-shadow:0 20px 70px rgba(0,0,0,.45);padding:14px}
     .arena-map-tab-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:10px}
     .arena-map-tab-head h2{font-family:Cinzel,serif;color:#eadfca;margin:2px 0 4px;font-size:1.35rem}
@@ -48,8 +46,6 @@
   async function loadMapImage(img,loading){
     const RAW='https://raw.githubusercontent.com/magodaspools-creator/mal-upados-site/main/assets/arena-map/';
     try{
-      // A fonte original do mapa foi dividida em 4 partes para o repositório.
-      // Juntamos as partes na ordem original antes de decodificar o JPEG.
       const parts=await Promise.all(['01','02','03','04'].map(async part=>{
         const r=await fetch(`${RAW}${part}.txt?v=map-source-20260916a`,{cache:'no-store'});
         if(!r.ok)throw new Error(`arena-map/${part}.txt ${r.status}`);
@@ -65,7 +61,6 @@
       img.src=blobUrl;
     }catch(err){
       console.error('[Arena Map Tab] Falha ao carregar fonte original do mapa:',err);
-      // Fallback para o asset antigo, sem esconder o mapa se uma das partes falhar.
       try{
         const r=await fetch(`${RAW}map-final.b64?v=map-final-fallback-20260916a`,{cache:'no-store'});
         if(!r.ok)throw new Error(`map-final.b64 ${r.status}`);
