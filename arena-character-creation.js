@@ -20,7 +20,14 @@
     document.head.appendChild(s);
   }
 
-  function close(){if(creating)return;modal?.remove();modal=null}
+  function close(){
+    if(creating)return false;
+    const current=modal||document.getElementById('arenaCharacterCreateModal');
+    if(current)current.remove();
+    modal=null;
+    return true;
+  }
+
   function openCreate(){
     if(modal||creating)return;
     style();
@@ -60,7 +67,7 @@
       if(typeof members!=='undefined'&&Array.isArray(members)){members.length=0;members.push({name:data.name,vocation:data.vocation,gender:data.gender,characterId:data.id})}
       if(typeof loadGame==='function')loadGame(data.name);
       if(typeof game!=='undefined'&&game){game.gender=gender;game.vocation=vocation;if(typeof persist==='function')persist()}
-      creating=false;modal?.remove();modal=null;
+      creating=false;close();
       if(typeof renderAll==='function')renderAll();
       if(typeof showZone==='function')showZone(typeof game!=='undefined'?game.zone:0);
       window.dispatchEvent(new CustomEvent('arena-character-created',{detail:{character:data}}));
@@ -76,5 +83,6 @@
 
   async function init(){style()}
   window.arenaOpenCharacterCreator=openCreate;
+  window.arenaCloseCharacterCreator=close;
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
