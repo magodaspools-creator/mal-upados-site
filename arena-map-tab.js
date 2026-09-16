@@ -46,19 +46,42 @@
   const currentZone=()=>Number(document.querySelector('.zone.selected')?.dataset.zone||0);
 
   async function loadMapImage(img,loading){
+    const RAW='https://raw.githubusercontent.com/magodaspools-creator/mal-upados-site/main/assets/arena-map/';
     try{
-      const url='https://raw.githubusercontent.com/magodaspools-creator/mal-upados-site/main/assets/arena-map/map-final.b64?v=map-final-20260916b';
-      const r=await fetch(url,{cache:'no-store'});
-      if(!r.ok)throw new Error('map-final.b64 '+r.status);
-      const b64=(await r.text()).trim();
-      if(!b64.startsWith('/9j/'))throw new Error('asset não é JPEG em base64');
+      // A fonte original do mapa foi dividida em 4 partes para o repositório.
+      // Juntamos as partes na ordem original antes de decodificar o JPEG.
+      const parts=await Promise.all(['01','02','03','04'].map(async part=>{
+        const r=await fetch(`${RAW}${part}.txt?v=map-source-20260916a`,{cache:'no-store'});
+        if(!r.ok)throw new Error(`arena-map/${part}.txt ${r.status}`);
+        return (await r.text()).replace(/\s+/g,'');
+      }));
+      const b64=parts.join('');
+      if(!b64.startsWith('/9j/'))throw new Error('fonte original não é JPEG em base64');
       const raw=atob(b64),bytes=new Uint8Array(raw.length);
       for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
       const blobUrl=URL.createObjectURL(new Blob([bytes],{type:'image/jpeg'}));
       img.onload=()=>{loading?.remove();setTimeout(()=>URL.revokeObjectURL(blobUrl),1000)};
-      img.onerror=()=>{URL.revokeObjectURL(blobUrl);loading.textContent='MAPA INDISPONÍVEL'};
+      img.onerror=()=>{URL.revokeObjectURL(blobUrl);throw new Error('JPEG do mapa original inválido')};
       img.src=blobUrl;
-    }catch(err){console.error('[Arena Map Tab] Falha ao carregar mapa:',err);loading.textContent='MAPA INDISPONÍVEL';}
+    }catch(err){
+      console.error('[Arena Map Tab] Falha ao carregar fonte original do mapa:',err);
+      // Fallback para o asset antigo, sem esconder o mapa se uma das partes falhar.
+      try{
+        const r=await fetch(`${RAW}map-final.b64?v=map-final-fallback-20260916a`,{cache:'no-store'});
+        if(!r.ok)throw new Error(`map-final.b64 ${r.status}`);
+        const b64=(await r.text()).trim();
+        if(!b64.startsWith('/9j/'))throw new Error('fallback não é JPEG em base64');
+        const raw=atob(b64),bytes=new Uint8Array(raw.length);
+        for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
+        const blobUrl=URL.createObjectURL(new Blob([bytes],{type:'image/jpeg'}));
+        img.onload=()=>{loading?.remove();setTimeout(()=>URL.revokeObjectURL(blobUrl),1000)};
+        img.onerror=()=>{URL.revokeObjectURL(blobUrl);loading.textContent='MAPA INDISPONÍVEL'};
+        img.src=blobUrl;
+      }catch(fallbackErr){
+        console.error('[Arena Map Tab] Fallback também falhou:',fallbackErr);
+        loading.textContent='MAPA INDISPONÍVEL';
+      }
+    }
   }
 
   function closeMap(){
