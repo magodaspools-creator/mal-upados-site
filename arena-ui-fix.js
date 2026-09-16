@@ -1,7 +1,7 @@
 // Arena submenu controller: one owner for normal tabs; Map stays specialized and Forge/Abyssal are tabs.
 (()=>{
-  if(window.__arenaUiFixV8)return;
-  window.__arenaUiFixV8=true;
+  if(window.__arenaUiFixV9)return;
+  window.__arenaUiFixV9=true;
 
   const VIEW_CLASSES=[
     'arena-view-combat','arena-view-shop','arena-view-daily',
@@ -89,24 +89,93 @@
     return true;
   }
 
+  function closeOverlays(){
+    const ids=['arenaWorldModal','arenaMapModal','arenaForgeModal','arenaCharacterCreateModal','arenaAccountModal'];
+    for(const id of ids){
+      const el=document.getElementById(id);
+      if(el){el.remove();return true;}
+    }
+    return false;
+  }
+
+  function ensureCharacterCloseButton(){
+    const modal=document.getElementById('arenaCharacterCreateModal');
+    const box=modal?.querySelector('.arena-char-window');
+    if(!box||box.querySelector('#arenaCharClose'))return;
+    const close=document.createElement('button');
+    close.type='button';
+    close.id='arenaCharClose';
+    close.className='arena-char-btn';
+    close.textContent='✕ FECHAR';
+    box.style.position='relative';
+    close.style.cssText='position:absolute;right:18px;top:18px;z-index:2;margin:0;';
+    close.onclick=e=>{e.preventDefault();e.stopPropagation();modal.remove()};
+    box.insertBefore(close,box.firstChild);
+  }
+
+  function prepareAccountV2(target){
+    const body=document.getElementById('arenaAccountBody');
+    if(!body)return;
+    body.classList.add('arena-account-v2-pending');
+    setTimeout(()=>{
+      try{
+        if(target==='achievements'&&typeof window.arenaAchievementsV2?.render==='function'){
+          window.arenaAchievementsV2.render();
+        }
+        if(target==='ranking'&&typeof window.arenaRankingV2?.render==='function'){
+          Promise.resolve(window.arenaRankingV2.render()).catch(()=>{});
+        }
+      }catch(e){}
+      setTimeout(()=>body.classList.remove('arena-account-v2-pending','rank-v2-pending'),250);
+      setTimeout(()=>body.classList.remove('arena-account-v2-pending','rank-v2-pending'),8000);
+    },0);
+  }
+
+  function installModalSafety(){
+    if(window.__arenaUiModalSafety)return;
+    window.__arenaUiModalSafety=true;
+    const style=document.createElement('style');
+    style.id='arenaUiModalSafetyStyle';
+    style.textContent='.arena-account-v2-pending{visibility:hidden!important}.arena-char-window{position:relative}.arena-char-window>#arenaCharClose{position:absolute!important;right:18px!important;top:18px!important;margin:0!important}';
+    document.head.appendChild(style);
+    document.addEventListener('keydown',event=>{
+      if(event.key!=='Escape')return;
+      if(closeOverlays()){
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    },true);
+    const observer=new MutationObserver(()=>ensureCharacterCloseButton());
+    if(document.body)observer.observe(document.body,{childList:true,subtree:true});
+    ensureCharacterCloseButton();
+  }
+
   function bind(){
     if(window.__arenaUiFixNavCapture)return;
     window.__arenaUiFixNavCapture=true;
     document.addEventListener('click',event=>{
       const btn=event.target.closest?.('#arenaSubnav button[data-target]');
-      if(!btn)return;
-      const target=btn.dataset.target;
-      if(target==='arenaMap')return;
-      if(!CLASS_MAP[target])return;
-      event.preventDefault();
-      event.stopPropagation();
-      event.stopImmediatePropagation();
-      activate(target);
+      if(btn){
+        const target=btn.dataset.target;
+        if(target!=='arenaMap'&&CLASS_MAP[target]){
+          event.preventDefault();
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          activate(target);
+          return;
+        }
+      }
+      const accountBtn=event.target.closest?.('#arenaAccountTools button[data-account],[data-tab="achievements"],[data-tab="ranking"]');
+      if(accountBtn){
+        const target=accountBtn.dataset.account||accountBtn.dataset.tab;
+        if(target==='achievements'||target==='ranking')prepareAccountV2(target);
+      }
     },true);
   }
 
   function init(){
     ensureIds();
+    installModalSafety();
     bind();
     ensureAbyssalButton();
     activate('arenaCombatSection');
