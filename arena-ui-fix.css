@@ -71,6 +71,9 @@ main.arena-view-abyssal .progress-section,
 main.arena-view-abyssal .arena-ranking,
 main.arena-view-abyssal #arenaForgeSection{display:none!important}
 
+/* O módulo real da Forja é injetado como .forge-section pelo arena-forge-v2.js. */
+main.arena-view-map .forge-section{display:none!important}
+
 @media(max-width:760px){
   .game-topbar{grid-template-columns:1fr!important;grid-template-rows:auto auto auto!important}
   .game-topbar>div:first-child{grid-column:1!important;grid-row:1!important}
