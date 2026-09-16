@@ -1,14 +1,9 @@
 // Arena submenu controller: one owner for normal tabs; Map and Forge stay specialized.
 (()=>{
-  if(window.__arenaUiFixV5)return;
-  window.__arenaUiFixV5=true;
+  if(window.__arenaUiFixV6)return;
+  window.__arenaUiFixV6=true;
 
-  const STYLE_ID='arenaRealTabsStyle';
-
-  function setHeaderLabel(){
-    const eyebrow=document.querySelector('.game-topbar>div:first-child .eyebrow');
-    if(eyebrow)eyebrow.textContent='Sua conta';
-  }
+  const VIEW_CLASSES=['arena-view-combat','arena-view-shop','arena-view-daily','arena-view-progress','arena-view-ranking'];
 
   function ensureIds(){
     const shell=document.querySelector('.game-shell');
@@ -24,70 +19,71 @@
     return {shell,shop,acts,prog,rank};
   }
 
-  function style(){
-    if(document.getElementById(STYLE_ID))return;
-    const s=document.createElement('style');
-    s.id=STYLE_ID;
-    s.textContent='.arena-tab-hidden{display:none!important}.arena-tab-visible{display:block!important}';
-    document.head.appendChild(s);
+  function setHeaderLabel(){
+    const eyebrow=document.querySelector('.game-topbar>div:first-child .eyebrow');
+    if(eyebrow)eyebrow.textContent='Sua conta';
   }
 
   function setActiveButton(target){
-    document.querySelectorAll('#arenaSubnav button[data-target]').forEach(btn=>btn.classList.toggle('active',btn.dataset.target===target));
+    document.querySelectorAll('#arenaSubnav button[data-target]').forEach(btn=>{
+      btn.classList.toggle('active',btn.dataset.target===target);
+    });
   }
 
-  function activate(target){
-    const s=ensureIds();
-    const panes=[
-      ['arenaCombatSection',s.shell],
-      ['arenaShopSection',s.shop],
-      ['arenaActivitiesSection',s.acts],
-      ['arenaProgressSection',s.prog],
-      ['arenaRankingSection',s.rank]
-    ];
-    const targetPane=panes.find(([id])=>id===target);
-    if(!targetPane||!targetPane[1])return false;
+  function setView(target){
+    const main=document.querySelector('main.arena-view-combat, main.arena-view-shop, main.arena-view-daily, main.arena-view-progress, main.arena-view-ranking');
+    if(!main)return false;
 
-    style();
-    panes.forEach(([id,el])=>{
-      if(!el)return;
-      const active=id===target;
-      el.classList.toggle('arena-tab-hidden',!active);
-      el.classList.toggle('arena-tab-visible',active);
-    });
+    const classMap={
+      arenaCombatSection:'arena-view-combat',
+      arenaShopSection:'arena-view-shop',
+      arenaActivitiesSection:'arena-view-daily',
+      arenaProgressSection:'arena-view-progress',
+      arenaRankingSection:'arena-view-ranking'
+    };
+    const next=classMap[target];
+    if(!next)return false;
 
+    main.classList.remove(...VIEW_CLASSES);
+    main.classList.add(next);
     setActiveButton(target);
+    main.dataset.arenaView=next;
+    return true;
+  }
 
+  function refreshTarget(target){
     if(target==='arenaShopSection'&&typeof window.shopRender==='function')window.shopRender();
     if(target==='arenaActivitiesSection'&&typeof window.renderArenaActivities==='function')window.renderArenaActivities();
     if(typeof window.arenaSkillRender==='function')window.arenaSkillRender();
+  }
+
+  function activate(target){
+    ensureIds();
+    if(!setView(target))return false;
+    refreshTarget(target);
     return true;
   }
 
   function bindNav(){
     const nav=document.getElementById('arenaSubnav');
     if(!nav)return false;
-    if(nav.dataset.arenaTabsBound==='5')return true;
+    if(nav.dataset.arenaTabsBound==='6')return true;
 
     nav.querySelectorAll('button[data-target]').forEach(btn=>{
       const target=btn.dataset.target;
       if(target==='arenaMap'||target==='arenaForgeSection')return;
-
-      // Direct ownership. No document capture, no stopPropagation and no
-      // competing delegated handler. Map/Forge keep their specialized modules.
       btn.onclick=(event)=>{
         event.preventDefault();
         activate(target);
       };
     });
 
-    nav.dataset.arenaTabsBound='5';
+    nav.dataset.arenaTabsBound='6';
     return true;
   }
 
   function init(){
     setHeaderLabel();
-    style();
     ensureIds();
     activate('arenaCombatSection');
 
