@@ -1,5 +1,6 @@
 /* Arena Map Visual V2
- * Mantém a lógica de zonas/combate existente e troca somente a apresentação do mapa.
+ * Mapa ilustrado fica exclusivamente na aba MAPA.
+ * A lógica existente de zonas/combate permanece intacta.
  */
 (()=>{
   const RAW='https://raw.githubusercontent.com/magodaspools-creator/mal-upados-site/main/assets/arena-map/';
@@ -12,11 +13,23 @@
     {left:89,top:30,preview:'91% 29%',label:'Abismo Demoníaco'}
   ];
   const NAV=[
-    ['⚔','MAPA',null],['⚒','FORGE','.forge-card'],['☠','DUNGEON','#arenaGameMode'],['♟','CRIAÇÃO','.character-panel'],
-    ['⚔','COMBATE','#battleArea'],['📖','BESTIÁRIO','.bestiary'],['▣','LOJA','.shop-section'],['●','CONTA','.character-panel']
+    ['⚔','MAPA','map'],['⚒','FORGE','.forge-card'],['☠','DUNGEON','#arenaGameMode'],['♟','CRIAÇÃO','.character-panel'],
+    ['⚔','COMBATE','combat'],['📖','BESTIÁRIO','.bestiary'],['▣','LOJA','.shop-section'],['●','CONTA','.character-panel']
   ];
 
   function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+  function setView(view){
+    const map=document.getElementById('map');
+    const details=document.getElementById('arenaMapDetails');
+    const battle=document.getElementById('battleArea');
+    if(!map||!battle)return;
+    const showMap=view==='map';
+    map.style.display=showMap?'block':'none';
+    if(details)details.style.display=showMap?'grid':'none';
+    battle.style.display=showMap?'none':'block';
+    document.querySelectorAll('#arenaMapNav button').forEach(btn=>btn.classList.toggle('active',btn.dataset.view===view));
+  }
 
   function ensureShell(){
     const host=document.querySelector('.adventure-panel');
@@ -26,9 +39,15 @@
       const nav=document.createElement('nav');
       nav.id='arenaMapNav';
       nav.className='arena-map-nav';
-      nav.innerHTML=NAV.map((n,i)=>`<button type="button" class="${i===0?'active':''}" data-target="${n[2]||''}"><span class="nav-icon">${n[0]}</span>${n[1]}</button>`).join('');
+      nav.innerHTML=NAV.map(n=>`<button type="button" class="${n[2]==='combat'?'active':''}" data-view="${n[2]}" data-target="${n[2].startsWith('.')||n[2].startsWith('#')?n[2]:''}"><span class="nav-icon">${n[0]}</span>${n[1]}</button>`).join('');
       host.insertBefore(nav,host.firstElementChild);
       nav.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',()=>{
+        const view=btn.dataset.view;
+        if(view==='map'||view==='combat'){
+          setView(view);
+          if(view==='map')renderIllustratedMap();
+          return;
+        }
         nav.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
         btn.classList.add('active');
         const target=btn.dataset.target;
@@ -48,7 +67,7 @@
       details.className='arena-map-details';
       details.innerHTML=`<div class="arena-map-preview"></div><div class="arena-map-details-copy"><div class="eyebrow">Área selecionada</div><h3 id="arenaMapDetailName">Floresta Sombria</h3><div class="map-level" id="arenaMapDetailLevel">Level mínimo: 1+</div><p id="arenaMapDetailDesc">Uma floresta densa e perigosa. Escolha uma criatura abaixo para começar sua hunt.</p><div class="arena-map-meta" id="arenaMapDetailMeta"></div></div><div class="arena-map-go"><button type="button" class="btn active" id="arenaMapGoBtn">⚔ IR PARA ESTA ÁREA</button></div>`;
       map.insertAdjacentElement('afterend',details);
-      document.getElementById('arenaMapGoBtn').onclick=()=>document.getElementById('battleArea')?.scrollIntoView({behavior:'smooth',block:'start'});
+      document.getElementById('arenaMapGoBtn').onclick=()=>setView('combat');
     }
     return map;
   }
@@ -104,6 +123,7 @@
     window.renderMap=renderIllustratedMap;
     ensureShell();
     renderIllustratedMap();
+    setView('combat');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});
