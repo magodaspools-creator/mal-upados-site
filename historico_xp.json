@@ -1045,7 +1045,7 @@
       "experience_vocation": null
     },
     "Acidos Graxos": {
-      "level": 311,
+      "level": 312,
       "experience": null,
       "experience_exact": false,
       "experience_vocation": null
@@ -1082,6 +1082,12 @@
     },
     "Promocao Relampago": {
       "level": 99,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Pugas": {
+      "level": 15,
       "experience": null,
       "experience_exact": false,
       "experience_vocation": null
