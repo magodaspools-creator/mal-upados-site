@@ -39,7 +39,7 @@
       const nav=document.createElement('nav');
       nav.id='arenaMapNav';
       nav.className='arena-map-nav';
-      nav.innerHTML=NAV.map(n=>`<button type="button" class="${n[2]==='combat'?'active':''}" data-view="${n[2]}" data-target="${n[2].startsWith('.')||n[2].startsWith('#')?n[2]:''}"><span class="nav-icon">${n[0]}</span>${n[1]}</button>`).join('');
+      nav.innerHTML=NAV.map(n=>`<button type="button" class="${n[2]==='map'?'active':''}" data-view="${n[2]}" data-target="${n[2].startsWith('.')||n[2].startsWith('#')?n[2]:''}"><span class="nav-icon">${n[0]}</span>${n[1]}</button>`).join('');
       host.insertBefore(nav,host.firstElementChild);
       nav.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',()=>{
         const view=btn.dataset.view;
@@ -123,7 +123,7 @@
     window.renderMap=renderIllustratedMap;
     ensureShell();
     renderIllustratedMap();
-    setView('combat');
+    setView('map');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});
