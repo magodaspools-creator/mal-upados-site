@@ -973,7 +973,7 @@
       "experience_vocation": null
     },
     "Lugas": {
-      "level": 275,
+      "level": 276,
       "experience": null,
       "experience_exact": false,
       "experience_vocation": null
@@ -1044,6 +1044,12 @@
       "experience_exact": false,
       "experience_vocation": null
     },
+    "Tapa Monstro": {
+      "level": 393,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
     "Acidos Graxos": {
       "level": 312,
       "experience": null,
@@ -1106,12 +1112,6 @@
     },
     "Sylvie Stormbringer": {
       "level": 30,
-      "experience": null,
-      "experience_exact": false,
-      "experience_vocation": null
-    },
-    "Tapa Monstro": {
-      "level": 393,
       "experience": null,
       "experience_exact": false,
       "experience_vocation": null
