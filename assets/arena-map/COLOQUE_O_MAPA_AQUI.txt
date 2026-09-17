@@ -1,0 +1,4 @@
+PASTA RESERVADA PARA O MAPA DA ARENA.
+
+Envie aqui o arquivo de imagem pelo GitHub (Upload files).
+Depois que o mapa estiver nesta pasta, posso acessar o asset pelo repositório e integrar na Arena.
