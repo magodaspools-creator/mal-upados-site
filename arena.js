@@ -17,10 +17,10 @@ const ZONES=[
 const WEAPONS=[['Espada de Bronze',0],['Fire Sword',8],['Heroic Axe',15],['Demon Blade',24],['Arcanum Edge',35]];
 const ARMORS=[['Leather Armor',0],['Knight Armor',7],['Dragon Scale Mail',15],['Demon Armor',25],['Phoenix Plate',38]];
 const CHALLENGES=[
- {type:'kills',label:'Caçador de hoje',desc:'Derrote 3 criaturas na Arena.',target:3,xp:90,gold:120},
- {type:'gold',label:'Caixa registradora',desc:'Ganhe 250 de ouro em batalhas.',target:250,xp:110,gold:150},
- {type:'wins',label:'Mais uma hunt',desc:'Vença 4 batalhas na Arena.',target:4,xp:130,gold:180},
- {type:'zone',label:'Explorador',desc:'Vença uma batalha na sua área mais avançada.',target:1,xp:160,gold:220}
+ {type:'kills',label:'Caçador de hoje',desc:'Derrote 3 criaturas na Arena.',target:3,xp:900,gold:1200},
+ {type:'gold',label:'Caixa registradora',desc:'Ganhe 250 de ouro em batalhas.',target:250,xp:1100,gold:1500},
+ {type:'wins',label:'Mais uma hunt',desc:'Vença 4 batalhas na Arena.',target:4,xp:1300,gold:1800},
+ {type:'zone',label:'Explorador',desc:'Vença uma batalha na sua área mais avançada.',target:1,xp:1600,gold:2200}
 ];
 function baseGame(name){return {character:name,level:1,xp:0,gold:100,wins:0,kills:0,damage:0,zone:0,manualZone:0,weapon:0,armor:0,bestStreak:0,streak:0,lastChallenge:'',challengeProgress:0,challengeIndex:Math.floor(Math.random()*CHALLENGES.length),challengeDay:''};}
 function loadStore(){try{return JSON.parse(localStorage.getItem(STORAGE)||'{}')}catch{return {}}}
