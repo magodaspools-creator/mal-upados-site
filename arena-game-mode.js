@@ -13,7 +13,7 @@
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const fmt=n=>new Intl.NumberFormat('pt-BR').format(Math.floor(Number(n)||0));
  const num=v=>Math.max(0,Number(v)||0);
- const ACTION_MS=1000;
+ const ACTION_MS=600;
  let state=null;
  let keyBound=false;
 
