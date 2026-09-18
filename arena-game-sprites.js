@@ -84,6 +84,9 @@
    else demonAnimFrame=(demonAnimFrame+1)%DEMON_FRAMES;
    demonMoveDir=nextDir;
    demonAnimating=true;
+   // CRÍTICO: consumir a posição observada. Sem isso, o mesmo movimento
+   // era detectado a cada 120ms e o Demon percorria a sequência inteira.
+   lastDemonPos={x,y};
   }
  }
  function paintSheet(el,m,frame){
