@@ -29,7 +29,8 @@
   sufferingSoul:{src:HIDDEN+'suffering-soul-default_2.png?1550288890=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true}
  };
  const HERO_FRAMES=7,HERO_SIZE=96;
- let timer=null,animFrame=0,attacking=false,lastEnemyHp=null;\n let demonMoveDir=DEMON_DIRECTIONS.south,demonAnimFrame=0,demonAnimating=false,lastDemonPos=null;
+ let timer=null,animFrame=0,attacking=false,lastEnemyHp=null;
+ let demonMoveDir=DEMON_DIRECTIONS.south,demonAnimFrame=0,demonAnimating=false,lastDemonPos=null;
  const cache=new Set();
  function preload(src){if(!src||cache.has(src))return;cache.add(src);const img=new Image();img.decoding='async';img.src=src}
  function style(){
