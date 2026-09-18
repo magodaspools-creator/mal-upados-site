@@ -27,7 +27,7 @@ body{min-height:100vh}
 .survive-character .stats{color:#8d939b;font-size:.62rem}
 .survive-back{display:inline-block;margin-top:18px;color:#9f8654;font-size:.65rem;text-decoration:none}
 .survive-back:hover{color:#e2c36f}
-footer{margin-top:20px}
+.survive-game-host{margin-top:18px}footer{margin-top:20px}
 @media(max-width:650px){.survive-page{padding-top:25px}.survive-hero h1{font-size:1.65rem}.survive-character{align-items:flex-start;flex-direction:column}}
 </style>
 </head>
@@ -69,7 +69,7 @@ footer{margin-top:20px}
     </div>
 
     <!-- Host técnico usado pelo arena-game-mode.js. A Arena normal não é carregada nesta página. -->
-    <div class="game-shell" style="display:none" aria-hidden="true"></div>
+    <div class="game-shell survive-game-host"></div>
   </section>
 
   <a class="survive-back" href="arena.html">← Voltar para a Arena normal</a>
