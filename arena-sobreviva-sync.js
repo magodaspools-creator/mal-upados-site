@@ -18,6 +18,9 @@
 
   // Mantemos um objeto global compatível com arena-game-mode.js.
   let game={...DEFAULT,arenaMode:{...DEFAULT.arenaMode}};
+  // arena-game-mode.js espera o estado do personagem em uma variável global.
+  // O sync mantém a fonte real dos dados, mas expõe a referência para o modo Sobreviva.
+  window.game=game;
   window.arenaSurviveReady=false;
 
   const clone=v=>JSON.parse(JSON.stringify(v));
@@ -92,6 +95,7 @@
     }
     currentRecord=record;
     game=mergedState(record);
+    window.game=game;
     cache();
     renderAll();
     if(typeof window.arenaSurviveCharacterChanged==='function')window.arenaSurviveCharacterChanged();
@@ -165,6 +169,7 @@
         :members[0].name;
       currentRecord=members.find(x=>x.name===preferred)||members[0];
       game=mergedState(currentRecord);
+      window.game=game;
       cache();
       renderCharacters();
     }else{
