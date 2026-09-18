@@ -29,7 +29,7 @@
   sufferingSoul:{src:HIDDEN+'suffering-soul-default_2.png?1550288890=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true}
  };
  const HERO_FRAMES=7,HERO_SIZE=96;
- let timer=null,animFrame=0,attacking=false,lastEnemyHp=null;
+ let timer=null,animFrame=0,attacking=false,lastEnemyHp=null;\n let demonMoveDir=DEMON_DIRECTIONS.south,demonAnimFrame=0,demonAnimating=false,lastDemonPos=null;
  const cache=new Set();
  function preload(src){if(!src||cache.has(src))return;cache.add(src);const img=new Image();img.decoding='async';img.src=src}
  function style(){
@@ -62,12 +62,23 @@
   el.style.backgroundSize=DEMON.size+'px '+DEMON.size+'px';
   el.style.backgroundPosition='center';el.style.backgroundRepeat='no-repeat';
  }
- function demonDirection(){
+ function detectDemonMovement(){
   const mode=window.__arenaGameState;
-  if(!mode?.player||!mode?.enemyPos)return DEMON_DIRECTIONS.south;
-  const dx=mode.player.x-mode.enemyPos.x,dy=mode.player.y-mode.enemyPos.y;
-  if(Math.abs(dx)>=Math.abs(dy))return dx>=0?DEMON_DIRECTIONS.east:DEMON_DIRECTIONS.west;
-  return dy>=0?DEMON_DIRECTIONS.south:DEMON_DIRECTIONS.north;
+  if(!mode?.enemyPos)return;
+  const x=Number(mode.enemyPos.x),y=Number(mode.enemyPos.y);
+  if(!Number.isFinite(x)||!Number.isFinite(y))return;
+  if(!lastDemonPos){
+   lastDemonPos={x,y};
+   return;
+  }
+  const dx=x-lastDemonPos.x,dy=y-lastDemonPos.y;
+  if(dx!==0||dy!==0){
+   if(Math.abs(dx)>=Math.abs(dy))demonMoveDir=dx>0?DEMON_DIRECTIONS.east:DEMON_DIRECTIONS.west;
+   else demonMoveDir=dy>0?DEMON_DIRECTIONS.south:DEMON_DIRECTIONS.north;
+   demonAnimFrame=0;
+   demonAnimating=true;
+  }
+  lastDemonPos={x,y};
  }
  function paintSheet(el,m,frame){
   if(!el||!m)return;
@@ -91,10 +102,10 @@
  function draw(){
   const p=playerEl(),e=enemyEl();if(!p||!e)return;
   const v=playerVocation();paint(p,heroIdle(v,animFrame%HERO_FRAMES),HERO_SIZE);p.textContent='';e.textContent='';
-  const kind=enemyKind();if(kind==='demonSurvive'){paintDemon(e,demonDirection(),animFrame%DEMON_FRAMES);return;}const m=MONSTERS[kind];if(m)paintSheet(e,m,m.animated?animFrame%m.frames:0);else{e.style.backgroundImage='';e.style.width='112px';e.style.height='112px'}
+  const kind=enemyKind();if(kind==='demonSurvive'){detectDemonMovement();paintDemon(e,demonMoveDir,demonAnimating?demonAnimFrame:0);return;}const m=MONSTERS[kind];if(m)paintSheet(e,m,m.animated?animFrame%m.frames:0);else{e.style.backgroundImage='';e.style.width='112px';e.style.height='112px'}
  }
  function startAttack(){if(attacking)return;attacking=true;const p=playerEl();if(p){p.classList.remove('waves-attack');void p.offsetWidth;p.classList.add('waves-attack');setTimeout(()=>p.classList.remove('waves-attack'),300)}setTimeout(()=>{attacking=false;draw()},310)}
- function idleAnimation(){if(attacking)return;animFrame++;draw()}
+ function idleAnimation(){if(attacking)return;if(demonAnimating){demonAnimFrame++;if(demonAnimFrame>=DEMON_FRAMES){demonAnimFrame=0;demonAnimating=false;}}animFrame++;draw()}
  function enemyDamageFx(){const el=enemyEl();if(!el)return;el.classList.remove('waves-damage');void el.offsetWidth;el.classList.add('waves-damage');setTimeout(()=>el.classList.remove('waves-damage'),230)}
  function hookAttack(){const b=document.getElementById('arenaAttackBtn');if(b&&!b.dataset.pixelHook){b.dataset.pixelHook='1';b.addEventListener('click',()=>setTimeout(startAttack,0))}}
  function observeDamage(){const t=document.getElementById('arenaEnemyHpText');if(!t)return;const m=String(t.textContent||'').match(/([\d.,]+)\s*\/\s*([\d.,]+)/);if(!m)return;const hp=Number(m[1].replace(/\./g,'').replace(',','.'));if(lastEnemyHp!==null&&hp<lastEnemyHp)enemyDamageFx();lastEnemyHp=hp}
