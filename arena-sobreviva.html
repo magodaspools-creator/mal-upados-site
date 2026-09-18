@@ -22,13 +22,16 @@ body{min-height:100vh}
 .survive-info strong{color:#e2c36f}
 .survive-shell{max-width:1100px;margin:0 auto}
 .survive-character{border:1px solid #39342c;background:#15171a;padding:12px 15px;margin-bottom:14px;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.survive-character-main{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.survive-character-picker select{min-width:220px;border:1px solid #4a4030;background:#0f1114;color:#e0e3e7;padding:8px 10px;font:800 .66rem Inter,sans-serif}
+.survive-character-picker select:disabled{opacity:.55}
 .survive-character .label{color:#737a83;font:800 .55rem Inter,sans-serif;text-transform:uppercase}
 .survive-character strong{color:#e0e3e7;font:900 .82rem Cinzel,serif}
 .survive-character .stats{color:#8d939b;font-size:.62rem}
 .survive-back{display:inline-block;margin-top:18px;color:#9f8654;font-size:.65rem;text-decoration:none}
 .survive-back:hover{color:#e2c36f}
 .survive-game-host{margin-top:18px}footer{margin-top:20px}
-@media(max-width:650px){.survive-page{padding-top:25px}.survive-hero h1{font-size:1.65rem}.survive-character{align-items:flex-start;flex-direction:column}}
+@media(max-width:650px){.survive-page{padding-top:25px}.survive-hero h1{font-size:1.65rem}.survive-character{align-items:flex-start;flex-direction:column}.survive-character-main{width:100%;align-items:flex-start;flex-direction:column}.survive-character-picker,.survive-character-picker select{width:100%}}
 </style>
 </head>
 <body>
@@ -64,11 +67,18 @@ body{min-height:100vh}
 
   <section class="survive-shell">
     <div class="survive-character">
-      <div><div class="label">Personagem atual</div><strong id="surviveCharacterName">Carregando...</strong></div>
-      <div class="stats" id="surviveCharacterStats">Level 1 · Gold 0</div>
+      <div class="survive-character-main">
+        <div class="label">Personagem da Arena</div>
+        <div class="survive-character-picker">
+          <select id="surviveCharacterSelect" aria-label="Selecionar personagem da Arena">
+            <option value="">Carregando personagens...</option>
+          </select>
+        </div>
+      </div>
+      <div class="stats" id="surviveCharacterStats">Conectando à conta...</div>
     </div>
 
-    <!-- Host técnico usado pelo arena-game-mode.js. A Arena normal não é carregada nesta página. -->
+    <!-- O modo Sobreviva usa os mesmos personagens persistidos em public.arena_characters. -->
     <div class="game-shell survive-game-host"></div>
   </section>
 
@@ -77,35 +87,8 @@ body{min-height:100vh}
 
 <footer>Mal Upados · Jadebra · <a href="index.html">Início</a> · <a href="arena.html">Arena</a> · <a href="arena-sobreviva.html">Sobreviva</a> · <a href="caos.html">Caos</a></footer>
 
-<script>
-const STORAGE='malupados_arena_v1';
-let game={character:'Aventureiro',level:1,xp:0,gold:0,wins:0,weapon:0,armor:0,arenaMode:{bestWave:0,runs:0,wins:0,arenaXp:0}};
-function loadSurviveCharacter(){
-  try{
-    const all=JSON.parse(localStorage.getItem(STORAGE)||'{}');
-    const names=Object.keys(all);
-    if(names.length){
-      const preferred=names[0];
-      const saved=all[preferred]||{};
-      game=Object.assign(game,saved,{character:preferred});
-      game.arenaMode=Object.assign({bestWave:0,runs:0,wins:0,arenaXp:0},saved.arenaMode||{});
-    }
-  }catch(e){}
-  document.getElementById('surviveCharacterName').textContent=game.character;
-  document.getElementById('surviveCharacterStats').textContent=`Level ${Number(game.level)||1} · Gold ${Number(game.gold)||0} · Recorde ${Number(game.arenaMode.bestWave)||0}`;
-}
-function persist(){
-  try{
-    const all=JSON.parse(localStorage.getItem(STORAGE)||'{}');
-    all[game.character]=game;
-    localStorage.setItem(STORAGE,JSON.stringify(all));
-    document.getElementById('surviveCharacterName').textContent=game.character;
-    document.getElementById('surviveCharacterStats').textContent=`Level ${Number(game.level)||1} · Gold ${Number(game.gold)||0} · Recorde ${Number(game.arenaMode.bestWave)||0}`;
-  }catch(e){console.warn('[Sobreviva] save failed',e)}
-}
-function renderAll(){loadSurviveCharacter()}
-loadSurviveCharacter();
-</script>
+<script src="site-auth.js?v=global-account-20260918"></script>
+<script src="arena-sobreviva-sync.js?v=characters-db-20260918"></script>
 <script src="arena-game-mode.js?v=tactical-turns-20260918"></script>
 <script src="arena-game-sprites.js?v=gemini-assets-20260918"></script>
 </body>
