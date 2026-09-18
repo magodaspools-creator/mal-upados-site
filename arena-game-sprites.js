@@ -9,7 +9,7 @@
  const DEMON_FRAMES=9;
  const DEMON_DIRECTIONS={south:0,east:1,north:2,west:3};
  const demonSrc=(dir,frame)=>DEMON_ROOT+String(4161+dir*DEMON_FRAMES+frame)+'.png';
- const DEMON={frames:DEMON_FRAMES,size:144,dirs:DEMON_DIRECTIONS};
+ const DEMON={frames:DEMON_FRAMES,size:144};
  const MONSTERS={
   rat:{src:HIDDEN+'rat-grey-sv_2.png?1550287821=',frames:9,w:64,h:64,rate:8,size:96,row:0,animated:true},
   goblin:{src:RAW+'goblin/idle.png',frames:4,w:150,h:150,rate:1,size:112,static:true},
@@ -58,20 +58,19 @@
  function paintDemon(el,dir,frame){
   if(!el)return;
   const src=demonSrc(dir,frame%DEMON_FRAMES);
-  el.style.width=DEMON.size+'px';el.style.height=DEMON.size+'px';
+  el.style.width=DEMON.size+'px';
+  el.style.height=DEMON.size+'px';
   el.style.backgroundImage='url("'+src+'")';
   el.style.backgroundSize=DEMON.size+'px '+DEMON.size+'px';
-  el.style.backgroundPosition='center';el.style.backgroundRepeat='no-repeat';
+  el.style.backgroundPosition='center';
+  el.style.backgroundRepeat='no-repeat';
  }
  function detectDemonMovement(){
   const mode=window.__arenaGameState;
   if(!mode?.enemyPos)return;
   const x=Number(mode.enemyPos.x),y=Number(mode.enemyPos.y);
   if(!Number.isFinite(x)||!Number.isFinite(y))return;
-  if(!lastDemonPos){
-   lastDemonPos={x,y};
-   return;
-  }
+  if(!lastDemonPos){lastDemonPos={x,y};return;}
   const dx=x-lastDemonPos.x,dy=y-lastDemonPos.y;
   if(dx!==0||dy!==0){
    if(Math.abs(dx)>=Math.abs(dy))demonMoveDir=dx>0?DEMON_DIRECTIONS.east:DEMON_DIRECTIONS.west;
