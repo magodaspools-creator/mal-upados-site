@@ -103,7 +103,7 @@
  }
  function playerEl(){return document.querySelector('#arenaPlayerName')?.closest('.arena-fighter')?.querySelector('.arena-fighter-icon')}
  function enemyEl(){return document.getElementById('arenaEnemyIcon')}
- function prepareAssets(){for(const v of Object.keys(HERO_ROOT))for(let i=0;i<HERO_FRAMES;i++)preload(heroIdle(v,i));Object.values(MONSTERS).forEach(m=>preload(m.src))}
+ function prepareAssets(){for(const v of Object.keys(HERO_ROOT))for(let i=0;i<HERO_FRAMES;i++)preload(heroIdle(v,i));Object.values(MONSTERS).forEach(m=>preload(m.src));for(let dir=0;dir<4;dir++)for(let frame=0;frame<DEMON_FRAMES;frame++)preload(demonSrc(dir,frame))}
  function enemyKind(){
   const n=String(document.getElementById('arenaEnemyName')?.textContent||'').toLowerCase();
   if(n.includes('rat'))return'rat';if(n.includes('troll'))return'sahuagin';if(n==='orc')return'goblin';if(n.includes('berserker'))return'imp';if(n.includes('rider'))return'cockatrice';if(n.includes('cyclops'))return'gazer';if(n.includes('scorpion'))return'scorpion';if(n.includes('scarab'))return'plant';if(n.includes('dragon hatchling'))return'snake';if(n==='dragon')return'dragon';if(n.includes('dragon lord'))return'puppet';if(n.includes('frost dragon'))return'drone';if(n.includes('demon skeleton'))return'skeleton';if(n.includes('hellhound'))return'spider';if(n==='demon')return'demonSurvive';if(n.includes('deathbringer'))return'sufferingSoul';return null;
