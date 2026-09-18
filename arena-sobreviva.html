@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/jpeg" href="guilda.jpg?v=4-arena">
+<title>Arena: Sobreviva | Mal Upados</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@400;500;600;700;800" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="arena.css?v=arena-survive-20260918">
+<style>
+body{min-height:100vh}
+.survive-page{max-width:1180px;margin:0 auto;padding:42px 18px 70px}
+.survive-hero{text-align:center;padding:30px 0 20px}
+.survive-hero .sigil{font-size:2rem;color:#d4ae5b}
+.survive-hero .eyebrow{color:#b99754;font:800 .62rem Inter,sans-serif;letter-spacing:1.5px;text-transform:uppercase}
+.survive-hero h1{margin:8px 0;color:#eee;font:900 2.2rem Cinzel,serif}
+.survive-hero h1 span{color:#d3ad5b}
+.survive-hero p{max-width:680px;margin:0 auto;color:#858b94;font-size:.78rem;line-height:1.6}
+.survive-info{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:18px 0}
+.survive-info span{border:1px solid #403a31;background:#15171a;color:#aaa; padding:7px 11px;font:700 .58rem Inter,sans-serif;text-transform:uppercase}
+.survive-info strong{color:#e2c36f}
+.survive-shell{max-width:1100px;margin:0 auto}
+.survive-character{border:1px solid #39342c;background:#15171a;padding:12px 15px;margin-bottom:14px;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.survive-character .label{color:#737a83;font:800 .55rem Inter,sans-serif;text-transform:uppercase}
+.survive-character strong{color:#e0e3e7;font:900 .82rem Cinzel,serif}
+.survive-character .stats{color:#8d939b;font-size:.62rem}
+.survive-back{display:inline-block;margin-top:18px;color:#9f8654;font-size:.65rem;text-decoration:none}
+.survive-back:hover{color:#e2c36f}
+footer{margin-top:20px}
+@media(max-width:650px){.survive-page{padding-top:25px}.survive-hero h1{font-size:1.65rem}.survive-character{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="nav">
+    <a class="brand" href="index.html">⛧ MAL UPADOS</a>
+    <div class="links">
+      <a href="index.html">Início</a>
+      <a href="ranking.html">Ranking</a>
+      <a href="guilda.html">Guilda</a>
+      <a href="stash.html">Stash</a>
+      <a href="hunting.html">Guia de Hunts</a>
+      <a href="arena.html">Arena</a>
+      <a class="active" href="arena-sobreviva.html">Sobreviva</a>
+      <a href="caos.html">Caos</a>
+    </div>
+  </div>
+</header>
+
+<main class="survive-page">
+  <section class="survive-hero">
+    <div class="sigil">☠</div>
+    <div class="eyebrow">Modo especial · Combate tático</div>
+    <h1>Arena: <span>Sobreviva</span></h1>
+    <p>Um modo separado da Arena normal. Mova-se pelo campo, aproxime-se do inimigo, ataque em turnos e tente chegar até a onda 20.</p>
+    <div class="survive-info">
+      <span><strong>WASD</strong> / Setas · mover</span>
+      <span><strong>Espaço</strong> · atacar</span>
+      <span><strong>20</strong> ondas</span>
+      <span>Inimigos por turnos</span>
+    </div>
+  </section>
+
+  <section class="survive-shell">
+    <div class="survive-character">
+      <div><div class="label">Personagem atual</div><strong id="surviveCharacterName">Carregando...</strong></div>
+      <div class="stats" id="surviveCharacterStats">Level 1 · Gold 0</div>
+    </div>
+
+    <!-- Host técnico usado pelo arena-game-mode.js. A Arena normal não é carregada nesta página. -->
+    <div class="game-shell" style="display:none" aria-hidden="true"></div>
+  </section>
+
+  <a class="survive-back" href="arena.html">← Voltar para a Arena normal</a>
+</main>
+
+<footer>Mal Upados · Jadebra · <a href="index.html">Início</a> · <a href="arena.html">Arena</a> · <a href="arena-sobreviva.html">Sobreviva</a> · <a href="caos.html">Caos</a></footer>
+
+<script>
+const STORAGE='malupados_arena_v1';
+let game={character:'Aventureiro',level:1,xp:0,gold:0,wins:0,weapon:0,armor:0,arenaMode:{bestWave:0,runs:0,wins:0,arenaXp:0}};
+function loadSurviveCharacter(){
+  try{
+    const all=JSON.parse(localStorage.getItem(STORAGE)||'{}');
+    const names=Object.keys(all);
+    if(names.length){
+      const preferred=names[0];
+      const saved=all[preferred]||{};
+      game=Object.assign(game,saved,{character:preferred});
+      game.arenaMode=Object.assign({bestWave:0,runs:0,wins:0,arenaXp:0},saved.arenaMode||{});
+    }
+  }catch(e){}
+  document.getElementById('surviveCharacterName').textContent=game.character;
+  document.getElementById('surviveCharacterStats').textContent=`Level ${Number(game.level)||1} · Gold ${Number(game.gold)||0} · Recorde ${Number(game.arenaMode.bestWave)||0}`;
+}
+function persist(){
+  try{
+    const all=JSON.parse(localStorage.getItem(STORAGE)||'{}');
+    all[game.character]=game;
+    localStorage.setItem(STORAGE,JSON.stringify(all));
+    document.getElementById('surviveCharacterName').textContent=game.character;
+    document.getElementById('surviveCharacterStats').textContent=`Level ${Number(game.level)||1} · Gold ${Number(game.gold)||0} · Recorde ${Number(game.arenaMode.bestWave)||0}`;
+  }catch(e){console.warn('[Sobreviva] save failed',e)}
+}
+function renderAll(){loadSurviveCharacter()}
+loadSurviveCharacter();
+</script>
+<script src="arena-game-mode.js?v=tactical-turns-20260918"></script>
+<script src="arena-game-sprites.js?v=gemini-assets-20260918"></script>
+</body>
+</html>
