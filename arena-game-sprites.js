@@ -13,6 +13,7 @@
  const DEMON_DIRECTIONS={north:0,east:1,south:2,west:3};
  const demonSrc=(dir,frame)=>DEMON_ROOT+String(4161+(frame%DEMON_FRAMES)*4+dir)+'.png';
  const DEMON={frames:DEMON_FRAMES,size:144};
+ const RAT_FRAMES=8,RAT_DIRECTIONS={north:0,east:1,south:2,west:3};
  const MONSTERS={
   rat:{src:ROOT+'3843.png',frames:35,w:64,h:64,rate:1,size:96,row:0,animated:true,individualFrames:true},
   goblin:{src:RAW+'goblin/idle.png',frames:4,w:150,h:150,rate:1,size:112,static:true},
@@ -38,6 +39,7 @@
  let playerMoveDir=GM_DIRECTIONS.south,playerAnimFrame=0,lastPlayerPos=null;
  let timer=null,animFrame=0,attacking=false,lastEnemyHp=null;
  let demonMoveDir=DEMON_DIRECTIONS.south,demonAnimFrame=0,demonAnimating=false,lastDemonPos=null;
+ let ratMoveDir=RAT_DIRECTIONS.south,ratAnimFrame=0,ratAnimating=false,lastRatPos=null;
  const cache=new Set();
  function preload(src){if(!src||cache.has(src))return;cache.add(src);const img=new Image();img.decoding='async';img.src=src}
  function style(){
@@ -87,6 +89,22 @@
   el.style.backgroundPosition='center';
   el.style.backgroundRepeat='no-repeat';
  }
+ function detectRatMovement(){
+  const mode=window.__arenaGameState;
+  if(!mode?.enemyPos)return;
+  const x=Number(mode.enemyPos.x),y=Number(mode.enemyPos.y);
+  if(!Number.isFinite(x)||!Number.isFinite(y))return;
+  if(!lastRatPos){lastRatPos={x,y};return}
+  const dx=x-lastRatPos.x,dy=y-lastRatPos.y;
+  if(dx!==0||dy!==0){
+   ratMoveDir=Math.abs(dx)>=Math.abs(dy)
+    ?(dx>0?RAT_DIRECTIONS.east:RAT_DIRECTIONS.west)
+    :(dy>0?RAT_DIRECTIONS.south:RAT_DIRECTIONS.north);
+   ratAnimFrame=(ratAnimFrame+1)%RAT_FRAMES;
+   ratAnimating=true;
+   lastRatPos={x,y};
+  }
+ }
  function detectDemonMovement(){
   const mode=window.__arenaGameState;
   if(!mode?.enemyPos)return;
@@ -111,7 +129,8 @@
  function paintSheet(el,m,frame){
   if(!el||!m)return;
   if(m.individualFrames){
-   const src=ROOT+String(3843+(frame%m.frames))+'.png';
+   const ratIndex=(Math.min(RAT_FRAMES-1,frame%RAT_FRAMES)*4)+ratMoveDir;
+   const src=ROOT+String(3843+ratIndex)+'.png';
    el.style.width=m.size+'px';
    el.style.height=m.size+'px';
    el.style.backgroundImage='url("'+src+'")';
@@ -140,7 +159,7 @@
  function draw(){
   const p=playerEl(),e=enemyEl();if(!p||!e)return;
   detectPlayerMovement();paint(p,heroIdle(null,playerAnimFrame),HERO_SIZE);p.textContent='';e.textContent='';
-  const kind=enemyKind();if(kind==='demonSurvive'){detectDemonMovement();paintDemon(e,demonMoveDir,demonAnimating?demonAnimFrame:0);return;}const m=MONSTERS[kind];if(m)paintSheet(e,m,m.animated?animFrame%m.frames:0);else{e.style.backgroundImage='';e.style.width='112px';e.style.height='112px'}
+  const kind=enemyKind();if(kind==='rat'){detectRatMovement();paintSheet(e,MONSTERS.rat,ratAnimating?ratAnimFrame:0);return;}if(kind==='demonSurvive'){detectDemonMovement();paintDemon(e,demonMoveDir,demonAnimating?demonAnimFrame:0);return;}const m=MONSTERS[kind];if(m)paintSheet(e,m,m.animated?animFrame%m.frames:0);else{e.style.backgroundImage='';e.style.width='112px';e.style.height='112px'}
  }
  function startAttack(){if(attacking)return;attacking=true;const p=playerEl();if(p){p.classList.remove('waves-attack');void p.offsetWidth;p.classList.add('waves-attack');setTimeout(()=>p.classList.remove('waves-attack'),300)}setTimeout(()=>{attacking=false;draw()},310)}
  function idleAnimation(){if(attacking)return;animFrame++;draw()}
