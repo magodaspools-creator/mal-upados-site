@@ -18,7 +18,7 @@
  let keyBound=false;
  const PLAYER_MOVE_MS=100;
  const PLAYER_ATTACK_MS=200;
- const ENEMY_MOVE_MS=200;
+ const ENEMY_MOVE_MS=400;
  const ENEMY_ATTACK_MS=200;
 
  function style(){
