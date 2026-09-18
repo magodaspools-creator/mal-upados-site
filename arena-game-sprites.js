@@ -15,7 +15,8 @@
  const DEMON={frames:DEMON_FRAMES,size:144};
  const RAT_FRAMES=8,RAT_DIRECTIONS={north:0,east:1,south:2,west:3};
  const MONSTERS={
-  rat:{src:ROOT+'3843.png',frames:35,w:64,h:64,rate:1,size:96,row:0,animated:true,individualFrames:true},
+  rat:{src:ROOT+'3843.png',frames:35,w:64,h:64,rate:1,size:96,row:0,animated:true,individualFrames:true,base:3843},
+  troll:{src:ROOT+'3675.png',frames:35,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:3675},
   goblin:{src:RAW+'goblin/idle.png',frames:4,w:150,h:150,rate:1,size:112,static:true},
   skeleton:{src:RAW+'skeleton/idle.png',frames:4,w:150,h:150,rate:1,size:112,static:true},
   dragon:{src:RAW+'boss/dragon_idle.png',frames:6,w:70,h:73,rate:1,size:128,static:true},
@@ -130,7 +131,7 @@
   if(!el||!m)return;
   if(m.individualFrames){
    const ratIndex=(Math.min(RAT_FRAMES-1,frame%RAT_FRAMES)*4)+ratMoveDir;
-   const src=ROOT+String(3843+ratIndex)+'.png';
+   const src=ROOT+String(m.base+ratIndex)+'.png';
    el.style.width=m.size+'px';
    el.style.height=m.size+'px';
    el.style.backgroundImage='url("'+src+'")';
@@ -151,15 +152,15 @@
  }
  function playerEl(){return document.querySelector('#arenaPlayerName')?.closest('.arena-fighter')?.querySelector('.arena-fighter-icon')}
  function enemyEl(){return document.getElementById('arenaEnemyIcon')}
- function prepareAssets(){for(let dir=0;dir<4;dir++)for(let frame=0;frame<3;frame++)preload(gmSrc(dir,frame));Object.values(MONSTERS).forEach(m=>preload(m.src));for(let dir=0;dir<4;dir++)for(let frame=0;frame<DEMON_FRAMES;frame++)preload(demonSrc(dir,frame))}
+ function prepareAssets(){for(let dir=0;dir<4;dir++)for(let frame=0;frame<3;frame++)preload(gmSrc(dir,frame));Object.values(MONSTERS).forEach(m=>{preload(m.src);if(m.individualFrames){for(let i=0;i<Math.min(32,m.frames);i++)preload(ROOT+String(m.base+i)+'.png')}});for(let dir=0;dir<4;dir++)for(let frame=0;frame<DEMON_FRAMES;frame++)preload(demonSrc(dir,frame))}
  function enemyKind(){
   const n=String(document.getElementById('arenaEnemyName')?.textContent||'').toLowerCase();
-  if(n.includes('rat'))return'rat';if(n.includes('troll'))return'sahuagin';if(n==='orc')return'goblin';if(n.includes('berserker'))return'imp';if(n.includes('rider'))return'cockatrice';if(n.includes('cyclops'))return'gazer';if(n.includes('scorpion'))return'scorpion';if(n.includes('scarab'))return'plant';if(n.includes('dragon hatchling'))return'snake';if(n==='dragon')return'dragon';if(n.includes('dragon lord'))return'puppet';if(n.includes('frost dragon'))return'drone';if(n.includes('demon skeleton'))return'skeleton';if(n.includes('hellhound'))return'spider';if(n==='demon')return'demonSurvive';if(n.includes('deathbringer'))return'sufferingSoul';return null;
+  if(n.includes('rat'))return'rat';if(n.includes('troll'))return'troll';if(n==='orc')return'goblin';if(n.includes('berserker'))return'imp';if(n.includes('rider'))return'cockatrice';if(n.includes('cyclops'))return'gazer';if(n.includes('scorpion'))return'scorpion';if(n.includes('scarab'))return'plant';if(n.includes('dragon hatchling'))return'snake';if(n==='dragon')return'dragon';if(n.includes('dragon lord'))return'puppet';if(n.includes('frost dragon'))return'drone';if(n.includes('demon skeleton'))return'skeleton';if(n.includes('hellhound'))return'spider';if(n==='demon')return'demonSurvive';if(n.includes('deathbringer'))return'sufferingSoul';return null;
  }
  function draw(){
   const p=playerEl(),e=enemyEl();if(!p||!e)return;
   detectPlayerMovement();paint(p,heroIdle(null,playerAnimFrame),HERO_SIZE);p.textContent='';e.textContent='';
-  const kind=enemyKind();if(kind==='rat'){detectRatMovement();paintSheet(e,MONSTERS.rat,ratAnimating?ratAnimFrame:0);return;}if(kind==='demonSurvive'){detectDemonMovement();paintDemon(e,demonMoveDir,demonAnimating?demonAnimFrame:0);return;}const m=MONSTERS[kind];if(m)paintSheet(e,m,m.animated?animFrame%m.frames:0);else{e.style.backgroundImage='';e.style.width='112px';e.style.height='112px'}
+  const kind=enemyKind();if(kind==='rat'||kind==='troll'){detectRatMovement();paintSheet(e,MONSTERS[kind],ratAnimating?ratAnimFrame:0);return;}if(kind==='demonSurvive'){detectDemonMovement();paintDemon(e,demonMoveDir,demonAnimating?demonAnimFrame:0);return;}const m=MONSTERS[kind];if(m)paintSheet(e,m,m.animated?animFrame%m.frames:0);else{e.style.backgroundImage='';e.style.width='112px';e.style.height='112px'}
  }
  function startAttack(){if(attacking)return;attacking=true;const p=playerEl();if(p){p.classList.remove('waves-attack');void p.offsetWidth;p.classList.add('waves-attack');setTimeout(()=>p.classList.remove('waves-attack'),300)}setTimeout(()=>{attacking=false;draw()},310)}
  function idleAnimation(){if(attacking)return;animFrame++;draw()}
