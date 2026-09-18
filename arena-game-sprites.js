@@ -7,8 +7,11 @@
  const HIDDEN='https://www.hiddenone-sprites.com/uploads/7/1/8/7/71878507/published/';
  const DEMON_ROOT='assets/arena-enemies/demon-survive/';
  const DEMON_FRAMES=9;
- const DEMON_DIRECTIONS={south:0,east:1,north:2,west:3};
- const demonSrc=(dir,frame)=>DEMON_ROOT+String(4161+dir*DEMON_FRAMES+frame)+'.png';
+ // Os 36 sprites estão intercalados por frame:
+ // frame 0 = 4161..4164, frame 1 = 4165..4168, etc.
+ // Norte: 4161,4165,4169... | East: 4162,4166,4170...
+ const DEMON_DIRECTIONS={north:0,east:1,south:2,west:3};
+ const demonSrc=(dir,frame)=>DEMON_ROOT+String(4161+(frame%DEMON_FRAMES)*4+dir)+'.png';
  const DEMON={frames:DEMON_FRAMES,size:144};
  const MONSTERS={
   rat:{src:HIDDEN+'rat-grey-sv_2.png?1550287821=',frames:9,w:64,h:64,rate:8,size:96,row:0,animated:true},
@@ -73,12 +76,15 @@
   if(!lastDemonPos){lastDemonPos={x,y};return;}
   const dx=x-lastDemonPos.x,dy=y-lastDemonPos.y;
   if(dx!==0||dy!==0){
-   if(Math.abs(dx)>=Math.abs(dy))demonMoveDir=dx>0?DEMON_DIRECTIONS.east:DEMON_DIRECTIONS.west;
-   else demonMoveDir=dy>0?DEMON_DIRECTIONS.south:DEMON_DIRECTIONS.north;
-   demonAnimFrame=0;
+   const nextDir=Math.abs(dx)>=Math.abs(dy)
+    ?(dx>0?DEMON_DIRECTIONS.east:DEMON_DIRECTIONS.west)
+    :(dy>0?DEMON_DIRECTIONS.south:DEMON_DIRECTIONS.north);
+   // Ao mudar de direção, reinicia a sequência daquela direção.
+   if(nextDir!==demonMoveDir)demonAnimFrame=0;
+   else demonAnimFrame=(demonAnimFrame+1)%DEMON_FRAMES;
+   demonMoveDir=nextDir;
    demonAnimating=true;
   }
-  lastDemonPos={x,y};
  }
  function paintSheet(el,m,frame){
   if(!el||!m)return;
@@ -105,7 +111,7 @@
   const kind=enemyKind();if(kind==='demonSurvive'){detectDemonMovement();paintDemon(e,demonMoveDir,demonAnimating?demonAnimFrame:0);return;}const m=MONSTERS[kind];if(m)paintSheet(e,m,m.animated?animFrame%m.frames:0);else{e.style.backgroundImage='';e.style.width='112px';e.style.height='112px'}
  }
  function startAttack(){if(attacking)return;attacking=true;const p=playerEl();if(p){p.classList.remove('waves-attack');void p.offsetWidth;p.classList.add('waves-attack');setTimeout(()=>p.classList.remove('waves-attack'),300)}setTimeout(()=>{attacking=false;draw()},310)}
- function idleAnimation(){if(attacking)return;if(demonAnimating){demonAnimFrame++;if(demonAnimFrame>=DEMON_FRAMES){demonAnimFrame=0;demonAnimating=false;}}animFrame++;draw()}
+ function idleAnimation(){if(attacking)return;animFrame++;draw()}
  function enemyDamageFx(){const el=enemyEl();if(!el)return;el.classList.remove('waves-damage');void el.offsetWidth;el.classList.add('waves-damage');setTimeout(()=>el.classList.remove('waves-damage'),230)}
  function hookAttack(){const b=document.getElementById('arenaAttackBtn');if(b&&!b.dataset.pixelHook){b.dataset.pixelHook='1';b.addEventListener('click',()=>setTimeout(startAttack,0))}}
  function observeDamage(){const t=document.getElementById('arenaEnemyHpText');if(!t)return;const m=String(t.textContent||'').match(/([\d.,]+)\s*\/\s*([\d.,]+)/);if(!m)return;const hp=Number(m[1].replace(/\./g,'').replace(',','.'));if(lastEnemyHp!==null&&hp<lastEnemyHp)enemyDamageFx();lastEnemyHp=hp}
