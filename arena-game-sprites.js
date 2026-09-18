@@ -20,7 +20,7 @@
   puppet:{src:HIDDEN+'puppet-default_2.png?1550287709=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true},
   drone:{src:HIDDEN+'drone-default_2.png?1550286560=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true},
   spider:{src:HIDDEN+'spider-sv_4.png?1550288631=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true},
-  willoWisp:{src:HIDDEN+'willowisp-default_2.png?1550289032=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true},
+  willoWisp:{src:ROOT+'monsters-static/demon.svg',frames:1,w:64,h:64,rate:1,size:144,row:0,static:true},
   sufferingSoul:{src:HIDDEN+'suffering-soul-default_2.png?1550288890=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true}
  };
  const HERO_FRAMES=7,HERO_SIZE=96;
