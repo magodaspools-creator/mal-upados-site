@@ -5,6 +5,11 @@
  const HERO_ROOT={knight:'knight-hero-128/knight-hero-128',mage:'mage-hero-128/mage-hero-128',archer:'archer-hero-128/archer-hero-128',rogue:'rogue-hero-128/rogue-hero-128'};
  const RAW='https://raw.githubusercontent.com/LiquidGalaxyLAB/lg-rpg/main/lg_rpg_server/public/assets/enemies/';
  const HIDDEN='https://www.hiddenone-sprites.com/uploads/7/1/8/7/71878507/published/';
+ const DEMON_ROOT='assets/arena-enemies/demon-survive/';
+ const DEMON_FRAMES=9;
+ const DEMON_DIRECTIONS={south:0,east:1,north:2,west:3};
+ const demonSrc=(dir,frame)=>DEMON_ROOT+String(4161+dir*DEMON_FRAMES+frame)+'.png';
+ const DEMON={frames:DEMON_FRAMES,size:144,dirs:DEMON_DIRECTIONS};
  const MONSTERS={
   rat:{src:HIDDEN+'rat-grey-sv_2.png?1550287821=',frames:9,w:64,h:64,rate:8,size:96,row:0,animated:true},
   goblin:{src:RAW+'goblin/idle.png',frames:4,w:150,h:150,rate:1,size:112,static:true},
@@ -49,6 +54,21 @@
  function playerVocation(){const n=String(document.getElementById('arenaPlayerName')?.textContent||'').toLowerCase();if(n.includes('mage')||n.includes('mago'))return'mage';if(n.includes('archer')||n.includes('paladin')||n.includes('paladino'))return'archer';if(n.includes('rogue')||n.includes('monk')||n.includes('monge'))return'rogue';return'knight'}
  function heroIdle(v,n){return ROOT+HERO_ROOT[v]+'/idle_south/'+String(n).padStart(2,'0')+'.png'}
  function paint(el,src,size){if(!el)return;el.style.width=size+'px';el.style.height=size+'px';el.style.backgroundImage=src?`url(\"${src}\")`:'';el.style.backgroundSize=size+'px '+size+'px';el.style.backgroundPosition='center'}
+ function paintDemon(el,dir,frame){
+  if(!el)return;
+  const src=demonSrc(dir,frame%DEMON_FRAMES);
+  el.style.width=DEMON.size+'px';el.style.height=DEMON.size+'px';
+  el.style.backgroundImage='url("'+src+'")';
+  el.style.backgroundSize=DEMON.size+'px '+DEMON.size+'px';
+  el.style.backgroundPosition='center';el.style.backgroundRepeat='no-repeat';
+ }
+ function demonDirection(){
+  const mode=window.__arenaGameState;
+  if(!mode?.player||!mode?.enemyPos)return DEMON_DIRECTIONS.south;
+  const dx=mode.player.x-mode.enemyPos.x,dy=mode.player.y-mode.enemyPos.y;
+  if(Math.abs(dx)>=Math.abs(dy))return dx>=0?DEMON_DIRECTIONS.east:DEMON_DIRECTIONS.west;
+  return dy>=0?DEMON_DIRECTIONS.south:DEMON_DIRECTIONS.north;
+ }
  function paintSheet(el,m,frame){
   if(!el||!m)return;
   const targetH=m.size,targetW=targetH*(m.w/m.h);
@@ -66,12 +86,12 @@
  function prepareAssets(){for(const v of Object.keys(HERO_ROOT))for(let i=0;i<HERO_FRAMES;i++)preload(heroIdle(v,i));Object.values(MONSTERS).forEach(m=>preload(m.src))}
  function enemyKind(){
   const n=String(document.getElementById('arenaEnemyName')?.textContent||'').toLowerCase();
-  if(n.includes('rat'))return'rat';if(n.includes('troll'))return'sahuagin';if(n==='orc')return'goblin';if(n.includes('berserker'))return'imp';if(n.includes('rider'))return'cockatrice';if(n.includes('cyclops'))return'gazer';if(n.includes('scorpion'))return'scorpion';if(n.includes('scarab'))return'plant';if(n.includes('dragon hatchling'))return'snake';if(n==='dragon')return'dragon';if(n.includes('dragon lord'))return'puppet';if(n.includes('frost dragon'))return'drone';if(n.includes('demon skeleton'))return'skeleton';if(n.includes('hellhound'))return'spider';if(n==='demon')return'willoWisp';if(n.includes('deathbringer'))return'sufferingSoul';return null;
+  if(n.includes('rat'))return'rat';if(n.includes('troll'))return'sahuagin';if(n==='orc')return'goblin';if(n.includes('berserker'))return'imp';if(n.includes('rider'))return'cockatrice';if(n.includes('cyclops'))return'gazer';if(n.includes('scorpion'))return'scorpion';if(n.includes('scarab'))return'plant';if(n.includes('dragon hatchling'))return'snake';if(n==='dragon')return'dragon';if(n.includes('dragon lord'))return'puppet';if(n.includes('frost dragon'))return'drone';if(n.includes('demon skeleton'))return'skeleton';if(n.includes('hellhound'))return'spider';if(n==='demon')return'demonSurvive';if(n.includes('deathbringer'))return'sufferingSoul';return null;
  }
  function draw(){
   const p=playerEl(),e=enemyEl();if(!p||!e)return;
   const v=playerVocation();paint(p,heroIdle(v,animFrame%HERO_FRAMES),HERO_SIZE);p.textContent='';e.textContent='';
-  const kind=enemyKind(),m=MONSTERS[kind];if(m)paintSheet(e,m,m.animated?animFrame%m.frames:0);else{e.style.backgroundImage='';e.style.width='112px';e.style.height='112px'}
+  const kind=enemyKind();if(kind==='demonSurvive'){paintDemon(e,demonDirection(),animFrame%DEMON_FRAMES);return;}const m=MONSTERS[kind];if(m)paintSheet(e,m,m.animated?animFrame%m.frames:0);else{e.style.backgroundImage='';e.style.width='112px';e.style.height='112px'}
  }
  function startAttack(){if(attacking)return;attacking=true;const p=playerEl();if(p){p.classList.remove('waves-attack');void p.offsetWidth;p.classList.add('waves-attack');setTimeout(()=>p.classList.remove('waves-attack'),300)}setTimeout(()=>{attacking=false;draw()},310)}
  function idleAnimation(){if(attacking)return;animFrame++;draw()}
