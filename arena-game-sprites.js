@@ -14,7 +14,7 @@
  const demonSrc=(dir,frame)=>DEMON_ROOT+String(4161+(frame%DEMON_FRAMES)*4+dir)+'.png';
  const DEMON={frames:DEMON_FRAMES,size:144};
  const MONSTERS={
-  rat:{src:HIDDEN+'rat-grey-sv_2.png?1550287821=',frames:9,w:64,h:64,rate:8,size:96,row:0,animated:true},
+  rat:{src:ROOT+'3843.png',frames:35,w:64,h:64,rate:1,size:96,row:0,animated:true,individualFrames:true},
   goblin:{src:RAW+'goblin/idle.png',frames:4,w:150,h:150,rate:1,size:112,static:true},
   skeleton:{src:RAW+'skeleton/idle.png',frames:4,w:150,h:150,rate:1,size:112,static:true},
   dragon:{src:RAW+'boss/dragon_idle.png',frames:6,w:70,h:73,rate:1,size:128,static:true},
@@ -110,6 +110,16 @@
  }
  function paintSheet(el,m,frame){
   if(!el||!m)return;
+  if(m.individualFrames){
+   const src=ROOT+String(3843+(frame%m.frames))+'.png';
+   el.style.width=m.size+'px';
+   el.style.height=m.size+'px';
+   el.style.backgroundImage='url("'+src+'")';
+   el.style.backgroundSize=m.size+'px '+m.size+'px';
+   el.style.backgroundPosition='center';
+   el.style.backgroundRepeat='no-repeat';
+   return;
+  }
   const targetH=m.size,targetW=targetH*(m.w/m.h);
   // O elemento vira exatamente a janela de UM frame. Isso impede qualquer
   // vazamento visual das outras poses do spritesheet.
