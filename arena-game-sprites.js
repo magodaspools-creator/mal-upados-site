@@ -31,7 +31,11 @@
   willoWisp:{src:ROOT+'monsters-static/demon.svg',frames:1,w:64,h:64,rate:1,size:144,row:0,static:true},
   sufferingSoul:{src:HIDDEN+'suffering-soul-default_2.png?1550288890=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true}
  };
- const HERO_FRAMES=7,HERO_SIZE=96;
+ const HERO_FRAMES=3,HERO_SIZE=96;
+ const GM_DIRECTIONS={north:0,east:1,south:2,west:3};
+ const GM_ROOT=ROOT;
+ const gmSrc=(dir,frame)=>GM_ROOT+String(1771+(frame%3)*4+dir)+'.png';
+ let playerMoveDir=GM_DIRECTIONS.south,playerAnimFrame=0,lastPlayerPos=null;
  let timer=null,animFrame=0,attacking=false,lastEnemyHp=null;
  let demonMoveDir=DEMON_DIRECTIONS.south,demonAnimFrame=0,demonAnimating=false,lastDemonPos=null;
  const cache=new Set();
@@ -56,7 +60,22 @@
   `;document.head.appendChild(s)
  }
  function playerVocation(){const n=String(document.getElementById('arenaPlayerName')?.textContent||'').toLowerCase();if(n.includes('mage')||n.includes('mago'))return'mage';if(n.includes('archer')||n.includes('paladin')||n.includes('paladino'))return'archer';if(n.includes('rogue')||n.includes('monk')||n.includes('monge'))return'rogue';return'knight'}
- function heroIdle(v,n){return ROOT+HERO_ROOT[v]+'/idle_south/'+String(n).padStart(2,'0')+'.png'}
+ function heroIdle(v,n){return gmSrc(playerMoveDir,n)}
+ function detectPlayerMovement(){
+  const mode=window.__arenaGameState;
+  if(!mode?.player)return;
+  const x=Number(mode.player.x),y=Number(mode.player.y);
+  if(!Number.isFinite(x)||!Number.isFinite(y))return;
+  if(!lastPlayerPos){lastPlayerPos={x,y};return}
+  const dx=x-lastPlayerPos.x,dy=y-lastPlayerPos.y;
+  if(dx!==0||dy!==0){
+   playerMoveDir=Math.abs(dx)>=Math.abs(dy)
+    ?(dx>0?GM_DIRECTIONS.east:GM_DIRECTIONS.west)
+    :(dy>0?GM_DIRECTIONS.south:GM_DIRECTIONS.north);
+   playerAnimFrame=(playerAnimFrame+1)%3;
+   lastPlayerPos={x,y};
+  }
+ }
  function paint(el,src,size){if(!el)return;el.style.width=size+'px';el.style.height=size+'px';el.style.backgroundImage=src?`url(\"${src}\")`:'';el.style.backgroundSize=size+'px '+size+'px';el.style.backgroundPosition='center'}
  function paintDemon(el,dir,frame){
   if(!el)return;
@@ -103,14 +122,14 @@
  }
  function playerEl(){return document.querySelector('#arenaPlayerName')?.closest('.arena-fighter')?.querySelector('.arena-fighter-icon')}
  function enemyEl(){return document.getElementById('arenaEnemyIcon')}
- function prepareAssets(){for(const v of Object.keys(HERO_ROOT))for(let i=0;i<HERO_FRAMES;i++)preload(heroIdle(v,i));Object.values(MONSTERS).forEach(m=>preload(m.src));for(let dir=0;dir<4;dir++)for(let frame=0;frame<DEMON_FRAMES;frame++)preload(demonSrc(dir,frame))}
+ function prepareAssets(){for(let dir=0;dir<4;dir++)for(let frame=0;frame<3;frame++)preload(gmSrc(dir,frame));Object.values(MONSTERS).forEach(m=>preload(m.src));for(let dir=0;dir<4;dir++)for(let frame=0;frame<DEMON_FRAMES;frame++)preload(demonSrc(dir,frame))}
  function enemyKind(){
   const n=String(document.getElementById('arenaEnemyName')?.textContent||'').toLowerCase();
   if(n.includes('rat'))return'rat';if(n.includes('troll'))return'sahuagin';if(n==='orc')return'goblin';if(n.includes('berserker'))return'imp';if(n.includes('rider'))return'cockatrice';if(n.includes('cyclops'))return'gazer';if(n.includes('scorpion'))return'scorpion';if(n.includes('scarab'))return'plant';if(n.includes('dragon hatchling'))return'snake';if(n==='dragon')return'dragon';if(n.includes('dragon lord'))return'puppet';if(n.includes('frost dragon'))return'drone';if(n.includes('demon skeleton'))return'skeleton';if(n.includes('hellhound'))return'spider';if(n==='demon')return'demonSurvive';if(n.includes('deathbringer'))return'sufferingSoul';return null;
  }
  function draw(){
   const p=playerEl(),e=enemyEl();if(!p||!e)return;
-  const v=playerVocation();paint(p,heroIdle(v,animFrame%HERO_FRAMES),HERO_SIZE);p.textContent='';e.textContent='';
+  detectPlayerMovement();paint(p,heroIdle(null,playerAnimFrame),HERO_SIZE);p.textContent='';e.textContent='';
   const kind=enemyKind();if(kind==='demonSurvive'){detectDemonMovement();paintDemon(e,demonMoveDir,demonAnimating?demonAnimFrame:0);return;}const m=MONSTERS[kind];if(m)paintSheet(e,m,m.animated?animFrame%m.frames:0);else{e.style.backgroundImage='';e.style.width='112px';e.style.height='112px'}
  }
  function startAttack(){if(attacking)return;attacking=true;const p=playerEl();if(p){p.classList.remove('waves-attack');void p.offsetWidth;p.classList.add('waves-attack');setTimeout(()=>p.classList.remove('waves-attack'),300)}setTimeout(()=>{attacking=false;draw()},310)}
