@@ -15,21 +15,21 @@
  const DEMON={frames:DEMON_FRAMES,size:144};
  const RAT_FRAMES=8,RAT_DIRECTIONS={north:0,east:1,south:2,west:3};
  const MONSTERS={
-  rat:{src:ROOT+'3843.png',frames:35,w:64,h:64,rate:1,size:96,row:0,animated:true,individualFrames:true,base:3843,directionFrames:8},
-  troll:{src:ROOT+'3675.png',frames:35,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:3675,directionFrames:8},
-  scorpion:{src:ROOT+'scorpion/54629.png',frames:36,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:54629,directionFrames:9},
-  orcRider:{src:ROOT+'orc rider/3419.png',frames:36,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:3419,directionFrames:9},
-  cyclops:{src:ROOT+'cyc/3879.png',frames:36,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:3879,directionFrames:9},
-  dragon:{src:ROOT+'4125.png',frames:36,w:64,h:64,rate:1,size:128,row:0,animated:true,individualFrames:true,base:4125,directionFrames:9},
-  orc:{src:ROOT+'13.png',frames:36,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:13,directionFrames:9},
-  orcBerserker:{src:ROOT+'53.png',frames:36,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:53,directionFrames:9},
-  dragonLord:{src:ROOT+'4301.png',frames:36,w:64,h:64,rate:1,size:128,row:0,animated:true,individualFrames:true,base:4301,directionFrames:9},
-  ancientScarab:{src:ROOT+'ancient scarab/5077.png',frames:36,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:5077,directionFrames:9},
-  ferumbras:{src:ROOT+'deathbringer campeão/15908.png',frames:36,w:64,h:64,rate:1,size:144,row:0,animated:true,individualFrames:true,base:15908,directionFrames:9},
-  frostDragon:{src:ROOT+'16265.png',frames:12,w:64,h:64,rate:1,size:128,row:0,animated:true,individualFrames:true,base:16265,directionFrames:3},
-  dragonHatchling:{src:ROOT+'18549.png',frames:36,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:18549,directionFrames:9},
-  demonSkeleton:{src:ROOT+'demon skeleton/4233.png',frames:32,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:4233,directionFrames:8},
-  hellhound:{src:ROOT+'16153.png',frames:12,w:64,h:64,rate:1,size:128,row:0,animated:true,individualFrames:true,base:16153,directionFrames:3},
+  rat:{src:ROOT+'3843.png',frames:35,w:64,h:64,rate:1,size:96,row:0,animated:true,individualFrames:true,base:3843,directionFrames:8,folder:''},
+  troll:{src:ROOT+'3675.png',frames:35,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:3675,directionFrames:8,folder:''},
+  scorpion:{src:ROOT+'scorpion/54629.png',frames:36,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:54629,directionFrames:9,folder:'scorpion/'},
+  orcRider:{src:ROOT+'orc rider/3419.png',frames:36,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:3419,directionFrames:9,folder:'orc rider/'},
+  cyclops:{src:ROOT+'cyc/3879.png',frames:36,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:3879,directionFrames:9,folder:'cyc/'},
+  dragon:{src:ROOT+'4125.png',frames:36,w:64,h:64,rate:1,size:128,row:0,animated:true,individualFrames:true,base:4125,directionFrames:9,folder:''},
+  orc:{src:ROOT+'13.png',frames:36,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:13,directionFrames:9,folder:''},
+  orcBerserker:{src:ROOT+'53.png',frames:36,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:53,directionFrames:9,folder:''},
+  dragonLord:{src:ROOT+'4301.png',frames:36,w:64,h:64,rate:1,size:128,row:0,animated:true,individualFrames:true,base:4301,directionFrames:9,folder:''},
+  ancientScarab:{src:ROOT+'ancient scarab/5077.png',frames:36,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:5077,directionFrames:9,folder:'ancient scarab/'},
+  ferumbras:{src:ROOT+'deathbringer campeão/15908.png',frames:36,w:64,h:64,rate:1,size:144,row:0,animated:true,individualFrames:true,base:15908,directionFrames:9,folder:'deathbringer campeão/'},
+  frostDragon:{src:ROOT+'16265.png',frames:12,w:64,h:64,rate:1,size:128,row:0,animated:true,individualFrames:true,base:16265,directionFrames:3,folder:''},
+  dragonHatchling:{src:ROOT+'18549.png',frames:36,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:18549,directionFrames:9,folder:''},
+  demonSkeleton:{src:ROOT+'demon skeleton/4233.png',frames:32,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:4233,directionFrames:8,folder:'demon skeleton/'},
+  hellhound:{src:ROOT+'16153.png',frames:12,w:64,h:64,rate:1,size:128,row:0,animated:true,individualFrames:true,base:16153,directionFrames:3,folder:''},
   goblin:{src:RAW+'goblin/idle.png',frames:4,w:150,h:150,rate:1,size:112,static:true},
   skeleton:{src:RAW+'skeleton/idle.png',frames:4,w:150,h:150,rate:1,size:112,static:true},
   sahuagin:{src:HIDDEN+'sahuagin-default_2.png?1550287917=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true},
@@ -143,7 +143,7 @@
   if(m.individualFrames){
    const frameCount=m.directionFrames||Math.floor(m.frames/4);
    const mobIndex=(Math.min(frameCount-1,frame%frameCount)*4)+ratMoveDir;
-   const src=ROOT+String(m.base+mobIndex)+'.png';
+   const src=ROOT+(m.folder||'')+String(m.base+mobIndex)+'.png';
    el.style.width=m.size+'px';
    el.style.height=m.size+'px';
    el.style.backgroundImage='url("'+src+'")';
@@ -164,7 +164,7 @@
  }
  function playerEl(){return document.querySelector('#arenaPlayerName')?.closest('.arena-fighter')?.querySelector('.arena-fighter-icon')}
  function enemyEl(){return document.getElementById('arenaEnemyIcon')}
- function prepareAssets(){for(let dir=0;dir<4;dir++)for(let frame=0;frame<3;frame++)preload(gmSrc(dir,frame));Object.values(MONSTERS).forEach(m=>{preload(m.src);if(m.individualFrames){for(let i=0;i<m.frames;i++)preload(ROOT+String(m.base+i)+'.png')}});for(let dir=0;dir<4;dir++)for(let frame=0;frame<DEMON_FRAMES;frame++)preload(demonSrc(dir,frame))}
+ function prepareAssets(){for(let dir=0;dir<4;dir++)for(let frame=0;frame<3;frame++)preload(gmSrc(dir,frame));Object.values(MONSTERS).forEach(m=>{preload(m.src);if(m.individualFrames){for(let i=0;i<m.frames;i++)preload(ROOT+(m.folder||'')+String(m.base+i)+'.png')}});for(let dir=0;dir<4;dir++)for(let frame=0;frame<DEMON_FRAMES;frame++)preload(demonSrc(dir,frame))}
  function enemyKind(){
   const n=String(document.getElementById('arenaEnemyName')?.textContent||'').toLowerCase();
   if(n.includes('rat'))return'rat';if(n.includes('troll'))return'troll';if(n.includes('orc berserker'))return'orcBerserker';if(n.includes('orc rider'))return'orcRider';if(n==='orc')return'orc';if(n.includes('cyclops'))return'cyclops';if(n.includes('scorpion'))return'scorpion';if(n.includes('ancient scarab')||n.includes('scarab'))return'ancientScarab';if(n.includes('dragon hatchling'))return'dragonHatchling';if(n.includes('dragon lord'))return'dragonLord';if(n.includes('frost dragon')||n.includes('drost dragon'))return'frostDragon';if(n==='dragon')return'dragon';if(n.includes('demon skeleton'))return'demonSkeleton';if(n.includes('hellhound'))return'hellhound';if(n.includes('ferumbras')||n.includes('deathbringer'))return'ferumbras';if(n==='demon')return'demonSurvive';return null;
