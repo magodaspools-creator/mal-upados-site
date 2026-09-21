@@ -191,7 +191,7 @@
     ?(dx>0?GM_DIRECTIONS.east:GM_DIRECTIONS.west)
     :(dy>0?GM_DIRECTIONS.south:GM_DIRECTIONS.north);
    if(nextDir!==playerMoveDir)playerAnimFrame=0;
-   else playerAnimFrame=(playerAnimFrame+1)%3;
+   else playerAnimFrame=(window.__arenaPlayerMotion?.stepFrame??((playerAnimFrame+1)%3));
    playerMoveDir=nextDir;
    lastPlayerPos={x,y};
   }
