@@ -209,6 +209,7 @@
   return out;
  };
  const mageRecolor=(frame,dir)=>renderMageOutfit(frame,dir);
+ window.__arenaMageOutfitPreview=(frame,dir)=>renderMageOutfit(frame,dir);
  const GM_DIRECTIONS={north:0,east:1,south:2,west:3};
  const GM_ROOT=ROOT;
  const gmSrc=(dir,frame)=>GM_ROOT+String(1771+(frame%3)*4+dir)+'.png';
