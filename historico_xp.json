@@ -1665,8 +1665,8 @@
   },
   "2026-09-21": {
     "Chines Protetor": {
-      "level": 505,
-      "experience": 2132227849,
+      "level": 506,
+      "experience": 2137268701,
       "experience_exact": true,
       "experience_vocation": "TibiaData/highscores"
     },
@@ -1689,7 +1689,7 @@
       "experience_vocation": null
     },
     "Shyn Chan": {
-      "level": 130,
+      "level": 131,
       "experience": null,
       "experience_exact": false,
       "experience_vocation": null
@@ -1791,7 +1791,7 @@
       "experience_vocation": null
     },
     "Promocao Relampago": {
-      "level": 99,
+      "level": 101,
       "experience": null,
       "experience_exact": false,
       "experience_vocation": null
