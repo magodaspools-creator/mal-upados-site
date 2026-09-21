@@ -46,9 +46,12 @@
  };
  const HERO_FRAMES=3,HERO_SIZE=96;
  const PALADIN_SIZE=96;
+ const MAGE_SIZE=96;
  const PALADIN_DIRECTIONS={north:0,east:1,south:2,west:3};
  const PALADIN_ROOT='arena-godot/characters/';
  const paladinSrc=(dir)=>PALADIN_ROOT+String(6311+dir*2)+'.png';
+ const MAGE_ROOT='arena-godot/characters/';
+ const mageSrc=(dir)=>MAGE_ROOT+String(6665+dir*2)+'.png';
  const GM_DIRECTIONS={north:0,east:1,south:2,west:3};
  const GM_ROOT=ROOT;
  const gmSrc=(dir,frame)=>GM_ROOT+String(1771+(frame%3)*4+dir)+'.png';
@@ -78,7 +81,7 @@
   `;document.head.appendChild(s)
  }
  function playerVocation(){let voc='';try{const current=typeof window.arenaSurviveCurrent==='function'?window.arenaSurviveCurrent():null;voc=String(current?.vocation||'')}catch(e){}if(!voc){try{const name=String(document.getElementById('arenaPlayerName')?.textContent||'').trim();let list=[];try{list=typeof members!=='undefined'&&Array.isArray(members)?members:[]}catch(e){}const member=list.find(m=>String(m?.name||'').trim()===name);voc=String(member?.vocation||'')}catch(e){}}voc=voc.toLowerCase().trim();if(voc.includes('paladin')||voc.includes('paladino'))return'paladin';if(voc.includes('sorcerer')||voc.includes('mage')||voc.includes('mago'))return'mage';if(voc.includes('druid'))return'druid';if(voc.includes('monk')||voc.includes('monge')||voc.includes('rogue'))return'rogue';return'knight'}
- function heroIdle(v,n){return playerVocation()==='paladin'?paladinSrc(playerMoveDir):gmSrc(playerMoveDir,n)}
+ function heroIdle(v,n){const voc=playerVocation();if(voc==='paladin')return paladinSrc(playerMoveDir);if(voc==='mage')return mageSrc(playerMoveDir);return gmSrc(playerMoveDir,n)}
  function detectPlayerMovement(){
   const mode=window.__arenaGameState;
   if(!mode?.player)return;
@@ -168,7 +171,7 @@
  }
  function playerEl(){return document.querySelector('#arenaPlayerName')?.closest('.arena-fighter')?.querySelector('.arena-fighter-icon')}
  function enemyEl(){return document.getElementById('arenaEnemyIcon')}
- function prepareAssets(){for(let dir=0;dir<4;dir++)for(let frame=0;frame<3;frame++)preload(gmSrc(dir,frame));for(let dir=0;dir<4;dir++)preload(paladinSrc(dir));Object.values(MONSTERS).forEach(m=>{preload(m.src);if(m.individualFrames){for(let i=0;i<m.frames;i++)preload(ROOT+(m.folder||'')+String(m.base+i)+'.png')}});for(let dir=0;dir<4;dir++)for(let frame=0;frame<DEMON_FRAMES;frame++)preload(demonSrc(dir,frame))}
+ function prepareAssets(){for(let dir=0;dir<4;dir++)for(let frame=0;frame<3;frame++)preload(gmSrc(dir,frame));for(let dir=0;dir<4;dir++)preload(paladinSrc(dir));for(let dir=0;dir<4;dir++)preload(mageSrc(dir));Object.values(MONSTERS).forEach(m=>{preload(m.src);if(m.individualFrames){for(let i=0;i<m.frames;i++)preload(ROOT+(m.folder||'')+String(m.base+i)+'.png')}});for(let dir=0;dir<4;dir++)for(let frame=0;frame<DEMON_FRAMES;frame++)preload(demonSrc(dir,frame))}
  function enemyKind(){
   const n=String(document.getElementById('arenaEnemyName')?.textContent||'').toLowerCase().replace(/\\s+/g,' ').trim();
   if(n.includes('rat'))return'rat';if(n.includes('troll'))return'troll';if(n.includes('orc berserker'))return'orcBerserker';if(n.includes('orc rider'))return'orcRider';if(n==='orc')return'orc';if(n.includes('cyclops'))return'cyclops';if(n.includes('scorpion'))return'scorpion';if(n.includes('ancient scarab')||n.includes('scarab'))return'ancientScarab';if(n.includes('dragon hatchling'))return'dragonHatchling';if(n.includes('dragon lord'))return'dragonLord';if(n.includes('frost dragon')||n.includes('drost dragon'))return'frostDragon';if(n==='dragon')return'dragon';if(n.includes('demon skeleton'))return'demonSkeleton';if(n.includes('hellhound'))return'hellhound';if(n.includes('ferumbras')||n.includes('deathbringer'))return'ferumbras';if(n==='demon')return'demonSurvive';return null;
