@@ -75,94 +75,112 @@
  const MAGE_VISUALS=[
   {id:'base',label:'Padrão',frames:[
    [
-    {base:6673,mask:6674}, // Norte
-    {base:6675,mask:6676}, // Leste
-    {base:6677,mask:6678}, // Sul
-    {base:6679,mask:6680}  // Oeste
+    {base:6673,mask:6674},
+    {base:6675,mask:6676},
+    {base:6677,mask:6678},
+    {base:6679,mask:6680}
    ],
    [
-    {base:6694,mask:6695}, // Norte
-    {base:6696,mask:6697}, // Leste
-    {base:6698,mask:6699}, // Sul
-    {base:6700,mask:6701}  // Oeste
+    {base:6694,mask:6695},
+    {base:6696,mask:6697},
+    {base:6698,mask:6699},
+    {base:6700,mask:6701}
    ],
    [
-    {base:6714,mask:6715}, // Norte
-    {base:6716,mask:6717}, // Leste
-    {base:6718,mask:6719}, // Sul
-    {base:6720,mask:6721}  // Oeste
+    {base:6714,mask:6715},
+    {base:6716,mask:6717},
+    {base:6718,mask:6719},
+    {base:6720,mask:6721}
    ]
   ]}
  ];
+ const MAGE_BODY_FRAMES=MAGE_VISUALS[0].frames;
+
+ // Addons são layers opcionais; nunca entram na sequência de frames.
+ // As máscaras RGB não são renderizadas, apenas lidas no Canvas temporário.
+ const MAGE_LAYERS={
+  staff:{active:false,frames:[]},
+  hat:{active:false,frames:[]}
+ };
+
  const mageFramePair=(visual,frame,dir)=>{
-  const v=MAGE_VISUALS[0];
-  const pairs=v.frames[frame%v.frames.length];
-  return pairs[dir%4];
+  return MAGE_BODY_FRAMES[frame%MAGE_BODY_FRAMES.length][dir%4];
  };
  const mageFrameSrc=(frame,dir,visual=0)=>MAGE_ROOT+String(mageFramePair(visual,frame,dir).base)+'.png';
  const mageFrameMask=(frame,dir,visual=0)=>MAGE_ROOT+String(mageFramePair(visual,frame,dir).mask)+'.png';
- const mageColors={
-  head:'#d6a06d',
-  body:'#3f7cff',
-  details:'#7a4fd0',
-  feet:'#8b5a2b'
- };
- const mageCanvasCache=new Map();
- let mageVisual=0;
- const mageImages=new Map();
- const mageImage=(src)=>{
-  if(mageImages.has(src))return mageImages.get(src);
-  const img=new Image();
-  img.decoding='async';
-  img.crossOrigin='anonymous';
-  img.src=src;
-  mageImages.set(src,img);
-  return img;
- };
- const mageHexRgb=(hex)=>{
-  const s=String(hex||'').replace('#','');
-  if(!/^[0-9a-fA-F]{6}$/.test(s))return [255,255,255];
-  return [parseInt(s.slice(0,2),16),parseInt(s.slice(2,4),16),parseInt(s.slice(4,6),16)];
- };
  const mageRecolor=(frame,dir)=>{
   const colors=window.arenaMageColors||mageColors;
+  const pair=mageFramePair(mageVisual,frame,dir);
   const key=mageVisual+'|'+frame+'|'+dir+'|'+colors.head+'|'+colors.body+'|'+colors.details+'|'+colors.feet;
   if(mageCanvasCache.has(key))return mageCanvasCache.get(key);
-  const base=mageImage(mageFrameSrc(frame,dir,mageVisual));
-  const mask=mageImage(mageFrameMask(frame,dir,mageVisual));
-  if(!base.complete||!mask.complete||!base.naturalWidth||!mask.naturalWidth){
-   base.onload=()=>draw();
-   mask.onload=()=>draw();
-   return mageFrameSrc(frame,dir,mageVisual);
-  }
-  const w=base.naturalWidth,h=base.naturalHeight;
-  const c=document.createElement('canvas');c.width=w;c.height=h;
-  const ctx=c.getContext('2d');
-  ctx.imageSmoothingEnabled=false;
-  ctx.drawImage(base,0,0);
-  const bi=ctx.getImageData(0,0,w,h);
-  const mc=document.createElement('canvas');mc.width=w;mc.height=h;
-  const mx=mc.getContext('2d');mx.drawImage(mask,0,0);
-  const mi=mx.getImageData(0,0,w,h).data;
-  const targets={
-   head:mageHexRgb(colors.head),body:mageHexRgb(colors.body),
-   details:mageHexRgb(colors.details),feet:mageHexRgb(colors.feet)
+
+  const body=mageImage(MAGE_ROOT+String(pair.base)+'.png');
+  const mask=mageImage(MAGE_ROOT+String(pair.mask)+'.png');
+
+  const build=()=>{
+   if(!body.complete||!mask.complete||!body.naturalWidth||!mask.naturalWidth)return null;
+
+   const w=body.naturalWidth,h=body.naturalHeight;
+   const c=document.createElement('canvas');
+   c.width=w;c.height=h;
+   const ctx=c.getContext('2d');
+   ctx.imageSmoothingEnabled=false;
+
+   // Corpo base.
+   ctx.clearRect(0,0,w,h);
+   ctx.drawImage(body,0,0,w,h);
+
+   // Máscara RGB: somente referência de cor, em canvas temporário.
+   const mc=document.createElement('canvas');
+   mc.width=w;mc.height=h;
+   const mx=mc.getContext('2d');
+   mx.imageSmoothingEnabled=false;
+   mx.drawImage(mask,0,0,w,h);
+   const mi=mx.getImageData(0,0,w,h).data;
+   const bi=ctx.getImageData(0,0,w,h);
+   const targets={
+    head:mageHexRgb(colors.head),
+    body:mageHexRgb(colors.body),
+    details:mageHexRgb(colors.details),
+    feet:mageHexRgb(colors.feet)
+   };
+
+   for(let i=0;i<bi.data.length;i+=4){
+    if(!mi[i+3])continue;
+    const r=mi[i],g=mi[i+1],b=mi[i+2];
+    let target=null;
+    if(r>180&&g>180&&b<120)target=targets.head;
+    else if(r>180&&g<120&&b<120)target=targets.body;
+    else if(r<120&&g>150&&b<150)target=targets.details;
+    else if(r<120&&g<150&&b>150)target=targets.feet;
+    if(!target)continue;
+    bi.data[i]=target[0];
+    bi.data[i+1]=target[1];
+    bi.data[i+2]=target[2];
+   }
+   ctx.putImageData(bi,0,0);
+
+   // Addons ficam acima do corpo e nunca participam da animação.
+   for(const layer of [MAGE_LAYERS.staff,MAGE_LAYERS.hat]){
+    if(!layer?.active)continue;
+    const spec=layer.frames?.[frame%layer.frames.length]?.[dir%4];
+    if(!spec?.base)continue;
+    const img=mageImage(MAGE_ROOT+String(spec.base)+'.png');
+    if(img.complete&&img.naturalWidth)ctx.drawImage(img,0,0,w,h);
+   }
+
+   const out=c.toDataURL('image/png');
+   mageCanvasCache.set(key,out);
+   return out;
   };
-  for(let i=0;i<bi.data.length;i+=4){
-   const a=mi[i+3]; if(!a)continue;
-   const r=mi[i],g=mi[i+1],b=mi[i+2];
-   let target=null;
-   if(r>180&&g>180&&b<120)target=targets.head;
-   else if(r>180&&g<120&&b<120)target=targets.body;
-   else if(r<120&&g>150&&b<150)target=targets.details;
-   else if(r<120&&g<150&&b>150)target=targets.feet;
-   if(!target)continue;
-   bi.data[i]=target[0];bi.data[i+1]=target[1];bi.data[i+2]=target[2];
-  }
-  ctx.putImageData(bi,0,0);
-  const out=c.toDataURL('image/png');
-  mageCanvasCache.set(key,out);
-  return out;
+
+  const out=build();
+  if(out)return out;
+
+  const redraw=()=>{mageCanvasCache.delete(key);draw()};
+  body.onload=redraw;
+  mask.onload=redraw;
+  return mageFrameSrc(frame,dir,mageVisual);
  };
  const GM_DIRECTIONS={north:0,east:1,south:2,west:3};
  const GM_ROOT=ROOT;
@@ -240,7 +258,15 @@
   Object.keys(map).forEach(k=>{const el=document.getElementById(map[k]);if(el&&el.value!==next[k])el.value=next[k]});
  }
  function playerVocation(){let voc='';try{const current=typeof window.arenaSurviveCurrent==='function'?window.arenaSurviveCurrent():null;voc=String(current?.vocation||'')}catch(e){}if(!voc){try{const name=String(document.getElementById('arenaPlayerName')?.textContent||'').trim();let list=[];try{list=typeof members!=='undefined'&&Array.isArray(members)?members:[]}catch(e){}const member=list.find(m=>String(m?.name||'').trim()===name);voc=String(member?.vocation||'')}catch(e){}}voc=voc.toLowerCase().trim();if(voc.includes('paladin')||voc.includes('paladino'))return'paladin';if(voc.includes('sorcerer')||voc.includes('mage')||voc.includes('mago'))return'mage';if(voc.includes('druid'))return'druid';if(voc.includes('monk')||voc.includes('monge')||voc.includes('rogue'))return'rogue';return'knight'}
- function heroIdle(v,n){const voc=playerVocation();if(voc==='paladin')return paladinSrc(playerMoveDir);if(voc==='mage')return mageRecolor(n||0,playerMoveDir);return gmSrc(playerMoveDir,n)}
+ function heroIdle(v,n){
+  const voc=playerVocation();
+  if(voc==='paladin')return paladinSrc(playerMoveDir);
+  if(voc==='mage'){
+   const frame=Math.max(0,Math.min(MAGE_BODY_FRAMES.length-1,Number(n)||0));
+   return mageRecolor(frame,playerMoveDir);
+  }
+  return gmSrc(playerMoveDir,n);
+ }
  function setMageVisual(next){
   mageVisual=Math.max(0,Math.min(MAGE_VISUALS.length-1,Number(next)||0));
   mageCanvasCache.clear();
@@ -257,8 +283,13 @@
    const nextDir=Math.abs(dx)>=Math.abs(dy)
     ?(dx>0?GM_DIRECTIONS.east:GM_DIRECTIONS.west)
     :(dy>0?GM_DIRECTIONS.south:GM_DIRECTIONS.north);
-   if(nextDir!==playerMoveDir)playerAnimFrame=0;
-   else playerAnimFrame=(playerAnimFrame+1)%3;
+   // O frame do Mage só muda quando o Player realmente se move.
+   // O timer de renderização nunca percorre arquivos da pasta.
+   if(nextDir!==playerMoveDir){
+    playerAnimFrame=0;
+   }else{
+    playerAnimFrame=(playerAnimFrame+1)%MAGE_BODY_FRAMES.length;
+   }
    playerMoveDir=nextDir;
    lastPlayerPos={x,y};
   }
@@ -337,7 +368,27 @@
  }
  function playerEl(){return document.querySelector('#arenaPlayerName')?.closest('.arena-fighter')?.querySelector('.arena-fighter-icon')}
  function enemyEl(){return document.getElementById('arenaEnemyIcon')}
- function prepareAssets(){for(let dir=0;dir<4;dir++)for(let frame=0;frame<3;frame++)preload(gmSrc(dir,frame));for(let dir=0;dir<4;dir++)preload(paladinSrc(dir));for(let frame=0;frame<3;frame++)for(let dir=0;dir<4;dir++){preload(mageFrameSrc(frame,dir));preload(mageFrameMask(frame,dir));}Object.values(MONSTERS).forEach(m=>{preload(m.src);if(m.individualFrames){for(let i=0;i<m.frames;i++)preload(ROOT+(m.folder||'')+String(m.base+i)+'.png')}});for(let dir=0;dir<4;dir++)for(let frame=0;frame<DEMON_FRAMES;frame++)preload(demonSrc(dir,frame))}
+ function prepareAssets(){
+  for(let dir=0;dir<4;dir++)for(let frame=0;frame<3;frame++)preload(gmSrc(dir,frame));
+  for(let dir=0;dir<4;dir++)preload(paladinSrc(dir));
+
+  // Mage: somente 3 frames do corpo x 4 direções.
+  for(let frame=0;frame<MAGE_BODY_FRAMES.length;frame++){
+   for(let dir=0;dir<4;dir++){
+    const pair=MAGE_BODY_FRAMES[frame][dir];
+    preload(MAGE_ROOT+String(pair.base)+'.png');
+    preload(MAGE_ROOT+String(pair.mask)+'.png');
+   }
+  }
+
+  Object.values(MONSTERS).forEach(m=>{
+   preload(m.src);
+   if(m.individualFrames){
+    for(let i=0;i<m.frames;i++)preload(ROOT+(m.folder||'')+String(m.base+i)+'.png')
+   }
+  });
+  for(let dir=0;dir<4;dir++)for(let frame=0;frame<DEMON_FRAMES;frame++)preload(demonSrc(dir,frame))
+ }
  function enemyKind(){
   const n=String(document.getElementById('arenaEnemyName')?.textContent||'').toLowerCase().replace(/\\s+/g,' ').trim();
   if(n.includes('rat'))return'rat';if(n.includes('troll'))return'troll';if(n.includes('orc berserker'))return'orcBerserker';if(n.includes('orc rider'))return'orcRider';if(n==='orc')return'orc';if(n.includes('cyclops'))return'cyclops';if(n.includes('scorpion'))return'scorpion';if(n.includes('ancient scarab')||n.includes('scarab'))return'ancientScarab';if(n.includes('dragon hatchling'))return'dragonHatchling';if(n.includes('dragon lord'))return'dragonLord';if(n.includes('frost dragon')||n.includes('drost dragon'))return'frostDragon';if(n==='dragon')return'dragon';if(n.includes('demon skeleton'))return'demonSkeleton';if(n.includes('hellhound'))return'hellhound';if(n.includes('ferumbras')||n.includes('deathbringer'))return'ferumbras';if(n==='demon')return'demonSurvive';return null;
