@@ -55,27 +55,49 @@
  // Mage masculino: SOMENTE o Rider/Player. As montarias 6665+ ficam fora.
  // Cada frame de caminhada possui 3 visuais (base, addon 1, addon 2),
  // cada visual com 4 direções e cada sprite alternada com sua máscara RGB.
+ // Mapeamento de teste do Mage masculino — baseado na sequência real 6665–6916.
+ // IMPORTANTE: os 4 primeiros pares de cada bloco Player são as 4 direções
+ // (Norte, Leste, Sul, Oeste). Não usamos mais "+dir*2" em um par que já
+ // representa uma direção, porque isso fazia visual 1/2 apontarem para
+ // sprites que pertenciam a outra direção.
+ //
+ // Estrutura completa registrada para não perder a sequência:
+ // Ciclo 1: 6665–6727 | Ciclo 2: 6728–6790
+ // Ciclo 3: 6791–6853 | Ciclo 4: 6854–6916
+ // Player parado: 6673–6685
+ // Walk 1:        6694–6705
+ // Walk 2:        6714–6727
+ //
+ // Nesta primeira rodada NÃO inventamos quais dos arquivos extras são addons.
+ // O teste usa somente a camada base verificável das 4 direções em cada
+ // frame de movimento. Addons continuam fora até o agrupamento visual ser
+ // confirmado.
  const MAGE_VISUALS=[
   {id:'base',label:'Padrão',frames:[
-   {base:6673,mask:6674},
-   {base:6694,mask:6695},
-   {base:6714,mask:6715}
-  ]},
-  {id:'addon1',label:'Addon 1',frames:[
-   {base:6675,mask:6676},
-   {base:6696,mask:6697},
-   {base:6716,mask:6717}
-  ]},
-  {id:'addon2',label:'Addon 2',frames:[
-   {base:6677,mask:6678},
-   {base:6698,mask:6699},
-   {base:6718,mask:6719}
+   [
+    {base:6673,mask:6674}, // Norte
+    {base:6675,mask:6676}, // Leste
+    {base:6677,mask:6678}, // Sul
+    {base:6679,mask:6680}  // Oeste
+   ],
+   [
+    {base:6694,mask:6695}, // Norte
+    {base:6696,mask:6697}, // Leste
+    {base:6698,mask:6699}, // Sul
+    {base:6700,mask:6701}  // Oeste
+   ],
+   [
+    {base:6714,mask:6715}, // Norte
+    {base:6716,mask:6717}, // Leste
+    {base:6718,mask:6719}, // Sul
+    {base:6720,mask:6721}  // Oeste
+   ]
   ]}
  ];
  const mageFramePair=(visual,frame,dir)=>{
-  const v=MAGE_VISUALS[visual]||MAGE_VISUALS[0];
-  const pair=v.frames[frame%v.frames.length];
-  return {base:pair.base+dir*2,mask:pair.mask+dir*2};
+  const v=MAGE_VISUALS[0];
+  const pairs=v.frames[frame%v.frames.length];
+  return pairs[dir%4];
  };
  const mageFrameSrc=(frame,dir,visual=0)=>MAGE_ROOT+String(mageFramePair(visual,frame,dir).base)+'.png';
  const mageFrameMask=(frame,dir,visual=0)=>MAGE_ROOT+String(mageFramePair(visual,frame,dir).mask)+'.png';
