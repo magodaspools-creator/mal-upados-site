@@ -31,7 +31,7 @@ body{min-height:100vh}
 .survive-back{display:inline-block;margin-top:18px;color:#9f8654;font-size:.65rem;text-decoration:none}
 .survive-back:hover{color:#e2c36f}
 .survive-game-host{margin-top:18px}footer{margin-top:20px}
-.mage-visual-panel{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-left:auto;padding:7px 9px;border:1px solid #39342c;background:#101215;color:#8d939b;font:700 .58rem Inter,sans-serif;text-transform:uppercase}.mage-visual-panel[hidden]{display:none}.mage-visual-panel .label{color:#d3ad5b}.mage-visual-panel button{border:1px solid #4a4030;background:#171a1e;color:#aaa;padding:5px 8px;font:800 .55rem Inter,sans-serif;cursor:pointer;text-transform:uppercase}.mage-visual-panel button.active{border-color:#d3ad5b;background:#2a2418;color:#e5c76e}.mage-color-panel{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-left:auto;padding:7px 9px;border:1px solid #39342c;background:#101215;color:#8d939b;font:700 .58rem Inter,sans-serif;text-transform:uppercase}.mage-color-panel[hidden]{display:none}.mage-color-panel .label{color:#d3ad5b}.mage-color-panel label{display:inline-flex;align-items:center;gap:4px}.mage-color-panel input[type=color]{width:24px;height:24px;padding:0;border:1px solid #4a4030;background:#0f1114;cursor:pointer}
+.mage-visual-panel{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-left:auto;padding:7px 9px;border:1px solid #39342c;background:#101215;color:#8d939b;font:700 .58rem Inter,sans-serif;text-transform:uppercase}.mage-visual-panel[hidden]{display:none}.mage-visual-panel .label{color:#d3ad5b}.mage-visual-panel button{border:1px solid #4a4030;background:#171a1e;color:#aaa;padding:5px 8px;font:800 .55rem Inter,sans-serif;cursor:pointer;text-transform:uppercase}.mage-visual-panel button.active{border-color:#d3ad5b;background:#2a2418;color:#e5c76e}.mage-color-panel{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-left:auto;padding:7px 9px;border:1px solid #39342c;background:#101215;color:#8d939b;font:700 .58rem Inter,sans-serif;text-transform:uppercase}.mage-color-panel[hidden]{display:none}.mage-color-panel .label{color:#d3ad5b}.mage-color-panel label{display:inline-flex;align-items:center;gap:4px}.mage-color-panel input[type=color]{width:24px;height:24px;padding:0;border:1px solid #4a4030;background:#0f1114;cursor:pointer}.outfit-preview-wrap{display:flex;align-items:center;gap:7px;margin-left:4px;padding-left:8px;border-left:1px solid #39342c}.outfit-preview-wrap span{color:#d3ad5b}.outfit-preview-wrap canvas{width:64px;height:64px;image-rendering:pixelated;image-rendering:crisp-edges;display:block}
 @media(max-width:650px){.survive-page{padding-top:25px}.survive-hero h1{font-size:1.65rem}.survive-character{align-items:flex-start;flex-direction:column}.survive-character-main{width:100%;align-items:flex-start;flex-direction:column}.survive-character-picker,.survive-character-picker select{width:100%}}
 </style>
 </head>
@@ -84,6 +84,7 @@ body{min-height:100vh}
         <label> Corpo <input id="mageColorBody" type="color" value="#3f7cff" aria-label="Cor do corpo"></label>
         <label> Detalhes <input id="mageColorDetails" type="color" value="#7a4fd0" aria-label="Cor dos detalhes"></label>
         <label> Pés <input id="mageColorFeet" type="color" value="#8b5a2b" aria-label="Cor dos pés"></label>
+        <div class="outfit-preview-wrap"><span>Preview</span><canvas id="outfit-preview-canvas" width="64" height="64" aria-label="Preview do Outfit do Mage"></canvas></div>
       </div>
     </div>
 
@@ -100,5 +101,61 @@ body{min-height:100vh}
 <script src="arena-sobreviva-sync.js?v=characters-db-20260918-fix1"></script>
 <script src="arena-game-mode.js?v=tactical-turns-20260918"></script>
 <script src="arena-game-sprites.js?v=mage-visuals-3-20260921"></script>
+<script>
+(function(){
+  function updateOutfitPreview(){
+    const canvas=document.getElementById('outfit-preview-canvas');
+    if(!canvas)return;
+    const ctx=canvas.getContext('2d');
+    ctx.imageSmoothingEnabled=false;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    const colors={
+      head:document.getElementById('mageColorHead')?.value||'#d6a06d',
+      body:document.getElementById('mageColorBody')?.value||'#3f7cff',
+      legs:document.getElementById('mageColorDetails')?.value||'#7a4fd0',
+      feet:document.getElementById('mageColorFeet')?.value||'#8b5a2b'
+    };
+    window.arenaMageColors={...(window.arenaMageColors||{}),...colors,details:colors.legs};
+
+    const addon=document.querySelector('[data-mage-visual].active')||document.querySelector('[data-mage-visual][aria-pressed="true"]');
+    if(addon&&typeof window.setMageVisual==='function')window.setMageVisual(addon.dataset.mageVisual);
+
+    const src=typeof window.__arenaMageOutfitPreview==='function'
+      ?window.__arenaMageOutfitPreview(0,2)
+      :'';
+    if(!src)return;
+    const img=new Image();
+    img.onload=function(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.imageSmoothingEnabled=false;
+      ctx.drawImage(img,0,0,64,64);
+    };
+    img.src=src;
+  }
+
+  window.updateOutfitPreview=updateOutfitPreview;
+
+  function bindPreviewEvents(){
+    ['mageColorHead','mageColorBody','mageColorDetails','mageColorFeet'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el&&!el.dataset.previewHook){
+        el.dataset.previewHook='1';
+        el.addEventListener('input',updateOutfitPreview);
+        el.addEventListener('change',updateOutfitPreview);
+      }
+    });
+    document.querySelectorAll('[data-mage-visual]').forEach(btn=>{
+      if(btn.dataset.previewHook)return;
+      btn.dataset.previewHook='1';
+      btn.addEventListener('click',()=>setTimeout(updateOutfitPreview,0));
+    });
+    updateOutfitPreview();
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindPreviewEvents,{once:true});
+  else bindPreviewEvents();
+})();
+</script>
 </body>
 </html>
