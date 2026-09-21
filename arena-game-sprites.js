@@ -126,78 +126,77 @@
  };
  const renderMageOutfit=(frame,dir)=>{
   const colors=window.arenaMageColors||mageColors;
-  // Mage isolado: frame -> bloco de caminhada; dir -> N/E/S/O.
-  // Nunca percorremos os PNGs sequencialmente. Cada camada é composta
-  // explicitamente no mesmo Canvas e a máscara RGB só serve para recolorir.
-  const layersByFrame=[
-   [
-    {base:6673,mask:6674},
-    {base:6675,mask:6676},
-    {base:6677,mask:6678},
-    {base:6679,mask:6680}
-   ],
-   [
-    {base:6694,mask:6695},
-    {base:6696,mask:6697},
-    {base:6698,mask:6699},
-    {base:6700,mask:6701}
-   ],
-   [
-    {base:6714,mask:6715},
-    {base:6716,mask:6717},
-    {base:6718,mask:6719},
-    {base:6720,mask:6721}
-   ]
-  ];
-  const addonByFrame=[
-   [
-    {base:6681,mask:6682},
-    {base:6683,mask:6684}
-   ],
-   [
-    {base:6702,mask:6703},
-    {base:6704,mask:6705}
-   ],
-   [
-    {base:6722,mask:6723},
-    {base:6724,mask:6725}
-   ]
-  ];
+
+  // MAPA FIXO DA OUTFIT MAGE A PÉ.
+  // Não percorremos a faixa 6665–6916: cada frame/direção aponta
+  // diretamente para o sprite humanoide correspondente.
+  const baseBody={
+   0:[6665,6667,6669,6671], // parado: N, E, S, O
+   1:[6706,6708,6710,6712], // passo 1: N, E, S, O
+   2:[6746,6748,6750,6752]  // passo 2: N, E, S, O
+  };
+
   const frameIndex=((Number(frame)||0)%3+3)%3;
   const dirIndex=((Number(dir)||0)%4+4)%4;
-  const activeLayers=[layersByFrame[frameIndex][dirIndex],...addonByFrame[frameIndex]];
-  const key='mage-outfit-v2|'+frameIndex+'|'+dirIndex+'|'+activeLayers.map(x=>x.base+'/'+x.mask).join(',')+'|'+colors.head+'|'+colors.body+'|'+colors.details+'|'+colors.feet;
+  const baseId=baseBody[frameIndex][dirIndex];
+  const maskId=baseId+1;
+  const key='mage-body-fixed-v1|'+frameIndex+'|'+dirIndex+'|'+baseId+'|'+maskId+'|'+colors.head+'|'+colors.body+'|'+colors.details+'|'+colors.feet;
+
   if(mageCanvasCache.has(key))return mageCanvasCache.get(key);
-  const loaded=activeLayers.map(layer=>({layer,base:mageImage(MAGE_ROOT+String(layer.base)+'.png'),mask:mageImage(MAGE_ROOT+String(layer.mask)+'.png')}));
-  if(loaded.some(x=>!x.base.complete||!x.mask.complete||!x.base.naturalWidth||!x.mask.naturalWidth)){
-   loaded.forEach(x=>{x.base.onload=()=>draw();x.mask.onload=()=>draw()});
-   return mageFrameSrc(frameIndex,dirIndex,mageVisual);
+
+  const base=mageImage(MAGE_ROOT+String(baseId)+'.png');
+  const mask=mageImage(MAGE_ROOT+String(maskId)+'.png');
+
+  if(!base.complete||!mask.complete||!base.naturalWidth||!mask.naturalWidth){
+   base.onload=()=>draw();
+   mask.onload=()=>draw();
+   return '';
   }
-  const w=loaded[0].base.naturalWidth,h=loaded[0].base.naturalHeight;
-  const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
-  const ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;
-  const targets={head:mageHexRgb(colors.head),body:mageHexRgb(colors.body),details:mageHexRgb(colors.details),feet:mageHexRgb(colors.feet)};
-  for(const item of loaded){
-   const layerCanvas=document.createElement('canvas');layerCanvas.width=w;layerCanvas.height=h;
-   const layerCtx=layerCanvas.getContext('2d');layerCtx.imageSmoothingEnabled=false;
-   layerCtx.drawImage(item.base,0,0,w,h);
-   const pixels=layerCtx.getImageData(0,0,w,h);
-   const maskCanvas=document.createElement('canvas');maskCanvas.width=w;maskCanvas.height=h;
-   const maskCtx=maskCanvas.getContext('2d');maskCtx.drawImage(item.mask,0,0,w,h);
-   const mask=maskCtx.getImageData(0,0,w,h).data;
-   for(let i=0;i<pixels.data.length;i+=4){
-    if(!mask[i+3])continue;
-    const r=mask[i],g=mask[i+1],b=mask[i+2];
-    let target=null;
-    if(r>180&&g>180&&b<120)target=targets.head;
-    else if(r>180&&g<120&&b<120)target=targets.body;
-    else if(r<120&&g>150&&b<150)target=targets.details;
-    else if(r<120&&g<150&&b>150)target=targets.feet;
-    if(target){pixels.data[i]=target[0];pixels.data[i+1]=target[1];pixels.data[i+2]=target[2]}
+
+  const w=base.naturalWidth,h=base.naturalHeight;
+  const canvas=document.createElement('canvas');
+  canvas.width=w;
+  canvas.height=h;
+
+  const ctx=canvas.getContext('2d');
+  ctx.imageSmoothingEnabled=false;
+  ctx.drawImage(base,0,0,w,h);
+
+  const pixels=ctx.getImageData(0,0,w,h);
+  const maskCanvas=document.createElement('canvas');
+  maskCanvas.width=w;
+  maskCanvas.height=h;
+  const maskCtx=maskCanvas.getContext('2d');
+  maskCtx.drawImage(mask,0,0,w,h);
+  const maskPixels=maskCtx.getImageData(0,0,w,h).data;
+
+  const targets={
+   head:mageHexRgb(colors.head),
+   body:mageHexRgb(colors.body),
+   details:mageHexRgb(colors.details),
+   feet:mageHexRgb(colors.feet)
+  };
+
+  for(let i=0;i<pixels.data.length;i+=4){
+   if(!maskPixels[i+3])continue;
+
+   const r=maskPixels[i],g=maskPixels[i+1],b=maskPixels[i+2];
+   let target=null;
+
+   if(r>180&&g>180&&b<120)target=targets.head;
+   else if(r>180&&g<120&&b<120)target=targets.body;
+   else if(r<120&&g>150&&b<150)target=targets.details;
+   else if(r<120&&g<150&&b>150)target=targets.feet;
+
+   if(target){
+    pixels.data[i]=target[0];
+    pixels.data[i+1]=target[1];
+    pixels.data[i+2]=target[2];
    }
-   layerCtx.putImageData(pixels,0,0);
-   ctx.drawImage(layerCanvas,0,0,w,h);
   }
+
+  ctx.putImageData(pixels,0,0);
+
   const out=canvas.toDataURL('image/png');
   mageCanvasCache.set(key,out);
   return out;
