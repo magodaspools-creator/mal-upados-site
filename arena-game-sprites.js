@@ -32,7 +32,6 @@
   hellhound:{src:ROOT+'16153.png',frames:12,w:64,h:64,rate:1,size:128,row:0,animated:true,individualFrames:true,base:16153,directionFrames:3},
   goblin:{src:RAW+'goblin/idle.png',frames:4,w:150,h:150,rate:1,size:112,static:true},
   skeleton:{src:RAW+'skeleton/idle.png',frames:4,w:150,h:150,rate:1,size:112,static:true},
-  dragon:{src:RAW+'boss/dragon_idle.png',frames:6,w:70,h:73,rate:1,size:128,static:true},
   sahuagin:{src:HIDDEN+'sahuagin-default_2.png?1550287917=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true},
   imp:{src:HIDDEN+'imp-dark-default_2.png?1550287170=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true},
   cockatrice:{src:HIDDEN+'cockatrice-default_2.png?1550201742=',frames:9,w:64,h:64,rate:1,size:112,row:0,static:true},
@@ -52,7 +51,7 @@
  let playerMoveDir=GM_DIRECTIONS.south,playerAnimFrame=0,lastPlayerPos=null;
  let timer=null,animFrame=0,attacking=false,lastEnemyHp=null;
  let demonMoveDir=DEMON_DIRECTIONS.south,demonAnimFrame=0,demonAnimating=false,lastDemonPos=null;
- let ratMoveDir=RAT_DIRECTIONS.south,ratAnimFrame=0,ratAnimating=false,lastRatPos=null;
+ let ratMoveDir=RAT_DIRECTIONS.south,ratAnimFrame=0,ratAnimating=false,lastRatPos=null,lastRatKind=null;
  const cache=new Set();
  function preload(src){if(!src||cache.has(src))return;cache.add(src);const img=new Image();img.decoding='async';img.src=src}
  function style(){
@@ -173,7 +172,7 @@
  function draw(){
   const p=playerEl(),e=enemyEl();if(!p||!e)return;
   detectPlayerMovement();paint(p,heroIdle(null,playerAnimFrame),HERO_SIZE);p.textContent='';e.textContent='';
-  const kind=enemyKind();if(kind==='rat'||kind==='troll'){detectRatMovement();paintSheet(e,MONSTERS[kind],ratAnimating?ratAnimFrame:0);return;}if(kind==='demonSurvive'){detectDemonMovement();paintDemon(e,demonMoveDir,demonAnimating?demonAnimFrame:0);return;}const m=MONSTERS[kind];if(m)paintSheet(e,m,m.animated?animFrame%m.frames:0);else{e.style.backgroundImage='';e.style.width='112px';e.style.height='112px'}
+  const kind=enemyKind();const m=MONSTERS[kind];if(m?.individualFrames){if(lastRatKind!==kind){lastRatKind=kind;lastRatPos=null;ratAnimFrame=0;ratMoveDir=RAT_DIRECTIONS.south;ratAnimating=false;}detectRatMovement();paintSheet(e,m,ratAnimating?ratAnimFrame:0);return;}if(kind==='demonSurvive'){detectDemonMovement();paintDemon(e,demonMoveDir,demonAnimating?demonAnimFrame:0);return;}if(m)paintSheet(e,m,m.animated?animFrame%m.frames:0);else{e.style.backgroundImage='';e.style.width='112px';e.style.height='112px'}
  }
  function startAttack(){if(attacking)return;attacking=true;const p=playerEl();if(p){p.classList.remove('waves-attack');void p.offsetWidth;p.classList.add('waves-attack');setTimeout(()=>p.classList.remove('waves-attack'),300)}setTimeout(()=>{attacking=false;draw()},310)}
  function idleAnimation(){if(attacking)return;animFrame++;draw()}
