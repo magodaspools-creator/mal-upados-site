@@ -76,7 +76,7 @@
    @media(max-width:650px){#arenaGameMode .arena-game-battle{min-height:330px}#arenaGameMode .arena-fighter{width:145px}#arenaGameMode .arena-fighter:first-child{left:1%}#arenaGameMode .arena-fighter.enemy{right:1%}#arenaGameMode .arena-fighter-icon{width:72px;height:72px;font-size:2.7rem} }
   `;document.head.appendChild(s)
  }
- function playerVocation(){const n=String(document.getElementById('arenaPlayerName')?.textContent||'').toLowerCase();if(n.includes('mage')||n.includes('mago'))return'mage';if(n.includes('paladin')||n.includes('paladino'))return'paladin';if(n.includes('archer'))return'archer';if(n.includes('rogue')||n.includes('monk')||n.includes('monge'))return'rogue';return'knight'}
+ function playerVocation(){const name=String(document.getElementById('arenaPlayerName')?.textContent||'').trim();const member=(Array.isArray(window.members)?window.members:[]).find(m=>String(m?.name||'').trim()===name);const voc=String(member?.vocation||'').toLowerCase().trim();if(voc.includes('paladin')||voc.includes('paladino'))return'paladin';if(voc.includes('sorcerer')||voc.includes('mage')||voc.includes('mago'))return'mage';if(voc.includes('druid'))return'druid';if(voc.includes('monk')||voc.includes('monge')||voc.includes('rogue'))return'rogue';return'knight'}
  function heroIdle(v,n){return playerVocation()==='paladin'?paladinSrc(playerMoveDir):gmSrc(playerMoveDir,n)}
  function detectPlayerMovement(){
   const mode=window.__arenaGameState;
