@@ -25,7 +25,7 @@ const CHALLENGES=[
 function baseGame(name){return {character:name,level:1,xp:0,gold:100,wins:0,kills:0,damage:0,zone:0,manualZone:0,weapon:0,armor:0,bestStreak:0,streak:0,lastChallenge:'',challengeProgress:0,challengeIndex:Math.floor(Math.random()*CHALLENGES.length),challengeDay:''};}
 function loadStore(){try{return JSON.parse(localStorage.getItem(STORAGE)||'{}')}catch{return {}}}
 function saveStore(all){localStorage.setItem(STORAGE,JSON.stringify(all));game=all[game.character];}
-function loadGame(name){let all=loadStore();if(!all[name])all[name]=baseGame(name);game=all[name];normalizeGame();if(!Number.isInteger(game.manualZone))game.manualZone=game.zone;saveStore(all)}
+function loadGame(name){let all=loadStore();if(!all[name])all[name]=baseGame(name);game=all[name];try{const savedOutfit=localStorage.getItem('mage_outfit_config');if(savedOutfit)game.outfit=JSON.parse(savedOutfit)}catch(e){}normalizeGame();if(!Number.isInteger(game.manualZone))game.manualZone=game.zone;saveStore(all)}
 function normalizeGame(){game.level=Math.max(1,Number(game.level)||1);game.xp=Math.max(0,Number(game.xp)||0);game.gold=Math.max(0,Number(game.gold)||0);game.zone=Math.min(ZONES.length-1,Math.max(0,Number(game.zone)||0));game.manualZone=Math.min(ZONES.length-1,Math.max(0,Number(game.manualZone??game.zone)||0));game.weapon=Math.min(WEAPONS.length-1,Math.max(0,Number(game.weapon)||0));game.armor=Math.min(ARMORS.length-1,Math.max(0,Number(game.armor)||0));}
 function persist(){let all=loadStore();all[game.character]=game;localStorage.setItem(STORAGE,JSON.stringify(all));}
 function xpNeed(){return 100+((game.level-1)*65);}
