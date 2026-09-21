@@ -26,6 +26,7 @@
   start(){if(this.raf)return;this.last=performance.now();const loop=now=>{const dt=Math.min(32,now-this.last);this.last=now;this.t=Math.min(1,this.t+dt/this.duration);const p=this.t;this.x=this.startX+(this.targetX-this.startX)*p;this.y=this.startY+(this.targetY-this.startY)*p;if(this.t>=1){this.x=this.targetX;this.y=this.targetY;this.moving=false;this.raf=0}else this.raf=requestAnimationFrame(loop);this.paint();};this.raf=requestAnimationFrame(loop)},
   paint(){const el=document.getElementById('arenaPlayerFighter');if(!el||this.x===null)return;el.style.left=this.x+'px';el.style.top=this.y+'px';el.style.transform='translate(-50%,-50%)'}
  };
+ window.__arenaPlayerMotion=playerMotion;
  const PLAYER_MOVE_MS=70;
  const PLAYER_ATTACK_MS=200;
  const ENEMY_MOVE_MS=240;
