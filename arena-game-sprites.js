@@ -450,7 +450,7 @@ aves pixel-art renderer for the website.
   mageCanvasCache.clear();
   draw();
  }
- window.addEventListener('arena:outfitChanged',(event)=>{\n  const cfg=event?.detail||{};\n  if(typeof cfg.visual==='number')mageVisual=Math.max(0,Math.min(MAGE_VISUALS.length-1,cfg.visual));\n  if(cfg.colors){window.arenaMageColors={head:cfg.colors.head||mageColors.head,body:cfg.colors.body||mageColors.body,details:cfg.colors.legs||cfg.colors.details||mageColors.details,feet:cfg.colors.feet||mageColors.feet};}\n  mageCanvasCache.clear();\n  draw();\n });\n function detectPlayerMovement(){
+ function detectPlayerMovement(){
   const mode=window.__arenaGameState;
   if(!mode?.player)return;
   const x=Number(mode.player.x),y=Number(mode.player.y);
