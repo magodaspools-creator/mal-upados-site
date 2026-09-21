@@ -150,6 +150,43 @@
    @media(max-width:650px){#arenaGameMode .arena-game-battle{min-height:330px}#arenaGameMode .arena-fighter{width:145px}#arenaGameMode .arena-fighter:first-child{left:1%}#arenaGameMode .arena-fighter.enemy{right:1%}#arenaGameMode .arena-fighter-icon{width:72px;height:72px;font-size:2.7rem} }
   `;document.head.appendChild(s)
  }
+ function setupMageColorControls(){
+  const panel=document.getElementById('mageColorPanel');
+  if(!panel)return;
+  const ids={head:'mageColorHead',body:'mageColorBody',details:'mageColorDetails',feet:'mageColorFeet'};
+  const saved=window.game?.arenaMode?.outfitColors||{};
+  window.arenaMageColors={...mageColors,...saved};
+  Object.keys(ids).forEach(key=>{
+   const input=document.getElementById(ids[key]);
+   if(!input)return;
+   input.value=window.arenaMageColors[key];
+   if(input.dataset.mageHook)return;
+   input.dataset.mageHook='1';
+   input.addEventListener('input',()=>{
+    window.arenaMageColors[key]=input.value;
+    try{
+     if(window.game){
+      window.game.arenaMode=window.game.arenaMode||{};
+      window.game.arenaMode.outfitColors={...window.arenaMageColors};
+     }
+     if(typeof window.persist==='function')window.persist();
+    }catch(e){}
+    mageCanvasCache.clear();
+    draw();
+   });
+  });
+  panel.hidden=playerVocation()!=='mage';
+ }
+ function syncMageColorControls(){
+  const panel=document.getElementById('mageColorPanel');
+  if(!panel)return;
+  const saved=window.game?.arenaMode?.outfitColors||{};
+  const next={...mageColors,...saved};
+  window.arenaMageColors={...next};
+  panel.hidden=playerVocation()!=='mage';
+  const map={head:'mageColorHead',body:'mageColorBody',details:'mageColorDetails',feet:'mageColorFeet'};
+  Object.keys(map).forEach(k=>{const el=document.getElementById(map[k]);if(el&&el.value!==next[k])el.value=next[k]});
+ }
  function playerVocation(){let voc='';try{const current=typeof window.arenaSurviveCurrent==='function'?window.arenaSurviveCurrent():null;voc=String(current?.vocation||'')}catch(e){}if(!voc){try{const name=String(document.getElementById('arenaPlayerName')?.textContent||'').trim();let list=[];try{list=typeof members!=='undefined'&&Array.isArray(members)?members:[]}catch(e){}const member=list.find(m=>String(m?.name||'').trim()===name);voc=String(member?.vocation||'')}catch(e){}}voc=voc.toLowerCase().trim();if(voc.includes('paladin')||voc.includes('paladino'))return'paladin';if(voc.includes('sorcerer')||voc.includes('mage')||voc.includes('mago'))return'mage';if(voc.includes('druid'))return'druid';if(voc.includes('monk')||voc.includes('monge')||voc.includes('rogue'))return'rogue';return'knight'}
  function heroIdle(v,n){const voc=playerVocation();if(voc==='paladin')return paladinSrc(playerMoveDir);if(voc==='mage')return mageRecolor(n||0,playerMoveDir);return gmSrc(playerMoveDir,n)}
  function detectPlayerMovement(){
@@ -247,6 +284,7 @@
   if(n.includes('rat'))return'rat';if(n.includes('troll'))return'troll';if(n.includes('orc berserker'))return'orcBerserker';if(n.includes('orc rider'))return'orcRider';if(n==='orc')return'orc';if(n.includes('cyclops'))return'cyclops';if(n.includes('scorpion'))return'scorpion';if(n.includes('ancient scarab')||n.includes('scarab'))return'ancientScarab';if(n.includes('dragon hatchling'))return'dragonHatchling';if(n.includes('dragon lord'))return'dragonLord';if(n.includes('frost dragon')||n.includes('drost dragon'))return'frostDragon';if(n==='dragon')return'dragon';if(n.includes('demon skeleton'))return'demonSkeleton';if(n.includes('hellhound'))return'hellhound';if(n.includes('ferumbras')||n.includes('deathbringer'))return'ferumbras';if(n==='demon')return'demonSurvive';return null;
  }
  function draw(){
+  syncMageColorControls();
   const p=playerEl(),e=enemyEl();if(!p||!e)return;
   detectPlayerMovement();paint(p,heroIdle(null,playerAnimFrame),HERO_SIZE);p.textContent='';e.textContent='';
   const kind=enemyKind();const m=MONSTERS[kind];if(m?.individualFrames){if(lastRatKind!==kind){lastRatKind=kind;lastRatPos=null;ratAnimFrame=0;ratMoveDir=RAT_DIRECTIONS.south;ratAnimating=false;}detectRatMovement();paintSheet(e,m,ratAnimating?ratAnimFrame:0);return;}if(kind==='demonSurvive'){detectDemonMovement();paintDemon(e,demonMoveDir,demonAnimating?demonAnimFrame:0);return;}if(m)paintSheet(e,m,m.animated?animFrame%m.frames:0);else{e.style.backgroundImage='';e.style.width='112px';e.style.height='112px'}
@@ -257,7 +295,7 @@
  function hookAttack(){const b=document.getElementById('arenaAttackBtn');if(b&&!b.dataset.pixelHook){b.dataset.pixelHook='1';b.addEventListener('click',()=>setTimeout(startAttack,0))}}
  function observeDamage(){const t=document.getElementById('arenaEnemyHpText');if(!t)return;const m=String(t.textContent||'').match(/([\d.,]+)\s*\/\s*([\d.,]+)/);if(!m)return;const hp=Number(m[1].replace(/\./g,'').replace(',','.'));if(lastEnemyHp!==null&&hp<lastEnemyHp)enemyDamageFx();lastEnemyHp=hp}
  function tick(){if(!document.getElementById('arenaGameMode'))return;hookAttack();draw();observeDamage()}
- function boot(){style();prepareAssets();tick();if(timer)clearInterval(timer);timer=setInterval(()=>{tick();idleAnimation()},120)}
+ function boot(){style();setupMageColorControls();prepareAssets();tick();if(timer)clearInterval(timer);timer=setInterval(()=>{tick();idleAnimation()},120)}
  function wait(){if(document.getElementById('arenaGameMode'))boot();else setTimeout(wait,300)}
  wait();
 })();
