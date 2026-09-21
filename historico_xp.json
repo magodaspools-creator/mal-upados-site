@@ -1726,9 +1726,9 @@
     },
     "Ezra Gladius": {
       "level": 487,
-      "experience": null,
-      "experience_exact": false,
-      "experience_vocation": null
+      "experience": 1904160149,
+      "experience_exact": true,
+      "experience_vocation": "TibiaData/highscores"
     },
     "Gepone": {
       "level": 144,
