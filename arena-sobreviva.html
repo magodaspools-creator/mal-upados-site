@@ -31,6 +31,7 @@ body{min-height:100vh}
 .survive-back{display:inline-block;margin-top:18px;color:#9f8654;font-size:.65rem;text-decoration:none}
 .survive-back:hover{color:#e2c36f}
 .survive-game-host{margin-top:18px}footer{margin-top:20px}
+.mage-color-panel{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-left:auto;padding:7px 9px;border:1px solid #39342c;background:#101215;color:#8d939b;font:700 .58rem Inter,sans-serif;text-transform:uppercase}.mage-color-panel[hidden]{display:none}.mage-color-panel .label{color:#d3ad5b}.mage-color-panel label{display:inline-flex;align-items:center;gap:4px}.mage-color-panel input[type=color]{width:24px;height:24px;padding:0;border:1px solid #4a4030;background:#0f1114;cursor:pointer}
 @media(max-width:650px){.survive-page{padding-top:25px}.survive-hero h1{font-size:1.65rem}.survive-character{align-items:flex-start;flex-direction:column}.survive-character-main{width:100%;align-items:flex-start;flex-direction:column}.survive-character-picker,.survive-character-picker select{width:100%}}
 </style>
 </head>
@@ -76,6 +77,13 @@ body{min-height:100vh}
         </div>
       </div>
       <div class="stats" id="surviveCharacterStats">Conectando à conta...</div>
+      <div id="mageColorPanel" class="mage-color-panel" hidden>
+        <span class="label">Cores do Mage</span>
+        <label> Cabeça <input id="mageColorHead" type="color" value="#d6a06d" aria-label="Cor da cabeça"></label>
+        <label> Corpo <input id="mageColorBody" type="color" value="#3f7cff" aria-label="Cor do corpo"></label>
+        <label> Detalhes <input id="mageColorDetails" type="color" value="#7a4fd0" aria-label="Cor dos detalhes"></label>
+        <label> Pés <input id="mageColorFeet" type="color" value="#8b5a2b" aria-label="Cor dos pés"></label>
+      </div>
     </div>
 
     <!-- O modo Sobreviva usa os mesmos personagens persistidos em public.arena_characters. -->
