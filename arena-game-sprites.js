@@ -79,68 +79,23 @@
  };
  const mageFrameSrc=(frame,dir,visual=0)=>MAGE_ROOT+String(mageFramePair(visual,frame,dir).base)+'.png';
  const mageFrameMask=(frame,dir,visual=0)=>MAGE_ROOT+String(mageFramePair(visual,frame,dir).mask)+'.png';
- const mageColors={
-  head:'#d6a06d',
-  body:'#3f7cff',
-  details:'#7a4fd0',
-  feet:'#8b5a2b'
- };
+ const mageColors={head:'#d6a06d',body:'#3f7cff',legs:'#7a4fd0',feet:'#8b5a2b'};
  const mageCanvasCache=new Map();
- let mageVisual=0;
- const mageImages=new Map();
- const mageImage=(src)=>{
-  if(mageImages.has(src))return mageImages.get(src);
-  const img=new Image();
-  img.decoding='async';
-  img.crossOrigin='anonymous';
-  img.src=src;
-  mageImages.set(src,img);
-  return img;
- };
- const mageHexRgb=(hex)=>{
-  const s=String(hex||'').replace('#','');
-  if(!/^[0-9a-fA-F]{6}$/.test(s))return [255,255,255];
-  return [parseInt(s.slice(0,2),16),parseInt(s.slice(2,4),16),parseInt(s.slice(4,6),16)];
- };
+ const mageRenderPending=new Set();
+ const mageColorsNow=()=>{const c=window.arenaMageColors||mageColors;return{head:c.head,body:c.body,legs:c.legs||c.details||mageColors.legs,feet:c.feet}};
  const mageRecolor=(frame,dir)=>{
-  const colors=window.arenaMageColors||mageColors;
-  const key=mageVisual+'|'+frame+'|'+dir+'|'+colors.head+'|'+colors.body+'|'+colors.details+'|'+colors.feet;
+  const colors=mageColorsNow(),pair=mageFramePair(mageVisual,frame,dir);
+  const key=[pair.base,pair.mask,colors.head,colors.body,colors.legs,colors.feet].join('|');
   if(mageCanvasCache.has(key))return mageCanvasCache.get(key);
-  const base=mageImage(mageFrameSrc(frame,dir,mageVisual));
-  const mask=mageImage(mageFrameMask(frame,dir,mageVisual));
-  if(!base.complete||!mask.complete||!base.naturalWidth||!mask.naturalWidth){
-   base.onload=()=>draw();
-   mask.onload=()=>draw();
-   return mageFrameSrc(frame,dir,mageVisual);
+  const fallback=mageFrameSrc(frame,dir,mageVisual);
+  if(!window.arenaOutfitColorizer)return fallback;
+  if(!mageRenderPending.has(key)){
+   mageRenderPending.add(key);
+   window.arenaOutfitColorizer.colorize(MAGE_ROOT+String(pair.base)+'.png',MAGE_ROOT+String(pair.mask)+'.png',colors)
+    .then(canvas=>{mageCanvasCache.set(key,canvas.toDataURL('image/png'));mageRenderPending.delete(key);draw()})
+    .catch(()=>{mageRenderPending.delete(key)});
   }
-  const w=base.naturalWidth,h=base.naturalHeight;
-  const c=document.createElement('canvas');c.width=w;c.height=h;
-  const ctx=c.getContext('2d');
-  ctx.imageSmoothingEnabled=false;
-  ctx.drawImage(base,0,0);
-  const bi=ctx.getImageData(0,0,w,h);
-  const mc=document.createElement('canvas');mc.width=w;mc.height=h;
-  const mx=mc.getContext('2d');mx.drawImage(mask,0,0);
-  const mi=mx.getImageData(0,0,w,h).data;
-  const targets={
-   head:mageHexRgb(colors.head),body:mageHexRgb(colors.body),
-   details:mageHexRgb(colors.details),feet:mageHexRgb(colors.feet)
-  };
-  for(let i=0;i<bi.data.length;i+=4){
-   const a=mi[i+3]; if(!a)continue;
-   const r=mi[i],g=mi[i+1],b=mi[i+2];
-   let target=null;
-   if(r>180&&g>180&&b<120)target=targets.head;
-   else if(r>180&&g<120&&b<120)target=targets.body;
-   else if(r<120&&g>150&&b<150)target=targets.details;
-   else if(r<120&&g<150&&b>150)target=targets.feet;
-   if(!target)continue;
-   bi.data[i]=target[0];bi.data[i+1]=target[1];bi.data[i+2]=target[2];
-  }
-  ctx.putImageData(bi,0,0);
-  const out=c.toDataURL('image/png');
-  mageCanvasCache.set(key,out);
-  return out;
+  return fallback;
  };
  const GM_DIRECTIONS={north:0,east:1,south:2,west:3};
  const GM_ROOT=ROOT;
@@ -183,7 +138,7 @@
    if(input.dataset.mageHook)return;
    input.dataset.mageHook='1';
    input.addEventListener('input',()=>{
-    window.arenaMageColors[key]=input.value;
+    window.arenaMageColors[key]=input.value;if(key==='legs')window.arenaMageColors.details=input.value;
     try{
      if(window.game){
       window.game.arenaMode=window.game.arenaMode||{};
@@ -210,11 +165,11 @@
   const panel=document.getElementById('mageColorPanel');
   if(!panel)return;
   const saved=window.game?.arenaMode?.outfitColors||{};
-  const next={...mageColors,...saved};
+  const next={...mageColors,...saved,legs:saved.legs||saved.details||mageColors.legs};
   window.arenaMageColors={...next};
   panel.hidden=playerVocation()!=='mage';
   syncMageVisualControls();
-  const map={head:'mageColorHead',body:'mageColorBody',details:'mageColorDetails',feet:'mageColorFeet'};
+  const map={head:'mageColorHead',body:'mageColorBody',legs:'mageColorLegs',feet:'mageColorFeet'};
   Object.keys(map).forEach(k=>{const el=document.getElementById(map[k]);if(el&&el.value!==next[k])el.value=next[k]});
  }
  function playerVocation(){let voc='';try{const current=typeof window.arenaSurviveCurrent==='function'?window.arenaSurviveCurrent():null;voc=String(current?.vocation||'')}catch(e){}if(!voc){try{const name=String(document.getElementById('arenaPlayerName')?.textContent||'').trim();let list=[];try{list=typeof members!=='undefined'&&Array.isArray(members)?members:[]}catch(e){}const member=list.find(m=>String(m?.name||'').trim()===name);voc=String(member?.vocation||'')}catch(e){}}voc=voc.toLowerCase().trim();if(voc.includes('paladin')||voc.includes('paladino'))return'paladin';if(voc.includes('sorcerer')||voc.includes('mage')||voc.includes('mago'))return'mage';if(voc.includes('druid'))return'druid';if(voc.includes('monk')||voc.includes('monge')||voc.includes('rogue'))return'rogue';return'knight'}
@@ -315,7 +270,7 @@
  }
  function playerEl(){return document.querySelector('#arenaPlayerName')?.closest('.arena-fighter')?.querySelector('.arena-fighter-icon')}
  function enemyEl(){return document.getElementById('arenaEnemyIcon')}
- function prepareAssets(){for(let dir=0;dir<4;dir++)for(let frame=0;frame<3;frame++)preload(gmSrc(dir,frame));for(let dir=0;dir<4;dir++)preload(paladinSrc(dir));for(let frame=0;frame<3;frame++)for(let dir=0;dir<4;dir++){preload(mageFrameSrc(frame,dir));preload(mageFrameMask(frame,dir));}Object.values(MONSTERS).forEach(m=>{preload(m.src);if(m.individualFrames){for(let i=0;i<m.frames;i++)preload(ROOT+(m.folder||'')+String(m.base+i)+'.png')}});for(let dir=0;dir<4;dir++)for(let frame=0;frame<DEMON_FRAMES;frame++)preload(demonSrc(dir,frame))}
+ function prepareAssets(){for(let dir=0;dir<4;dir++)for(let frame=0;frame<3;frame++)preload(gmSrc(dir,frame));for(let dir=0;dir<4;dir++)preload(paladinSrc(dir));for(let visual=0;visual<3;visual++)for(let frame=0;frame<3;frame++)for(let dir=0;dir<4;dir++){preload(mageFrameSrc(frame,dir,visual));preload(mageFrameMask(frame,dir,visual));}Object.values(MONSTERS).forEach(m=>{preload(m.src);if(m.individualFrames){for(let i=0;i<m.frames;i++)preload(ROOT+(m.folder||'')+String(m.base+i)+'.png')}});for(let dir=0;dir<4;dir++)for(let frame=0;frame<DEMON_FRAMES;frame++)preload(demonSrc(dir,frame))}
  function enemyKind(){
   const n=String(document.getElementById('arenaEnemyName')?.textContent||'').toLowerCase().replace(/\\s+/g,' ').trim();
   if(n.includes('rat'))return'rat';if(n.includes('troll'))return'troll';if(n.includes('orc berserker'))return'orcBerserker';if(n.includes('orc rider'))return'orcRider';if(n==='orc')return'orc';if(n.includes('cyclops'))return'cyclops';if(n.includes('scorpion'))return'scorpion';if(n.includes('ancient scarab')||n.includes('scarab'))return'ancientScarab';if(n.includes('dragon hatchling'))return'dragonHatchling';if(n.includes('dragon lord'))return'dragonLord';if(n.includes('frost dragon')||n.includes('drost dragon'))return'frostDragon';if(n==='dragon')return'dragon';if(n.includes('demon skeleton'))return'demonSkeleton';if(n.includes('hellhound'))return'hellhound';if(n.includes('ferumbras')||n.includes('deathbringer'))return'ferumbras';if(n==='demon')return'demonSurvive';return null;
