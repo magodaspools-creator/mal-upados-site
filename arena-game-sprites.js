@@ -73,6 +73,7 @@
   if(mageImages.has(src))return mageImages.get(src);
   const img=new Image();
   img.decoding='async';
+  img.crossOrigin='anonymous';
   img.src=src;
   mageImages.set(src,img);
   return img;
