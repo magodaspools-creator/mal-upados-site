@@ -47,7 +47,8 @@
  const HERO_FRAMES=3,HERO_SIZE=96;
  const PALADIN_SIZE=96;
  const PALADIN_DIRECTIONS={north:0,east:1,south:2,west:3};
- const paladinSrc=(dir)=>ROOT+String(6311+dir*2)+'.png';
+ const PALADIN_ROOT='arena-godot/characters/';
+ const paladinSrc=(dir)=>PALADIN_ROOT+String(6311+dir*2)+'.png';
  const GM_DIRECTIONS={north:0,east:1,south:2,west:3};
  const GM_ROOT=ROOT;
  const gmSrc=(dir,frame)=>GM_ROOT+String(1771+(frame%3)*4+dir)+'.png';
