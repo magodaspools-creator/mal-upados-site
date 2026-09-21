@@ -25,7 +25,7 @@
   orcBerserker:{src:ROOT+'53.png',frames:36,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:53,directionFrames:9,folder:''},
   dragonLord:{src:ROOT+'4301.png',frames:36,w:64,h:64,rate:1,size:128,row:0,animated:true,individualFrames:true,base:4301,directionFrames:9,folder:''},
   ancientScarab:{src:ROOT+'ancient scarab/5077.png',frames:36,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:5077,directionFrames:9,folder:'ancient scarab/'},
-  ferumbras:{src:ROOT+'deathbringer campeão/15908.png',frames:36,w:64,h:64,rate:1,size:144,row:0,animated:true,individualFrames:true,base:15908,directionFrames:9,folder:'deathbringer campeão/'},
+  ferumbras:{src:ROOT+'deathbringer campeão/15908.png',frames:36,w:64,h:64,rate:1,size:144,row:0,animated:true,individualFrames:true,base:15908,directionFrames:9,folder:'deathbringer-campeao/'},
   frostDragon:{src:ROOT+'16265.png',frames:12,w:64,h:64,rate:1,size:128,row:0,animated:true,individualFrames:true,base:16265,directionFrames:3,folder:''},
   dragonHatchling:{src:ROOT+'18549.png',frames:36,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:18549,directionFrames:9,folder:''},
   demonSkeleton:{src:ROOT+'demon skeleton/4233.png',frames:32,w:64,h:64,rate:1,size:112,row:0,animated:true,individualFrames:true,base:4233,directionFrames:8,folder:'demon skeleton/'},
