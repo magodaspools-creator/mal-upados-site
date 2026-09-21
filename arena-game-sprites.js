@@ -51,16 +51,34 @@
  const paladinSrc=(dir)=>PALADIN_ROOT+String(6311+dir*2)+'.png';
  const MAGE_ROOT='arena-godot/characters/';
  const MAGE_SIZE=96;
- // Cada frame de caminhada do Mage tem 4 direções de base + 4 máscaras RGB.
- // A parte da montaria NÃO é usada: desenhamos somente o Rider/Player.
- const MAGE_WALK_FRAMES=[
-  {base:6673,mask:6674},
-  {base:6694,mask:6695},
-  {base:6714,mask:6715}
- ];
  const MAGE_DIRECTIONS={north:0,east:1,south:2,west:3};
- const mageFrameSrc=(frame,dir)=>MAGE_ROOT+String(MAGE_WALK_FRAMES[frame%MAGE_WALK_FRAMES.length].base+dir*2)+'.png';
- const mageFrameMask=(frame,dir)=>MAGE_ROOT+String(MAGE_WALK_FRAMES[frame%MAGE_WALK_FRAMES.length].mask+dir*2)+'.png';
+ // Mage masculino: SOMENTE o Rider/Player. As montarias 6665+ ficam fora.
+ // Cada frame de caminhada possui 3 visuais (base, addon 1, addon 2),
+ // cada visual com 4 direções e cada sprite alternada com sua máscara RGB.
+ const MAGE_VISUALS=[
+  {id:'base',label:'Padrão',frames:[
+   {base:6673,mask:6674},
+   {base:6694,mask:6695},
+   {base:6714,mask:6715}
+  ]},
+  {id:'addon1',label:'Addon 1',frames:[
+   {base:6675,mask:6676},
+   {base:6696,mask:6697},
+   {base:6716,mask:6717}
+  ]},
+  {id:'addon2',label:'Addon 2',frames:[
+   {base:6677,mask:6678},
+   {base:6698,mask:6699},
+   {base:6718,mask:6719}
+  ]}
+ ];
+ const mageFramePair=(visual,frame,dir)=>{
+  const v=MAGE_VISUALS[visual]||MAGE_VISUALS[0];
+  const pair=v.frames[frame%v.frames.length];
+  return {base:pair.base+dir*2,mask:pair.mask+dir*2};
+ };
+ const mageFrameSrc=(frame,dir,visual=0)=>MAGE_ROOT+String(mageFramePair(visual,frame,dir).base)+'.png';
+ const mageFrameMask=(frame,dir,visual=0)=>MAGE_ROOT+String(mageFramePair(visual,frame,dir).mask)+'.png';
  const mageColors={
   head:'#d6a06d',
   body:'#3f7cff',
@@ -68,6 +86,7 @@
   feet:'#8b5a2b'
  };
  const mageCanvasCache=new Map();
+ let mageVisual=0;
  const mageImages=new Map();
  const mageImage=(src)=>{
   if(mageImages.has(src))return mageImages.get(src);
@@ -85,14 +104,14 @@
  };
  const mageRecolor=(frame,dir)=>{
   const colors=window.arenaMageColors||mageColors;
-  const key=frame+'|'+dir+'|'+colors.head+'|'+colors.body+'|'+colors.details+'|'+colors.feet;
+  const key=mageVisual+'|'+frame+'|'+dir+'|'+colors.head+'|'+colors.body+'|'+colors.details+'|'+colors.feet;
   if(mageCanvasCache.has(key))return mageCanvasCache.get(key);
-  const base=mageImage(mageFrameSrc(frame,dir));
-  const mask=mageImage(mageFrameMask(frame,dir));
+  const base=mageImage(mageFrameSrc(frame,dir,mageVisual));
+  const mask=mageImage(mageFrameMask(frame,dir,mageVisual));
   if(!base.complete||!mask.complete||!base.naturalWidth||!mask.naturalWidth){
    base.onload=()=>draw();
    mask.onload=()=>draw();
-   return mageFrameSrc(frame,dir);
+   return mageFrameSrc(frame,dir,mageVisual);
   }
   const w=base.naturalWidth,h=base.naturalHeight;
   const c=document.createElement('canvas');c.width=w;c.height=h;
@@ -177,6 +196,15 @@
    });
   });
   panel.hidden=playerVocation()!=='mage';
+  const options=document.querySelectorAll('[data-mage-visual]');
+  options.forEach(btn=>{if(btn.dataset.mageVisualHook)return;btn.dataset.mageVisualHook='1';btn.addEventListener('click',()=>setMageVisual(btn.dataset.mageVisual));});
+  syncMageVisualControls();
+ }
+ function syncMageVisualControls(){
+  const panel=document.getElementById('mageVisualPanel');
+  if(!panel)return;
+  panel.hidden=playerVocation()!=='mage';
+  document.querySelectorAll('[data-mage-visual]').forEach(btn=>btn.classList.toggle('active',Number(btn.dataset.mageVisual)===mageVisual));
  }
  function syncMageColorControls(){
   const panel=document.getElementById('mageColorPanel');
@@ -185,11 +213,17 @@
   const next={...mageColors,...saved};
   window.arenaMageColors={...next};
   panel.hidden=playerVocation()!=='mage';
+  syncMageVisualControls();
   const map={head:'mageColorHead',body:'mageColorBody',details:'mageColorDetails',feet:'mageColorFeet'};
   Object.keys(map).forEach(k=>{const el=document.getElementById(map[k]);if(el&&el.value!==next[k])el.value=next[k]});
  }
  function playerVocation(){let voc='';try{const current=typeof window.arenaSurviveCurrent==='function'?window.arenaSurviveCurrent():null;voc=String(current?.vocation||'')}catch(e){}if(!voc){try{const name=String(document.getElementById('arenaPlayerName')?.textContent||'').trim();let list=[];try{list=typeof members!=='undefined'&&Array.isArray(members)?members:[]}catch(e){}const member=list.find(m=>String(m?.name||'').trim()===name);voc=String(member?.vocation||'')}catch(e){}}voc=voc.toLowerCase().trim();if(voc.includes('paladin')||voc.includes('paladino'))return'paladin';if(voc.includes('sorcerer')||voc.includes('mage')||voc.includes('mago'))return'mage';if(voc.includes('druid'))return'druid';if(voc.includes('monk')||voc.includes('monge')||voc.includes('rogue'))return'rogue';return'knight'}
  function heroIdle(v,n){const voc=playerVocation();if(voc==='paladin')return paladinSrc(playerMoveDir);if(voc==='mage')return mageRecolor(n||0,playerMoveDir);return gmSrc(playerMoveDir,n)}
+ function setMageVisual(next){
+  mageVisual=Math.max(0,Math.min(MAGE_VISUALS.length-1,Number(next)||0));
+  mageCanvasCache.clear();
+  draw();
+ }
  function detectPlayerMovement(){
   const mode=window.__arenaGameState;
   if(!mode?.player)return;
@@ -198,10 +232,12 @@
   if(!lastPlayerPos){lastPlayerPos={x,y};return}
   const dx=x-lastPlayerPos.x,dy=y-lastPlayerPos.y;
   if(dx!==0||dy!==0){
-   playerMoveDir=Math.abs(dx)>=Math.abs(dy)
+   const nextDir=Math.abs(dx)>=Math.abs(dy)
     ?(dx>0?GM_DIRECTIONS.east:GM_DIRECTIONS.west)
     :(dy>0?GM_DIRECTIONS.south:GM_DIRECTIONS.north);
-   playerAnimFrame=(playerAnimFrame+1)%3;
+   if(nextDir!==playerMoveDir)playerAnimFrame=0;
+   else playerAnimFrame=(playerAnimFrame+1)%3;
+   playerMoveDir=nextDir;
    lastPlayerPos={x,y};
   }
  }
