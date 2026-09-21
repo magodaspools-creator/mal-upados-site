@@ -202,7 +202,8 @@
   mageCanvasCache.set(key,out);
   return out;
  };
- const mageRecolor=(frame,dir)=>renderMageOutfit(frame,dir) const GM_DIRECTIONS={north:0,east:1,south:2,west:3};
+ const mageRecolor=(frame,dir)=>renderMageOutfit(frame,dir);
+ const GM_DIRECTIONS={north:0,east:1,south:2,west:3};
  const GM_ROOT=ROOT;
  const gmSrc=(dir,frame)=>GM_ROOT+String(1771+(frame%3)*4+dir)+'.png';
  let playerMoveDir=GM_DIRECTIONS.south,playerAnimFrame=0,lastPlayerPos=null;
