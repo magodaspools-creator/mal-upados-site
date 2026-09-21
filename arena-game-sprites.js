@@ -125,7 +125,7 @@
   return [parseInt(s.slice(0,2),16),parseInt(s.slice(2,4),16),parseInt(s.slice(4,6),16)];
  };
  const renderMageOutfit=(frame,dir)=>{
-  // ETAPA 2: corpo base + máscara RGB processada somente em memória.
+  // ETAPA 2B: corpo + máscara RGB com multiplicação de luminosidade.
   const baseBody={
    0:[6665,6667,6669,6671], // parado: N, E, S, O
    1:[6706,6708,6710,6712], // passo 1: N, E, S, O
@@ -137,7 +137,7 @@
   const baseId=baseBody[frameIndex][dirIndex];
   const maskId=baseId+1;
   const colors=window.arenaMageColors||mageColors;
-  const key='mage-body-rgb-v2|'+frameIndex+'|'+dirIndex+'|'+baseId+'|'+maskId+'|'+colors.head+'|'+colors.body+'|'+colors.legs+'|'+colors.feet;
+  const key='mage-body-multiply-v1|'+frameIndex+'|'+dirIndex+'|'+baseId+'|'+maskId+'|'+colors.head+'|'+colors.body+'|'+colors.legs+'|'+colors.feet;
 
   if(mageCanvasCache.has(key))return mageCanvasCache.get(key);
 
@@ -156,7 +156,7 @@
   const ctx=canvas.getContext('2d');
   ctx.imageSmoothingEnabled=false;
 
-  // Canvas isolado da máscara: ela NUNCA é desenhada no Canvas da tela.
+  // A máscara só existe neste Canvas isolado. Nunca vai para a tela.
   const maskCanvas=document.createElement('canvas');
   maskCanvas.width=w;
   maskCanvas.height=h;
@@ -164,7 +164,7 @@
   maskCtx.imageSmoothingEnabled=false;
   maskCtx.drawImage(mask,0,0,w,h);
 
-  // O resultado final começa com o corpo base.
+  // O Canvas de resultado começa com o sprite base original.
   ctx.drawImage(base,0,0,w,h);
 
   const pixels=ctx.getImageData(0,0,w,h);
@@ -177,22 +177,29 @@
   };
 
   for(let i=0;i<pixels.data.length;i+=4){
-   if(!maskPixels[i+3])continue;
+   const baseR=pixels.data[i];
+   const baseG=pixels.data[i+1];
+   const baseB=pixels.data[i+2];
+   const baseA=pixels.data[i+3];
+   if(!baseA||!maskPixels[i+3])continue;
 
-   const r=maskPixels[i],g=maskPixels[i+1],b=maskPixels[i+2];
+   const r=maskPixels[i];
+   const g=maskPixels[i+1];
+   const b=maskPixels[i+2];
    let target=null;
 
-   // Cores puras da máscara RGB:
-   // vermelho = cabeça/cabelo, amarelo = corpo, verde = pernas, azul = pés.
+   // Cores puras da máscara RGB.
    if(r===255&&g===0&&b===0)target=targets.head;
    else if(r===255&&g===255&&b===0)target=targets.body;
    else if(r===0&&g===255&&b===0)target=targets.legs;
    else if(r===0&&g===0&&b===255)target=targets.feet;
 
    if(target){
-    pixels.data[i]=target[0];
-    pixels.data[i+1]=target[1];
-    pixels.data[i+2]=target[2];
+    const lum=(baseR*0.299+baseG*0.587+baseB*0.114)/255;
+    pixels.data[i]=Math.floor(target[0]*lum);
+    pixels.data[i+1]=Math.floor(target[1]*lum);
+    pixels.data[i+2]=Math.floor(target[2]*lum);
+    pixels.data[i+3]=baseA;
    }
   }
 
