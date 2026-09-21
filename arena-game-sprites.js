@@ -124,8 +124,8 @@
   if(!/^[0-9a-fA-F]{6}$/.test(s))return [255,255,255];
   return [parseInt(s.slice(0,2),16),parseInt(s.slice(2,4),16),parseInt(s.slice(4,6),16)];
  };
- const renderMageOutfit=(frame,dir)=>{
-  // ETAPA 2B: corpo + máscara RGB com multiplicação de luminosidade.
+ const renderMageOutfit=(frame,dir)=>{ 
+  // ETAPA 2C: corpo + máscara RGB com multiplicação de luminosidade e threshold.
   const baseBody={
    0:[6665,6667,6669,6671], // parado: N, E, S, O
    1:[6706,6708,6710,6712], // passo 1: N, E, S, O
@@ -137,7 +137,7 @@
   const baseId=baseBody[frameIndex][dirIndex];
   const maskId=baseId+1;
   const colors=window.arenaMageColors||mageColors;
-  const key='mage-body-multiply-v1|'+frameIndex+'|'+dirIndex+'|'+baseId+'|'+maskId+'|'+colors.head+'|'+colors.body+'|'+colors.legs+'|'+colors.feet;
+  const key='mage-body-threshold-v1|'+frameIndex+'|'+dirIndex+'|'+baseId+'|'+maskId+'|'+colors.head+'|'+colors.body+'|'+colors.legs+'|'+colors.feet;
 
   if(mageCanvasCache.has(key))return mageCanvasCache.get(key);
 
@@ -183,16 +183,16 @@
    const baseA=pixels.data[i+3];
    if(!baseA||!maskPixels[i+3])continue;
 
-   const r=maskPixels[i];
-   const g=maskPixels[i+1];
-   const b=maskPixels[i+2];
+   const maskR=maskPixels[i];
+   const maskG=maskPixels[i+1];
+   const maskB=maskPixels[i+2];
    let target=null;
 
-   // Cores puras da máscara RGB.
-   if(r===255&&g===0&&b===0)target=targets.head;
-   else if(r===255&&g===255&&b===0)target=targets.body;
-   else if(r===0&&g===255&&b===0)target=targets.legs;
-   else if(r===0&&g===0&&b===255)target=targets.feet;
+   // Thresholds: capturam também os pixels de transição/borda da máscara.
+   if(maskR>150&&maskG<100&&maskB<100)target=targets.head;
+   else if(maskR>150&&maskG>150&&maskB<100)target=targets.body;
+   else if(maskG>150&&maskR<100&&maskB<100)target=targets.legs;
+   else if(maskB>150&&maskR<100&&maskG<100)target=targets.feet;
 
    if(target){
     const lum=(baseR*0.299+baseG*0.587+baseB*0.114)/255;
