@@ -125,11 +125,8 @@
   return [parseInt(s.slice(0,2),16),parseInt(s.slice(2,4),16),parseInt(s.slice(4,6),16)];
  };
  const renderMageOutfit=(frame,dir)=>{
-  const colors=window.arenaMageColors||mageColors;
-
-  // MAPA FIXO DA OUTFIT MAGE A PÉ.
-  // Não percorremos a faixa 6665–6916: cada frame/direção aponta
-  // diretamente para o sprite humanoide correspondente.
+  // ETAPA 1: somente o corpo base cinza.
+  // Não carrega, desenha nem processa as máscaras RGB nesta etapa.
   const baseBody={
    0:[6665,6667,6669,6671], // parado: N, E, S, O
    1:[6706,6708,6710,6712], // passo 1: N, E, S, O
@@ -139,17 +136,13 @@
   const frameIndex=((Number(frame)||0)%3+3)%3;
   const dirIndex=((Number(dir)||0)%4+4)%4;
   const baseId=baseBody[frameIndex][dirIndex];
-  const maskId=baseId+1;
-  const key='mage-body-fixed-v1|'+frameIndex+'|'+dirIndex+'|'+baseId+'|'+maskId+'|'+colors.head+'|'+colors.body+'|'+colors.details+'|'+colors.feet;
+  const key='mage-body-base-only-v1|'+frameIndex+'|'+dirIndex+'|'+baseId;
 
   if(mageCanvasCache.has(key))return mageCanvasCache.get(key);
 
   const base=mageImage(MAGE_ROOT+String(baseId)+'.png');
-  const mask=mageImage(MAGE_ROOT+String(maskId)+'.png');
-
-  if(!base.complete||!mask.complete||!base.naturalWidth||!mask.naturalWidth){
+  if(!base.complete||!base.naturalWidth){
    base.onload=()=>draw();
-   mask.onload=()=>draw();
    return '';
   }
 
@@ -161,41 +154,6 @@
   const ctx=canvas.getContext('2d');
   ctx.imageSmoothingEnabled=false;
   ctx.drawImage(base,0,0,w,h);
-
-  const pixels=ctx.getImageData(0,0,w,h);
-  const maskCanvas=document.createElement('canvas');
-  maskCanvas.width=w;
-  maskCanvas.height=h;
-  const maskCtx=maskCanvas.getContext('2d');
-  maskCtx.drawImage(mask,0,0,w,h);
-  const maskPixels=maskCtx.getImageData(0,0,w,h).data;
-
-  const targets={
-   head:mageHexRgb(colors.head),
-   body:mageHexRgb(colors.body),
-   details:mageHexRgb(colors.details),
-   feet:mageHexRgb(colors.feet)
-  };
-
-  for(let i=0;i<pixels.data.length;i+=4){
-   if(!maskPixels[i+3])continue;
-
-   const r=maskPixels[i],g=maskPixels[i+1],b=maskPixels[i+2];
-   let target=null;
-
-   if(r>180&&g>180&&b<120)target=targets.head;
-   else if(r>180&&g<120&&b<120)target=targets.body;
-   else if(r<120&&g>150&&b<150)target=targets.details;
-   else if(r<120&&g<150&&b>150)target=targets.feet;
-
-   if(target){
-    pixels.data[i]=target[0];
-    pixels.data[i+1]=target[1];
-    pixels.data[i+2]=target[2];
-   }
-  }
-
-  ctx.putImageData(pixels,0,0);
 
   const out=canvas.toDataURL('image/png');
   mageCanvasCache.set(key,out);
