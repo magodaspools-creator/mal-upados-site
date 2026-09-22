@@ -98,16 +98,11 @@
   const frames=MAGE_LAYERS[layer]||MAGE_LAYERS.base;
   return frames[((Number(frame)||0)%3+3)%3][((Number(dir)||0)%4+4)%4];
  };
- const mageFramePair=(visual,frame,dir)=>{
-  const v=MAGE_VISUALS[0];
-  const pairs=v.frames[frame%v.frames.length];
-  return pairs[dir%4];
- };
- const mageFrameSrc=(frame,dir,visual=0)=>MAGE_ROOT+String(mageFramePair(visual,frame,dir).base)+'.png';
- const mageFrameMask=(frame,dir,visual=0)=>MAGE_ROOT+String(mageFramePair(visual,frame,dir).mask)+'.png';
+
  const mageColors={
   head:'#d6a06d',
   body:'#3f7cff',
+  legs:'#7a4fd0',
   details:'#7a4fd0',
   feet:'#8b5a2b'
  };
@@ -210,7 +205,16 @@
   return out;
  };
  const mageRecolor=(frame,dir)=>renderMageOutfit(frame,dir);
- window.__arenaMageOutfitPreview=(frame,dir)=>renderMageOutfit(frame,dir);
+ window.__arenaMageOutfitPreview=(frame,dir)=>{
+  const result=renderMageOutfit(frame,dir);
+  if(result&&typeof result.then==='function'){
+   result.then(src=>{
+    if(src&&typeof window.updateOutfitPreview==='function')window.updateOutfitPreview();
+   });
+   return '';
+  }
+  return result||'';
+ };
  const GM_DIRECTIONS={north:0,east:1,south:2,west:3};
  const GM_ROOT=ROOT;
  const gmSrc=(dir,frame)=>GM_ROOT+String(1771+(frame%3)*4+dir)+'.png';
