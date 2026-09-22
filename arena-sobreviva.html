@@ -118,9 +118,6 @@ body{min-height:100vh}
     };
     window.arenaMageColors={...(window.arenaMageColors||{}),...colors,details:colors.legs};
 
-    const addon=document.querySelector('[data-mage-visual].active')||document.querySelector('[data-mage-visual][aria-pressed="true"]');
-    if(addon&&typeof window.setMageVisual==='function')window.setMageVisual(addon.dataset.mageVisual);
-
     const src=typeof window.__arenaMageOutfitPreview==='function'
       ?window.__arenaMageOutfitPreview(0,2)
       :'';
