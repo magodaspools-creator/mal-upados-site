@@ -73,27 +73,31 @@
  // frame de movimento. Addons continuam fora até o agrupamento visual ser
  // confirmado.
  const MAGE_VISUALS=[
-  {id:'base',label:'Padrão',frames:[
-   [
-    {base:6673,mask:6674}, // Norte
-    {base:6675,mask:6676}, // Leste
-    {base:6677,mask:6678}, // Sul
-    {base:6679,mask:6680}  // Oeste
-   ],
-   [
-    {base:6694,mask:6695}, // Norte
-    {base:6696,mask:6697}, // Leste
-    {base:6698,mask:6699}, // Sul
-    {base:6700,mask:6701}  // Oeste
-   ],
-   [
-    {base:6714,mask:6715}, // Norte
-    {base:6716,mask:6717}, // Leste
-    {base:6718,mask:6719}, // Sul
-    {base:6720,mask:6721}  // Oeste
-   ]
-  ]}
+  {id:'base',label:'Padrão'},
+  {id:'hat',label:'Addon 1 — Hat'},
+  {id:'staff',label:'Addon 2 — Staff'}
  ];
+ const MAGE_LAYERS={
+  base:[
+   [{base:6665,mask:6666},{base:6667,mask:6668},{base:6669,mask:6670},{base:6671,mask:6672}],
+   [{base:6706,mask:6707},{base:6708,mask:6709},{base:6710,mask:6711},{base:6712,mask:6713}],
+   [{base:6746,mask:6747},{base:6748,mask:6749},{base:6750,mask:6751},{base:6752,mask:6753}]
+  ],
+  hat:[
+   [{base:6673,mask:6674},{base:6675,mask:6676},{base:6677,mask:6678},{base:6679,mask:6680}],
+   [{base:6714,mask:6715},{base:6716,mask:6717},{base:6718,mask:6719},{base:6720,mask:6721}],
+   [{base:6754,mask:6755},{base:6756,mask:6757},{base:6758,mask:6759},{base:6760,mask:6761}]
+  ],
+  staff:[
+   [{base:6681,mask:6682},{base:6683,mask:6684},{base:6685,mask:6686},{base:6687,mask:6688}],
+   [{base:6722,mask:6723},{base:6724,mask:6725},{base:6726,mask:6727},{base:6728,mask:6729}],
+   [{base:6762,mask:6763},{base:6764,mask:6765},{base:6766,mask:6767},{base:6768,mask:6769}]
+  ]
+ };
+ const mageLayerPair=(layer,frame,dir)=>{
+  const frames=MAGE_LAYERS[layer]||MAGE_LAYERS.base;
+  return frames[((Number(frame)||0)%3+3)%3][((Number(dir)||0)%4+4)%4];
+ };
  const mageFramePair=(visual,frame,dir)=>{
   const v=MAGE_VISUALS[0];
   const pairs=v.frames[frame%v.frames.length];
@@ -124,86 +128,83 @@
   if(!/^[0-9a-fA-F]{6}$/.test(s))return [255,255,255];
   return [parseInt(s.slice(0,2),16),parseInt(s.slice(2,4),16),parseInt(s.slice(4,6),16)];
  };
- const renderMageOutfit=(frame,dir)=>{ 
-  // ETAPA 2C: corpo + máscara RGB com multiplicação de luminosidade e threshold.
-  const baseBody={
-   0:[6665,6667,6669,6671], // parado: N, E, S, O
-   1:[6706,6708,6710,6712], // passo 1: N, E, S, O
-   2:[6746,6748,6750,6752]  // passo 2: N, E, S, O
-  };
-
-  const frameIndex=((Number(frame)||0)%3+3)%3;
-  const dirIndex=((Number(dir)||0)%4+4)%4;
-  const baseId=baseBody[frameIndex][dirIndex];
-  const maskId=baseId+1;
-  const colors=window.arenaMageColors||mageColors;
-  const key='mage-body-threshold-v1|'+frameIndex+'|'+dirIndex+'|'+baseId+'|'+maskId+'|'+colors.head+'|'+colors.body+'|'+colors.legs+'|'+colors.feet;
-
-  if(mageCanvasCache.has(key))return mageCanvasCache.get(key);
-
-  const base=mageImage(MAGE_ROOT+String(baseId)+'.png');
-  const mask=mageImage(MAGE_ROOT+String(maskId)+'.png');
-  if(!base.complete||!base.naturalWidth||!mask.complete||!mask.naturalWidth){
-   base.onload=()=>draw();
-   mask.onload=()=>draw();
-   return '';
-  }
-
+ const mageLoad=(src)=>new Promise(resolve=>{
+  const img=mageImage(src);
+  if(img.complete&&img.naturalWidth){resolve(img);return;}
+  const done=()=>{img.removeEventListener('load',done);img.removeEventListener('error',fail);resolve(img)};
+  const fail=()=>{img.removeEventListener('load',done);img.removeEventListener('error',fail);resolve(img)};
+  img.addEventListener('load',done,{once:true});
+  img.addEventListener('error',fail,{once:true});
+ });
+ const mageDrawRecoloredLayer=(ctx,base,mask,colors)=>{
   const w=base.naturalWidth,h=base.naturalHeight;
-  const canvas=document.createElement('canvas');
-  canvas.width=w;
-  canvas.height=h;
-  const ctx=canvas.getContext('2d');
-  ctx.imageSmoothingEnabled=false;
-
-  // A máscara só existe neste Canvas isolado. Nunca vai para a tela.
+  const layer=document.createElement('canvas');
+  layer.width=w;layer.height=h;
+  const lctx=layer.getContext('2d');
+  lctx.imageSmoothingEnabled=false;
+  lctx.drawImage(base,0,0,w,h);
+  const pixels=lctx.getImageData(0,0,w,h);
   const maskCanvas=document.createElement('canvas');
-  maskCanvas.width=w;
-  maskCanvas.height=h;
-  const maskCtx=maskCanvas.getContext('2d');
-  maskCtx.imageSmoothingEnabled=false;
-  maskCtx.drawImage(mask,0,0,w,h);
-
-  // O Canvas de resultado começa com o sprite base original.
-  ctx.drawImage(base,0,0,w,h);
-
-  const pixels=ctx.getImageData(0,0,w,h);
-  const maskPixels=maskCtx.getImageData(0,0,w,h).data;
+  maskCanvas.width=w;maskCanvas.height=h;
+  const mctx=maskCanvas.getContext('2d');
+  mctx.imageSmoothingEnabled=false;
+  mctx.drawImage(mask,0,0,w,h);
+  const maskPixels=mctx.getImageData(0,0,w,h).data;
   const targets={
-   head:mageHexRgb(colors.head),
-   body:mageHexRgb(colors.body),
-   legs:mageHexRgb(colors.legs),
-   feet:mageHexRgb(colors.feet)
+   head:mageHexRgb(colors.head),body:mageHexRgb(colors.body),
+   legs:mageHexRgb(colors.legs),feet:mageHexRgb(colors.feet)
   };
-
   for(let i=0;i<pixels.data.length;i+=4){
-   const baseR=pixels.data[i];
-   const baseG=pixels.data[i+1];
-   const baseB=pixels.data[i+2];
-   const baseA=pixels.data[i+3];
-   if(!baseA||!maskPixels[i+3])continue;
-
-   const maskR=maskPixels[i];
-   const maskG=maskPixels[i+1];
-   const maskB=maskPixels[i+2];
+   const a=pixels.data[i+3];
+   if(!a||!maskPixels[i+3])continue;
+   const r=maskPixels[i],g=maskPixels[i+1],b=maskPixels[i+2];
    let target=null;
-
-   // Thresholds: capturam também os pixels de transição/borda da máscara.
-   if(maskR>150&&maskG<100&&maskB<100)target=targets.head;
-   else if(maskR>150&&maskG>150&&maskB<100)target=targets.body;
-   else if(maskG>150&&maskR<100&&maskB<100)target=targets.legs;
-   else if(maskB>150&&maskR<100&&maskG<100)target=targets.feet;
-
+   if(r>150&&g<100&&b<100)target=targets.head;
+   else if(r>150&&g>150&&b<100)target=targets.body;
+   else if(g>150&&r<100&&b<100)target=targets.legs;
+   else if(b>150&&r<100&&g<100)target=targets.feet;
    if(target){
-    const lum=(baseR*0.299+baseG*0.587+baseB*0.114)/255;
+    const lum=(pixels.data[i]*0.299+pixels.data[i+1]*0.587+pixels.data[i+2]*0.114)/255;
     pixels.data[i]=Math.floor(target[0]*lum);
     pixels.data[i+1]=Math.floor(target[1]*lum);
     pixels.data[i+2]=Math.floor(target[2]*lum);
-    pixels.data[i+3]=baseA;
+   }
+  }
+  lctx.putImageData(pixels,0,0);
+  ctx.drawImage(layer,0,0,w,h);
+ };
+ const renderMageOutfit=(frame,dir)=>{
+  const frameIndex=((Number(frame)||0)%3+3)%3;
+  const dirIndex=((Number(dir)||0)%4+4)%4;
+  const colors={...(window.arenaMageColors||mageColors),legs:(window.arenaMageColors||mageColors).legs||(window.arenaMageColors||mageColors).details||mageColors.legs};
+  const visualIndex=Math.max(0,Math.min(MAGE_VISUALS.length-1,Number(mageVisual)||0));
+  const key='mage-layered-v2|'+visualIndex+'|'+frameIndex+'|'+dirIndex+'|'+colors.head+'|'+colors.body+'|'+colors.legs+'|'+colors.feet;
+  if(mageCanvasCache.has(key))return mageCanvasCache.get(key);
+
+  const basePair=mageLayerPair('base',frameIndex,dirIndex);
+  const addonLayer=visualIndex===1?'hat':visualIndex===2?'staff':null;
+  const addonPair=addonLayer?mageLayerPair(addonLayer,frameIndex,dirIndex):null;
+  const base=await mageLoad(MAGE_ROOT+basePair.base+'.png');
+  const mask=await mageLoad(MAGE_ROOT+basePair.mask+'.png');
+  if(!base.naturalWidth||!mask.naturalWidth)return '';
+
+  const w=base.naturalWidth,h=base.naturalHeight;
+  const canvas=document.createElement('canvas');
+  canvas.width=w;canvas.height=h;
+  const ctx=canvas.getContext('2d');
+  ctx.imageSmoothingEnabled=false;
+  mageDrawRecoloredLayer(ctx,base,mask,colors);
+
+  if(addonPair){
+   const addon=await mageLoad(MAGE_ROOT+addonPair.base+'.png');
+   const addonMask=await mageLoad(MAGE_ROOT+addonPair.mask+'.png');
+   if(addon.naturalWidth&&addonMask.naturalWidth){
+    // Addons são desenhados por cima do corpo, mantendo os pixels transparentes.
+    // A máscara do addon é usada somente se houver pixels RGB de recolor.
+    mageDrawRecoloredLayer(ctx,addon,addonMask,colors);
    }
   }
 
-  ctx.putImageData(pixels,0,0);
   const out=canvas.toDataURL('image/png');
   mageCanvasCache.set(key,out);
   return out;
@@ -241,7 +242,7 @@
  function setupMageColorControls(){
   const panel=document.getElementById('mageColorPanel');
   if(!panel)return;
-  const ids={head:'mageColorHead',body:'mageColorBody',details:'mageColorDetails',feet:'mageColorFeet'};
+  const ids={head:'mageColorHead',body:'mageColorBody',legs:'mageColorDetails',feet:'mageColorFeet'};
   const saved=window.game?.arenaMode?.outfitColors||{};
   window.arenaMageColors={...mageColors,...saved};
   Object.keys(ids).forEach(key=>{
@@ -252,6 +253,7 @@
    input.dataset.mageHook='1';
    input.addEventListener('input',()=>{
     window.arenaMageColors[key]=input.value;
+    if(key==='legs')window.arenaMageColors.details=input.value;
     try{
      if(window.game){
       window.game.arenaMode=window.game.arenaMode||{};
@@ -278,11 +280,11 @@
   const panel=document.getElementById('mageColorPanel');
   if(!panel)return;
   const saved=window.game?.arenaMode?.outfitColors||{};
-  const next={...mageColors,...saved};
+  const next={...mageColors,...saved,legs:saved.legs||saved.details||mageColors.legs};
   window.arenaMageColors={...next};
   panel.hidden=playerVocation()!=='mage';
   syncMageVisualControls();
-  const map={head:'mageColorHead',body:'mageColorBody',details:'mageColorDetails',feet:'mageColorFeet'};
+  const map={head:'mageColorHead',body:'mageColorBody',legs:'mageColorDetails',feet:'mageColorFeet'};
   Object.keys(map).forEach(k=>{const el=document.getElementById(map[k]);if(el&&el.value!==next[k])el.value=next[k]});
  }
  function playerVocation(){let voc='';try{const current=typeof window.arenaSurviveCurrent==='function'?window.arenaSurviveCurrent():null;voc=String(current?.vocation||'')}catch(e){}if(!voc){try{const name=String(document.getElementById('arenaPlayerName')?.textContent||'').trim();let list=[];try{list=typeof members!=='undefined'&&Array.isArray(members)?members:[]}catch(e){}const member=list.find(m=>String(m?.name||'').trim()===name);voc=String(member?.vocation||'')}catch(e){}}voc=voc.toLowerCase().trim();if(voc.includes('paladin')||voc.includes('paladino'))return'paladin';if(voc.includes('sorcerer')||voc.includes('mage')||voc.includes('mago'))return'mage';if(voc.includes('druid'))return'druid';if(voc.includes('monk')||voc.includes('monge')||voc.includes('rogue'))return'rogue';return'knight'}
@@ -384,7 +386,7 @@
  }
  function playerEl(){return document.querySelector('#arenaPlayerName')?.closest('.arena-fighter')?.querySelector('.arena-fighter-icon')}
  function enemyEl(){return document.getElementById('arenaEnemyIcon')}
- function prepareAssets(){for(let dir=0;dir<4;dir++)for(let frame=0;frame<3;frame++)preload(gmSrc(dir,frame));for(let dir=0;dir<4;dir++)preload(paladinSrc(dir));for(let frame=0;frame<3;frame++)for(let dir=0;dir<4;dir++){preload(mageFrameSrc(frame,dir));preload(mageFrameMask(frame,dir));}Object.values(MONSTERS).forEach(m=>{preload(m.src);if(m.individualFrames){for(let i=0;i<m.frames;i++)preload(ROOT+(m.folder||'')+String(m.base+i)+'.png')}});for(let dir=0;dir<4;dir++)for(let frame=0;frame<DEMON_FRAMES;frame++)preload(demonSrc(dir,frame))}
+ function prepareAssets(){for(let dir=0;dir<4;dir++)for(let frame=0;frame<3;frame++)preload(gmSrc(dir,frame));for(let dir=0;dir<4;dir++)preload(paladinSrc(dir));for(const layer of ['base','hat','staff'])for(let frame=0;frame<3;frame++)for(let dir=0;dir<4;dir++){const pair=mageLayerPair(layer,frame,dir);preload(MAGE_ROOT+pair.base+'.png');preload(MAGE_ROOT+pair.mask+'.png');}Object.values(MONSTERS).forEach(m=>{preload(m.src);if(m.individualFrames){for(let i=0;i<m.frames;i++)preload(ROOT+(m.folder||'')+String(m.base+i)+'.png')}});for(let dir=0;dir<4;dir++)for(let frame=0;frame<DEMON_FRAMES;frame++)preload(demonSrc(dir,frame))}
  function enemyKind(){
   const n=String(document.getElementById('arenaEnemyName')?.textContent||'').toLowerCase().replace(/\\s+/g,' ').trim();
   if(n.includes('rat'))return'rat';if(n.includes('troll'))return'troll';if(n.includes('orc berserker'))return'orcBerserker';if(n.includes('orc rider'))return'orcRider';if(n==='orc')return'orc';if(n.includes('cyclops'))return'cyclops';if(n.includes('scorpion'))return'scorpion';if(n.includes('ancient scarab')||n.includes('scarab'))return'ancientScarab';if(n.includes('dragon hatchling'))return'dragonHatchling';if(n.includes('dragon lord'))return'dragonLord';if(n.includes('frost dragon')||n.includes('drost dragon'))return'frostDragon';if(n==='dragon')return'dragon';if(n.includes('demon skeleton'))return'demonSkeleton';if(n.includes('hellhound'))return'hellhound';if(n.includes('ferumbras')||n.includes('deathbringer'))return'ferumbras';if(n==='demon')return'demonSurvive';return null;
@@ -392,7 +394,15 @@
  function draw(){
   syncMageColorControls();
   const p=playerEl(),e=enemyEl();if(!p||!e)return;
-  detectPlayerMovement();paint(p,heroIdle(null,playerAnimFrame),HERO_SIZE);p.textContent='';e.textContent='';
+  detectPlayerMovement();
+  if(playerVocation()==='mage'){
+   const request=renderMageOutfit(playerAnimFrame,playerMoveDir);
+   if(request&&typeof request.then==='function')request.then(src=>{if(src&&p.isConnected){paint(p,src,HERO_SIZE);p.textContent='';}});
+   else if(request)paint(p,request,HERO_SIZE);
+  }else{
+   paint(p,heroIdle(null,playerAnimFrame),HERO_SIZE);
+  }
+  p.textContent='';e.textContent='';
   const kind=enemyKind();const m=MONSTERS[kind];if(m?.individualFrames){if(lastRatKind!==kind){lastRatKind=kind;lastRatPos=null;ratAnimFrame=0;ratMoveDir=RAT_DIRECTIONS.south;ratAnimating=false;}detectRatMovement();paintSheet(e,m,ratAnimating?ratAnimFrame:0);return;}if(kind==='demonSurvive'){detectDemonMovement();paintDemon(e,demonMoveDir,demonAnimating?demonAnimFrame:0);return;}if(m)paintSheet(e,m,m.animated?animFrame%m.frames:0);else{e.style.backgroundImage='';e.style.width='112px';e.style.height='112px'}
  }
  function startAttack(){if(attacking)return;attacking=true;const p=playerEl();if(p){p.classList.remove('waves-attack');void p.offsetWidth;p.classList.add('waves-attack');setTimeout(()=>p.classList.remove('waves-attack'),300)}setTimeout(()=>{attacking=false;draw()},310)}
