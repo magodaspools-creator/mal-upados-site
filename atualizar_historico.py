@@ -100,11 +100,7 @@ for page in range(1, total_pages + 1):
 
 # Level e XP usam o mesmo snapshot e o mesmo horario de coleta.
 level_historico = load_json(HISTORICO_LEVEL, {})
-level_historico[hoje] = {
-    "captured_at": captured_at_iso,
-    "members": {m["name"]: m["level"] for m in membros},
-}
-level_historico = keep_last_snapshots(level_historico)
+level_historico[hoje] = {m["name"]: m["level"] for m in membros}
 save_json(HISTORICO_LEVEL, level_historico)
 
 
