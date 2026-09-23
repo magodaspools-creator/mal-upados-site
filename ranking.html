@@ -1,148 +1,275 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/jpeg" href="guilda.jpg?v=4-ranking"><title>Ranking XP | Mal Upados</title><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"></head><body><header class="top"><div class="nav"><a class="brand" href="index.html">⛧ MAL UPADOS</a><div class="links"><a href="index.html">Início</a><a class="active" href="ranking.html">Ranking</a><a href="guilda.html">Guilda</a><a href="stash.html">Stash</a><a href="hunting.html">Guia de Hunts</a><a href="arena.html">Arena</a><a href="arena-sobreviva.html">Sobreviva</a><a href="caos.html">Caos</a></div></div></header><main><div class="hero"><div class="sigil">⚔</div><div class="eyebrow">Competição da guilda</div><h1>Ranking <span>XP</span></h1></div><section><div class="filters"><button class="btn active" data-days="1">Últimas 24 horas</button></div><div class="period" id="period">Calculando…</div><div class="podium" id="podium"></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Nome</th><th>XP feita nas últimas 24h</th><th>Fonte</th></tr></thead><tbody id="body"></tbody></table></div></section></main><footer>Mal Upados · Jadebra · <a href="index.html">Início</a> · <a href="ranking.html">Ranking</a> · <a href="guilda.html">Guilda</a> · <a href="stash.html">Stash</a> · <a href="hunting.html">Guia de Hunts</a> · <a href="arena.html">Arena</a> · <a href="caos.html">Caos</a></footer><script>
-function fmt(n){return new Intl.NumberFormat('pt-BR').format(Math.round(n))}
-function signed(n){return (n>=0?'+':'')+fmt(n)}
-function esc(v){return String(v??'').replace(/[&<>\\\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\\\"':'&quot;',"'":'&#39;'}[c]))}
-let history={};
-
-/*
-  Para quem está no Top 1000 do Highscore:
-  XP exata = XP atual - XP anterior.
-
-  Para quem não está no Top 1000:
-  usamos apenas a progressão de level observada nos dois snapshots.
-  A fórmula oficial é a experiência acumulada necessária para atingir cada level.
-  Se o level não mudou, a XP ganha é desconhecida — não mostramos 0.
-*/
-function xpAtLevel(level){
-  level=Number(level);
-  if(!Number.isFinite(level)||level<1)return null;
-  const x=level-1;
-  return Math.floor((50*x*x*x-150*x*x+400*x)/3);
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/jpeg" href="guilda.jpg?v=4-ranking"><title>Ranking XP | Mal Upados</title><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"></head><body><header class="top"><div class="nav"><a class="brand" href="index.html">⛧ MAL UPADOS</a><div class="links"><a href="index.html">Início</a><a class="active" href="ranking.html">Ranking</a><a href="guilda.html">Guilda</a><a href="stash.html">Stash</a><a href="hunting.html">Guia de Hunts</a><a href="arena.html">Arena</a><a href="arena-sobreviva.html">Sobreviva</a><a href="caos.html">Caos</a></div></div></header><main><div class="hero"><div class="sigil">⚔</div><div class="eyebrow">Competição da guilda</div><h1>Ranking <span>XP</span></h1></div><section><div class="filters"><button class="btn active" data-days="1">Últimas 24 horas</button></div><div class="period" id="period">Calculando…</div><div class="podium" id="podium"></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Nome</th><th>XP feita nas últimas 24h</th><th>Tipo</th></tr></thead><tbody id="body"></tbody></table></div></section></main><footer>Mal Upados · Jadebra · <a href="index.html">Início</a> · <a href="ranking.html">Ranking</a> · <a href="guilda.html">Guilda</a> · <a href="stash.html">Stash</a> · <a href="hunting.html">Guia de Hunts</a> · <a href="arena.html">Arena</a> · <a href="caos.html">Caos</a></footer><footer>Mal Upados · Jadebra · <a href="index.html">Início</a> · <a href="ranking.html">Ranking</a> · <a href="guilda.html">Guilda</a> · <a href="stash.html">Stash</a> · <a href="hunting.html">Guia de Hunts</a> · <a href="arena.html">Arena</a> · <a href="caos.html">Caos</a></footer><script>
+function fmt(n){
+  return new Intl.NumberFormat('pt-BR').format(Math.round(n));
 }
 
-function xpEstimated(previousLevel,currentLevel){
-  previousLevel=Number(previousLevel);
-  currentLevel=Number(currentLevel);
-  if(!Number.isInteger(previousLevel)||!Number.isInteger(currentLevel))return null;
-  if(currentLevel<=previousLevel)return null;
-  const previousXp=xpAtLevel(previousLevel);
-  const currentXp=xpAtLevel(currentLevel);
-  if(previousXp===null||currentXp===null)return null;
-  return currentXp-previousXp;
+function signed(n){
+  return (n >= 0 ? '+' : '') + fmt(n);
+}
+
+function esc(v){
+  return String(v ?? '').replace(/[&<>\\"']/g, c => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '\\':'&#92;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[c]));
+}
+
+/*
+ * A tabela oficial do Tibia informa a XP acumulada necessaria para cada level.
+ * Esta formula reproduz a tabela para levels inteiros:
+ * XP(L) = floor((50*(L-1)^3 - 150*(L-1)^2 + 400*(L-1)) / 3)
+ */
+function xpAtLevel(level){
+  level = Number(level);
+  if(!Number.isInteger(level) || level < 1) return null;
+
+  const x = level - 1;
+  return Math.floor((50*x*x*x - 150*x*x + 400*x) / 3);
+}
+
+function estimatedXp(previousLevel, currentLevel){
+  previousLevel = Number(previousLevel);
+  currentLevel = Number(currentLevel);
+
+  if(
+    !Number.isInteger(previousLevel) ||
+    !Number.isInteger(currentLevel) ||
+    currentLevel <= previousLevel
+  ){
+    return null;
+  }
+
+  const previousXp = xpAtLevel(previousLevel);
+  const currentXp = xpAtLevel(currentLevel);
+
+  if(previousXp === null || currentXp === null) return null;
+  return currentXp - previousXp;
+}
+
+function normalizeSnapshot(date, raw){
+  // Formato novo: { captured_at, world, members: {...} }
+  if(raw && raw.members && typeof raw.members === 'object'){
+    return {
+      date,
+      capturedAt: raw.captured_at || date + 'T00:00:00Z',
+      members: raw.members
+    };
+  }
+
+  // Compatibilidade com o historico antigo.
+  return {
+    date,
+    capturedAt: date + 'T00:00:00Z',
+    members: raw && typeof raw === 'object' ? raw : {}
+  };
+}
+
+function getSnapshots(history){
+  return Object.keys(history)
+    .filter(date => /^\d{4}-\d{2}-\d{2}$/.test(date))
+    .sort()
+    .slice(-2)
+    .map(date => normalizeSnapshot(date, history[date]));
+}
+
+function memberXp(snapshot, name){
+  const member = snapshot.members[name];
+  if(
+    member &&
+    member.experience_exact === true &&
+    typeof member.experience === 'number' &&
+    Number.isFinite(member.experience)
+  ){
+    return member.experience;
+  }
+  return null;
+}
+
+function memberLevel(snapshot, name){
+  const member = snapshot.members[name];
+  const level = member && member.level;
+  return Number.isInteger(Number(level)) ? Number(level) : null;
+}
+
+function formatCaptureDate(iso){
+  const date = new Date(iso);
+  if(Number.isNaN(date.getTime())) return iso;
+  return new Intl.DateTimeFormat('pt-BR', {
+    timeZone:'America/Sao_Paulo',
+    dateStyle:'short',
+    timeStyle:'short'
+  }).format(date);
 }
 
 async function load(){
   try{
-    let r=await fetch('historico_xp.json?'+Date.now());
-    if(!r.ok)throw Error();
-    history=await r.json();
-    render();
-  }catch(e){
-    document.getElementById('period').textContent='Histórico de XP indisponível.'
+    const response = await fetch('historico_xp.json?' + Date.now(), {cache:'no-store'});
+    if(!response.ok) throw new Error('HTTP ' + response.status);
+
+    const history = await response.json();
+    render(history);
+  }catch(error){
+    console.error('Falha ao carregar histórico de XP:', error);
+    document.getElementById('period').textContent = 'Histórico de XP indisponível.';
+    document.getElementById('body').innerHTML =
+      '<tr><td colspan="4">Não foi possível carregar o histórico de XP.</td></tr>';
+    document.getElementById('podium').innerHTML = '';
   }
 }
 
-function exactXpOf(date,name){
-  let v=(history[date]||{})[name];
-  if(!v||v.experience_exact!==true||typeof v.experience!=='number')return null;
-  return v.experience;
-}
+function render(history){
+  const snapshots = getSnapshots(history);
 
-function render(){
-  let ds=Object.keys(history).sort();
-  if(ds.length<2){
-    document.getElementById('period').textContent='Aguardando duas coletas para calcular as últimas 24 horas.';
-    document.getElementById('body').innerHTML='<tr><td colspan="4">Ainda não há duas coletas.</td></tr>';
-    document.getElementById('podium').innerHTML='';
+  if(snapshots.length < 2){
+    document.getElementById('period').textContent =
+      'Aguardando duas coletas de XP para calcular as últimas 24 horas.';
+    document.getElementById('body').innerHTML =
+      '<tr><td colspan="4">Ainda não há duas coletas.</td></tr>';
+    document.getElementById('podium').innerHTML = '';
     return;
   }
 
-  let end=ds.at(-1);
-  let previous=ds.at(-2);
-  let endDate=new Date(end+'T00:00:00Z');
-  let previousDate=new Date(previous+'T00:00:00Z');
-  let hours=(endDate-previousDate)/3600000;
+  const previous = snapshots[0];
+  const current = snapshots[1];
+  const previousTime = new Date(previous.capturedAt);
+  const currentTime = new Date(current.capturedAt);
+  const hours = (currentTime - previousTime) / 3600000;
 
-  if(hours!==24){
-    document.getElementById('period').innerHTML='<strong>XP das últimas 24 horas:</strong> aguardando duas coletas consecutivas de 24h.';
-    document.getElementById('body').innerHTML='<tr><td colspan="4">Não há um intervalo de exatamente 24 horas disponível.</td></tr>';
-    document.getElementById('podium').innerHTML='';
+  if(
+    Number.isNaN(previousTime.getTime()) ||
+    Number.isNaN(currentTime.getTime()) ||
+    hours <= 0 ||
+    hours > 26
+  ){
+    document.getElementById('period').innerHTML =
+      '<strong>XP das últimas 24 horas:</strong> aguardando duas coletas válidas.';
+    document.getElementById('body').innerHTML =
+      '<tr><td colspan="4">O intervalo entre as coletas não é válido para este ranking.</td></tr>';
+    document.getElementById('podium').innerHTML = '';
     return;
   }
 
-  let previousData=history[previous]||{};
-  let currentData=history[end]||{};
-  let names=new Set([...Object.keys(previousData),...Object.keys(currentData)]);
+  const names = new Set([
+    ...Object.keys(previous.members),
+    ...Object.keys(current.members)
+  ]);
 
-  let rows=[...names].map(name=>{
-    let prev=previousData[name];
-    let cur=currentData[name];
-    if(!prev||!cur)return null;
+  const rows = [...names].map(name => {
+    const previousMember = previous.members[name];
+    const currentMember = current.members[name];
 
-    const exactCurrent=exactXpOf(end,name);
-    const exactPrevious=exactXpOf(previous,name);
+    if(!previousMember || !currentMember) return null;
 
-    if(exactCurrent!==null && exactPrevious!==null){
+    const exactPrevious = memberXp(previous, name);
+    const exactCurrent = memberXp(current, name);
+
+    if(exactPrevious !== null && exactCurrent !== null){
       return {
         name,
-        gain:exactCurrent-exactPrevious,
-        method:'exata',
-        previousLevel:prev.level,
-        currentLevel:cur.level
+        gain: exactCurrent - exactPrevious,
+        method: 'exata',
+        previousLevel: memberLevel(previous, name),
+        currentLevel: memberLevel(current, name)
       };
     }
 
-    const estimated=xpEstimated(prev.level,cur.level);
-    if(estimated!==null){
+    const previousLevel = memberLevel(previous, name);
+    const currentLevel = memberLevel(current, name);
+    const estimated = estimatedXp(previousLevel, currentLevel);
+
+    if(estimated !== null){
       return {
         name,
-        gain:estimated,
-        method:'estimada',
-        previousLevel:prev.level,
-        currentLevel:cur.level
+        gain: estimated,
+        method: 'estimada',
+        previousLevel,
+        currentLevel
       };
     }
 
     return {
       name,
-      gain:null,
-      method:'indisponivel',
-      previousLevel:prev.level,
-      currentLevel:cur.level
+      gain: null,
+      method: 'indisponivel',
+      previousLevel,
+      currentLevel
     };
   }).filter(Boolean);
 
-  rows.sort((a,b)=>{
-    if(a.gain===null&&b.gain!==null)return 1;
-    if(a.gain!==null&&b.gain===null)return -1;
-    if(a.gain!==null&&b.gain!==null&&b.gain!==a.gain)return b.gain-a.gain;
+  rows.sort((a,b) => {
+    if(a.gain === null && b.gain !== null) return 1;
+    if(a.gain !== null && b.gain === null) return -1;
+    if(a.gain !== null && b.gain !== null && b.gain !== a.gain){
+      return b.gain - a.gain;
+    }
     return a.name.localeCompare(b.name);
   });
 
-  document.getElementById('period').innerHTML='<strong>Período:</strong> últimas 24 horas · '+previous+' → '+end+' · XP exata no Top 1000 e estimada pela progressão de level fora dele';
+  const periodText =
+    '<strong>Período:</strong> ' +
+    formatCaptureDate(previous.capturedAt) +
+    ' → ' +
+    formatCaptureDate(current.capturedAt) +
+    ' · XP exata no Top 1000 e estimada pela progressão de level fora dele';
 
-  document.getElementById('body').innerHTML=rows.map((x,i)=>{
-    const rank=x.gain===null?'—':(i+1);
-    const xp=x.gain===null
-      ? '<span class="small">Level '+x.previousLevel+' → '+x.currentLevel+' · XP não determinável sem o XP absoluto</span>'
-      : signed(x.gain)+' XP';
-    const tag=x.method==='exata'
+  document.getElementById('period').innerHTML = periodText;
+
+  document.getElementById('body').innerHTML = rows.map((row, index) => {
+    const rank = row.gain === null ? '—' : String(index + 1);
+
+    let xpText;
+    if(row.gain === null){
+      xpText =
+        '<span class="small">Lv ' +
+        (row.previousLevel ?? '?') +
+        ' → ' +
+        (row.currentLevel ?? '?') +
+        ' · XP não determinável</span>';
+    }else{
+      xpText = signed(row.gain) + ' XP';
+    }
+
+    const type = row.method === 'exata'
       ? '<span class="small">Exata</span>'
-      : x.method==='estimada'
-        ? '<span class="small">Estimada · Lv '+x.previousLevel+' → '+x.currentLevel+'</span>'
+      : row.method === 'estimada'
+        ? '<span class="small">Estimada · Lv ' + row.previousLevel + ' → ' + row.currentLevel + '</span>'
         : '<span class="small">Sem variação de level</span>';
 
-    return '<tr><td class="rank">'+rank+'</td><td><strong>'+esc(x.name)+'</strong></td><td class="xp">'+xp+'</td><td>'+tag+'</td></tr>';
-  }).join('')||'<tr><td colspan="4">Nenhum membro disponível no intervalo.</td></tr>';
+    return (
+      '<tr>' +
+        '<td class="rank">' + rank + '</td>' +
+        '<td><strong>' + esc(row.name) + '</strong></td>' +
+        '<td class="xp">' + xpText + '</td>' +
+        '<td>' + type + '</td>' +
+      '</tr>'
+    );
+  }).join('') || '<tr><td colspan="4">Nenhum membro disponível.</td></tr>';
 
-  const ranked=rows.filter(x=>x.gain!==null);
-  let top=ranked.slice(0,3),slots=[top[1],top[0],top[2]];
-  document.getElementById('podium').innerHTML=slots.filter(Boolean).map((x,i)=>
-    '<div class="'+(i===1?'first':'')+'"><div class="pplace">'+['2º','1º','3º'][i]+'</div><div class="pname">'+esc(x.name)+'</div><div class="xp">'+signed(x.gain)+' XP</div><div class="small">'+(x.method==='exata'?'XP exata':'XP estimada pela progressão de level')+'</div></div>'
-  ).join('');
+  const ranked = rows.filter(row => row.gain !== null);
+  const top = ranked.slice(0,3);
+  const slots = [top[1], top[0], top[2]];
+
+  document.getElementById('podium').innerHTML = slots
+    .filter(Boolean)
+    .map((row, index) =>
+      '<div class="' + (index === 1 ? 'first' : '') + '">' +
+        '<div class="pplace">' + ['2º','1º','3º'][index] + '</div>' +
+        '<div class="pname">' + esc(row.name) + '</div>' +
+        '<div class="xp">' + signed(row.gain) + ' XP</div>' +
+        '<div class="small">' +
+          (row.method === 'exata'
+            ? 'XP exata'
+            : 'XP estimada pela progressão de level') +
+        '</div>' +
+      '</div>'
+    )
+    .join('');
 }
 
-document.querySelectorAll('.btn').forEach(b=>b.onclick=()=>render());
 load();
-</script><script src="site-auth.js?v=global-account-20260914"></script></body></html><script src="site-auth.js?v=global-account-20260914"></script></body></html>
+</script><script src="site-auth.js?v=global-account-20260914"></script></body></html>
