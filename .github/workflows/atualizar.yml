@@ -23,6 +23,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Validar script
+        run: python -m py_compile atualizar_historico.py
+
       - name: Atualizar historico
         run: python atualizar_historico.py
 
