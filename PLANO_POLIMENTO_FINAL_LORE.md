@@ -519,6 +519,68 @@ Isso permanece dentro da validação jogável das etapas posteriores.
 - [ ] Preservar a ambiguidade do final.
 - [ ] Criar uma pequena sensação de encerramento após a apresentação das opções.
 
+## Resultado da Etapa 7 — Segundo Impacto
+
+**Polimento aplicado sem alterar a escolha final nem criar interação adicional.**
+
+### Alterações realizadas
+
+- A entrada em primeira pessoa recebeu maior sensação de profundidade, com iluminação central e vinheta preservando o foco no campo de memória.
+- O afresco foi ampliado visualmente para dar mais peso à relação **Arena → Titãs → drenagem de energia**.
+- Titãs, tubos, fluxos de energia e o núcleo da Arena receberam mais contraste e escala.
+- A representação do mundo ganhou um segundo anel interno sutil, reforçando a ideia de uma estrutura artificial sustentada por energia externa.
+- A memória agora aparece em uma sequência visual: afresco → explicação da memória → controles/correntes → opções → frase de encerramento.
+- As correntes e o eixo central continuam pulsando, mas agora funcionam como parte da composição final em vez de simples decoração.
+- As duas opções continuam explicitamente **não clicáveis**.
+- A ambiguidade permanece: o jogo apresenta as duas consequências sem selecionar uma delas pelo jogador.
+- A frase final recebeu uma separação visual própria para funcionar como fechamento da cena.
+
+### Regra narrativa preservada
+
+O Segundo Impacto continua revelando que:
+- a Arena é sustentada pela drenagem de energia de Titãs de outras dimensões;
+- Kaelen conhecia essa verdade;
+- o protagonista precisa encarar duas consequências incompatíveis;
+- nenhuma escolha é registrada como decisão do jogador;
+- o final permanece ambíguo e trágico.
+
+Não foi criado sistema de escolha, final alternativo, pontuação ou nova mecânica.
+
+### Escopo
+
+Alterados somente:
+- `arena-segundo-impacto.js`
+- `arena-segundo-impacto.css`
+- `PLANO_POLIMENTO_FINAL_LORE.md`
+
+Não alterados:
+- combate;
+- progressão;
+- XP;
+- ranking;
+- renderer;
+- `arena-sobreviva.html`;
+- Mirror Match;
+- regras da escolha final.
+
+### Backup
+
+Criado antes da etapa:
+- `backup/pre-etapa-7-segundo-impacto-2026-09-23`
+
+### Validação pendente
+
+A estrutura foi revisada via GitHub. Ainda falta testar no navegador:
+- entrada no Trono;
+- sequência visual das memórias;
+- leitura dos Titãs e da drenagem;
+- correntes/engrenagens;
+- apresentação das duas opções;
+- fechamento da cena;
+- comportamento em mobile.
+
+Isso permanece dentro da validação jogável das etapas posteriores.
+
 ## Etapa 8 — Transições e ritmo
 
 - [ ] Revisar passagem entre cada capítulo.
