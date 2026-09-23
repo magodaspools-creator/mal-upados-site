@@ -6,6 +6,31 @@
   const corruption=(label='Sinal corrompido')=>{const el=root.createElement('span');el.className='arena-lore-corruption';el.textContent=label;return el;};
   const kaelenMark=()=>{const el=root.createElement('span');el.className='arena-kaelen-mark';const inner=root.createElement('span');inner.textContent='K';el.appendChild(inner);return el;};
   const chapterNames=['Floresta Sombria','Acampamento Orc','Deserto Perdido','Covil dos Dragões','Abismo Demoníaco'];
+  function renderFragmentProgress(){
+    const panel=root.querySelector('.adventure-panel'), n=window.ArenaNarrative;
+    if(!panel||!n)return;
+    let el=panel.querySelector('#arena-fragments-progress');
+    if(!el){
+      el=root.createElement('div');
+      el.id='arena-fragments-progress';
+      el.className='arena-fragments-progress';
+      el.setAttribute('aria-label','Fragmentos de memória');
+      panel.appendChild(el);
+    }
+    const count=Math.min(4,Math.max(0,Number(n.state?.fragments)||0));
+    el.innerHTML='<span class="arena-fragments-label">MEMÓRIA</span><span class="arena-fragments-count">'+count+' / 4</span><span class="arena-fragments-pips">'+[0,1,2,3].map(i=>'<i class="'+(i<count?'filled':'')+'" aria-hidden="true"></i>').join('')+'</span>';
+    el.classList.toggle('complete',count>=4);
+  }
+  function pulseFragmentProgress(){
+    const el=root.querySelector('#arena-fragments-progress');
+    if(!el)return;
+    renderFragmentProgress();
+    el.classList.remove('fragment-earned');
+    void el.offsetWidth;
+    el.classList.add('fragment-earned');
+    setTimeout(()=>el.classList.remove('fragment-earned'),760);
+  }
+  root.addEventListener('arena:fragment-earned',pulseFragmentProgress);
   let transitionTimer=null;
   function chapterTransition(to,from=null){
     const panel=root.querySelector('.adventure-panel');
