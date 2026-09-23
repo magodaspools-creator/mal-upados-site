@@ -8,7 +8,6 @@ GUILD = "Mal Upados"
 BASE = "https://api.tibiadata.com/v4"
 HISTORICO_LEVEL = "historico.json"
 HISTORICO_XP = "historico_xp.json"
-TOP_PAGES = 20
 
 
 def get_json(url):
@@ -25,8 +24,7 @@ def get_highscore_page(world, page):
         f"{BASE}/highscores/"
         f"{urllib.parse.quote(world)}/experience/all/{page}"
     )
-    data = get_json(url)
-    return data.get("highscores", {}).get("highscore_list", [])
+    return get_json(url)
 
 
 guild_data = get_json(f"{BASE}/guild/{urllib.parse.quote(GUILD)}")
@@ -48,15 +46,30 @@ nomes_guild = {m["name"].casefold() for m in membros}
 experiencias = {}
 fontes = {}
 
-for page in range(1, TOP_PAGES + 1):
+first_page = 1
+total_pages = 1
+
+try:
+    first_data = get_highscore_page(world, first_page)
+    total_pages = int(
+        first_data.get("highscores", {})
+        .get("highscore_page", {})
+        .get("total_pages") or 1
+    )
+except Exception as exc:
+    print(f"Falha ao consultar TibiaData pagina 1: {exc}")
+    first_data = {"highscores": {"highscore_list": []}}
+
+for page in range(1, total_pages + 1):
     try:
-        entries = get_highscore_page(world, page)
+        data = first_data if page == 1 else get_highscore_page(world, page)
+        entries = data.get("highscores", {}).get("highscore_list", [])
     except Exception as exc:
-        print(f"Falha ao consultar TibiaData pagina {page}: {exc}")
+        print(f"Falha ao consultar TibiaData pagina {page}/{total_pages}: {exc}")
         continue
 
     if not entries:
-        break
+        continue
 
     for item in entries:
         nome = str(item.get("name", "")).strip()
@@ -68,8 +81,6 @@ for page in range(1, TOP_PAGES + 1):
             experiencias[nome.casefold()] = value
             fontes[nome.casefold()] = "TibiaData/highscores"
 
-    if len(experiencias) == len(nomes_guild):
-        break
 
 xp_historico = {}
 if os.path.exists(HISTORICO_XP):
@@ -93,5 +104,5 @@ exatos = sum(1 for v in xp_historico[hoje].values() if v["experience_exact"])
 print(
     f"Historico atualizado: {hoje} | mundo: {world} | "
     f"membros: {len(membros)} | XP exata: {exatos}/{len(membros)} | "
-    f"fonte: TibiaData/all"
+    f"paginas consultadas: {total_pages} | fonte: TibiaData/all"
 )
