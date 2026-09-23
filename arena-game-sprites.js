@@ -390,6 +390,12 @@
   if(n.includes('rat'))return'rat';if(n.includes('troll'))return'troll';if(n.includes('orc berserker'))return'orcBerserker';if(n.includes('orc rider'))return'orcRider';if(n==='orc')return'orc';if(n.includes('cyclops'))return'cyclops';if(n.includes('scorpion'))return'scorpion';if(n.includes('ancient scarab')||n.includes('scarab'))return'ancientScarab';if(n.includes('dragon hatchling'))return'dragonHatchling';if(n.includes('dragon lord'))return'dragonLord';if(n.includes('frost dragon')||n.includes('drost dragon'))return'frostDragon';if(n==='dragon')return'dragon';if(n.includes('demon skeleton'))return'demonSkeleton';if(n.includes('hellhound'))return'hellhound';if(n.includes('ferumbras')||n.includes('deathbringer'))return'ferumbras';if(n==='demon')return'demonSurvive';return null;
  }
  function draw(){
+  // O seletor nativo do Sobreviva usa um popup controlado pelo navegador.
+  // Enquanto ele está focado/aberto, não atualizamos o renderer do Mage.
+  // Atualizações periódicas de Canvas/CSS durante a abertura podem fazer o
+  // popup fechar imediatamente em alguns navegadores.
+  const activeTag=document.activeElement?.tagName?.toLowerCase();
+  if(activeTag==='select'||activeTag==='input'||activeTag==='textarea')return;
   syncMageColorControls();
   const p=playerEl(),e=enemyEl();if(!p||!e)return;
   detectPlayerMovement();paint(p,heroIdle(null,playerAnimFrame),HERO_SIZE);p.textContent='';e.textContent='';
