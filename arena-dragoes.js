@@ -4,6 +4,8 @@
   const ZONE=3, MAP_ID='map4';
   const CHAIN_EVENT='map4_chains_reveal';
   const KAELEN_BREAK_EVENT='map4_kaelen_break';
+  const BOSS_EVENT='map4_boss_defeat';
+  const DESCENT_EVENT='map4_descent';
   const narrative=()=>window.ArenaNarrative||null;
   const selectedZone=()=>{const el=document.querySelector('.zone.selected');return el?Number(el.dataset.zone):null};
 
@@ -26,6 +28,7 @@
        +'<div class="dragon-double-reading"><div class="dragon-reading-head"><span>DUAS LEITURAS</span><strong>O que realmente aconteceu aqui?</strong></div>'
        +'<div class="dragon-reading-grid"><div><b>Escravidão</b><p>Os dragões podem ter sido capturados e transformados em ferramentas pelos responsáveis pela corrupção deste mundo.</p></div><div><b>Uma máquina improvisada</b><p>As correntes e mecanismos também podem ser parte de uma gambiarra dos Generais para manter o mundo funcionando depois do desaparecimento do Soberano.</p></div></div></div>'
        +'<div class="dragon-kaelen-state"><span class="state-label">KAELEN</span><strong>“Eles são monstros! Ferramentas! Mate-os e pegue o poder!”</strong><span class="state-note">Pela primeira vez, a postura do guia se rompe: ele deixa de apenas conduzir e passa a exigir a morte dos dragões.</span></div>'
+       +'<div class="dragon-descent"><span class="state-label">O NÚCLEO ABAIXO</span><strong>O mecanismo continua funcionando.</strong><p>Se o sistema falhar agora, o mundo acima também pode cair. O caminho para o Abismo se abre sob as ruínas da fornalha.</p></div>'
        +'</section>';
       battleArea.insertAdjacentHTML('beforebegin',html);
 
@@ -50,14 +53,51 @@
 
     const broken=n.hasEvent(KAELEN_BREAK_EVENT);
     existing?.classList.toggle('kaelen-broken',broken);
+    existing?.classList.toggle('dragon-descent-open',n.hasEvent(DESCENT_EVENT));
+  }
+
+  function installBossHook(){
+    if(window.__arenaDragonWinHook)return;
+    const original=window.winBattle;
+    if(typeof original!=='function')return;
+    window.winBattle=function(){
+      const isDragonBoss=typeof battle!=='undefined'&&battle?.isBoss&&Number(battle.zoneIndex)===ZONE;
+      original.apply(this,arguments);
+      if(!isDragonBoss)return;
+      const n=narrative();
+      if(!n||n.hasEvent(BOSS_EVENT))return;
+      n.completeEvent(BOSS_EVENT,{source:'general_of_beasts',boss:'frost_wyrm'});
+      n.addFragment(1);
+      n.completeEvent(DESCENT_EVENT,{source:'dragon_lair',destination:'abyss'});
+      n.discoverClue('map4_final_words',{text:'Nós acorrentamos o mundo... para que você não precisasse... O Abismo está aberto. O Trono o aguarda.'});
+      if(typeof toast==='function')toast('Quarto fragmento absorvido. O chão começa a ceder para o Abismo.');
+      setTimeout(renderScene,100);
+    };
+    window.__arenaDragonWinHook=true;
+  }
+
+  function renderBossNarrative(){
+    if(typeof battle==='undefined'||!battle?.isBoss||Number(battle.zoneIndex)!==ZONE)return;
+    const card=document.querySelector('.boss-battle-card');if(!card)return;
+    const title=card.querySelector('.battle-head h3');
+    if(title&&!title.dataset.dragonLore){
+      title.dataset.dragonLore='1';
+      title.insertAdjacentHTML('afterend','<div class="dragon-boss-label">GENERAL DAS FERAS · DRAGÃO ANCIÃO</div>');
+    }
+    if(!card.querySelector('.dragon-boss-line')){
+      const line=document.createElement('div');
+      line.className='dragon-boss-line';
+      line.textContent='“Nós acorrentamos o mundo... para que você não precisasse... O Abismo está aberto. O Trono o aguarda.”';
+      (card.querySelector('.boss-battle-warning')||card.querySelector('.battle-head'))?.after(line);
+    }
   }
 
   function observe(){
     const map=document.getElementById('map');if(!map)return;
-    new MutationObserver(()=>setTimeout(renderScene,0))
+    new MutationObserver(()=>setTimeout(()=>{renderScene();renderBossNarrative();installBossHook()},0))
       .observe(map,{subtree:true,childList:true,attributes:true,attributeFilter:['class','data-zone']});
-    setInterval(renderScene,350);
-    setTimeout(renderScene,250);
+    setInterval(()=>{renderScene();renderBossNarrative();installBossHook()},350);
+    setTimeout(()=>{renderScene();renderBossNarrative();installBossHook()},250);
   }
 
   function boot(){if(narrative())observe()}
