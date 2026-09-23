@@ -30,13 +30,13 @@ Objetivo: criar uma camada de dados sem espalhar textos pelo código.
 - [x] Não alterar combate/movimento.
 
 ## Fase 2 — Elementos visuais globais
-- [ ] Identidade visual da campanha.
-- [ ] Brasão/Sol Partido.
-- [ ] Fragmentos dourados.
-- [ ] Elementos de Kaelen.
-- [ ] Indicadores visuais de corrupção.
-- [ ] Elementos reutilizáveis para estátuas, portões, correntes e símbolos.
-- [ ] Validar cada asset individualmente antes de integrar.
+- [x] Identidade visual da campanha.
+- [x] Brasão/Sol Partido.
+- [x] Fragmentos dourados.
+- [x] Elementos de Kaelen.
+- [x] Indicadores visuais de corrupção.
+- [x] Elementos reutilizáveis para estátuas, portões, correntes e símbolos.
+- [x] Validar cada asset individualmente antes de integrar.
 
 ## Fase 3 — NPCs
 ### Kaelen
