@@ -868,10 +868,32 @@ Durante o teste, nenhum arquivo funcional da lore foi alterado. A única altera�
 
 ## Etapa 13 — Rejogabilidade
 
-- [ ] Confirmar que as pistas retroativas só aparecem depois do final.
-- [ ] Revisar as cinco regiões novamente após a revelação.
-- [ ] Verificar se as novas interpretações enriquecem a campanha sem reescrevê-la.
-- [ ] Confirmar que a primeira jogada continua preservada.
+### Resultado da Etapa 13
+
+A camada de rejogabilidade foi revisada para funcionar estritamente como uma **segunda leitura da campanha**, sem alterar a primeira jogada.
+
+- [x] **Pistas retroativas só aparecem depois do final:** `finale_second_impact` continua sendo o gate único.
+- [x] **Cinco regiões revisadas:** Floresta, Orcs, Deserto, Dragões e Abismo possuem uma leitura retroativa própria.
+- [x] **Interpretação sem reescrita:** as pistas reinterpretam elementos já apresentados — estátuas, defesa Orc, Elias, correntes e Guarda Real — em vez de criar uma nova história paralela.
+- [x] **Primeira jogada preservada:** antes de `finale_second_impact`, nenhum painel retroativo ou diálogo pós-memória é inserido.
+- [x] **Proteção contra seleção inválida:** a camada agora ignora zonas inexistentes ou sem seleção válida, evitando associação acidental com a Floresta.
+- [x] **Apresentação:** painel retroativo recebeu acabamento visual discreto e suporte a `prefers-reduced-motion`.
+
+### Leituras retroativas confirmadas
+
+1. **Floresta:** as estátuas e a sombra ausente passam a apontar para a divisão da alma.
+2. **Acampamento Orc:** a linha defensiva e o Sol Partido passam a representar a divisão do Soberano.
+3. **Deserto:** a destruição interna e as memórias de Elias passam a apontar para o crime oculto do próprio reino.
+4. **Covil dos Dragões:** as correntes e o brasão de Kaelen passam a representar a manutenção brutal do mundo após o desaparecimento do Soberano.
+5. **Abismo:** a Guarda Real e o silêncio da catedral passam a ser entendidos como espera pelo retorno do próprio Soberano.
+
+### Validação
+
+- Backup: `backup/pre-etapa-13-rejogabilidade-2026-09-23`
+- Compare com o backup: **2 commits à frente, 0 atrás**.
+- Arquivos alterados: somente `arena-rejogabilidade.js` e `arena-rejogabilidade.css`.
+- Não houve alteração em combate, progressão, XP, ranking, movimentação, sprites ou `arena-sobreviva.html`.
+- Validação estrutural concluída; playthrough visual manual continua reservado para a etapa de fechamento.
 
 ## Etapa 14 — Fechamento
 
