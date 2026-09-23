@@ -14,7 +14,7 @@ Por que os domínios dos Cinco Grandes Heróis do passado (que deveriam ser loca
 
 ## 4. VERDADE OCULTA
 
-Não houve uma guerra ancestral entre o "Bem" e o "Senhor do Abismo". O mundo foi criado por um único Soberano Benevolente. Porém, para manter o mundo vivo, o Soberano precisava cometer atrocidades cósmicas (drenar a energia de outros mundos). Consumido pela culpa, o Soberano enlouqueceu. Seus cinco Generais leais tentaram contê-lo, resultando em um evento chamado "O Cisma". A magia vazou, enlouquecendo os Generais e corrompendo os mapas. Os "demônios" são, na verdade, a guarda real original tentando manter o núcleo do mundo funcionando.
+Não houve uma guerra ancestral entre o "Bem" e o "Senhor do Abismo". O mundo foi criado por um único Soberano, lembrado inicialmente como benevolente. Porém, para manter o mundo vivo, o Soberano precisava cometer atrocidades cósmicas (drenar a energia de outros mundos). Consumido pela culpa, o Soberano enlouqueceu. Seus cinco Generais leais tentaram contê-lo, resultando em um evento chamado "O Cisma". A magia vazou, enlouquecendo os Generais e corrompendo os mapas. Os "demônios" são, na verdade, a guarda real original tentando manter o núcleo do mundo funcionando.
 
 ## 5. PROTAGONISTA
 
@@ -26,7 +26,7 @@ Durante o Cisma, a alma do Soberano se partiu em duas. O protagonista é a metad
 
 - **Kaelen (O Guia):** Aparece como um cavaleiro fantasmagórico/holográfico que apenas o jogador vê. Ele diz ser o último dos Heróis, guiando o jogador para salvar o mundo. *Segredo:* Kaelen é a outra metade da alma do Soberano (a Ambição e a Culpa). Ele quer que o jogador derrote os Generais para reunir o poder, para então absorver o jogador e governar novamente.
 - **Vara, a Xamã (Mapa 2):** Uma orc cega que enxerga almas. Ela não ataca o jogador e fala em enigmas.
-- **Elias, o Arquivista (Mapa 3):** Um estudioso humano que descobriu a verdade e perdeu a sanidade. Ele ri histericamente das ações do jogador.
+- **Elias, o Arquivista (Mapa 3):** Um estudioso humano que descobriu parte da verdade e passou a falar de forma perturbada sobre as ações do jogador.
 
 ## 7. MAPA 1 — FLORESTA SOMBRIA
 
@@ -70,7 +70,7 @@ Durante o Cisma, a alma do Soberano se partiu em duas. O protagonista é a metad
 
 ## 12. PISTAS ESCONDIDAS (Retroativamente lógicas)
 
-- **A Sombra Única (Mapa 1):** O motor do jogo projeta apenas a sombra do jogador, nunca a de Kaelen. O jogador acha que é porque Kaelen é um fantasma. A verdade: Kaelen é uma voz na cabeça do jogador/uma projeção esquizofrênica mágica.
+- **A Sombra Única (Mapa 1):** O motor do jogo projeta apenas a sombra do jogador, nunca a de Kaelen. O jogador acha que é porque Kaelen é um fantasma. A verdade: Kaelen é uma manifestação ligada à própria alma do jogador, uma presença que não possui corpo físico independente.
 - **O Tratamento dos Chefes:** Nenhum chefe tenta matar o jogador ativamente logo de cara. Eles reagem como se estivessem se defendendo de uma autoridade furiosa ("Meu Rei...", "Majestade").
 - **O Símbolo do Sol Partido:** Visto nos Orcs, representa a alma dividida do Soberano (Kaelen e o Jogador).
 - **A Ausência do "Senhor do Abismo":** Ninguém nos mapas 1 ao 4 chama o inimigo de "Senhor do Abismo", apenas Kaelen usa esse termo. Os NPCs usam "O Rei", "A Coroa", "O Trono".
@@ -123,7 +123,7 @@ A tela mostra duas opções não clicáveis de diálogo interno:
 *Destruir este mundo.*
 *Destruir os outros.*
 
-O jogador percebe que a "culpa" que rachou sua alma no passado não foi uma fraqueza. Foi o peso de ser o vilão do universo. A tela escurece aos poucos, enquanto ouve-se o som de correntes massivas se esticando e engrenagens voltando a girar. O mundo foi salvo, ao custo do resto do universo. O protagonista fecha os olhos, chorando a mesma luz dourada dos demônios.
+O jogador percebe que a "culpa" que rachou sua alma no passado não foi uma fraqueza. Foi o peso de ser o vilão do universo. A tela escurece aos poucos, enquanto ouve-se o som de correntes massivas se esticando e engrenagens voltando a girar. As correntes começam a esticar e as engrenagens voltam a girar, deixando em aberto qual das duas consequências prevalecerá. O protagonista fecha os olhos, chorando a mesma luz dourada dos demônios.
 
 ## 18. POSSÍVEL CONTINUAÇÃO
 
