@@ -1,4 +1,4 @@
-/* Arena — Fase 12: Rejogabilidade narrativa. */
+/* Arena — Fase 13: Rejogabilidade narrativa. */
 .arena-retro-lore{
   margin-top:18px;
   padding:18px 20px;
@@ -58,4 +58,21 @@
   .arena-retro-lore{padding:15px}
   .arena-retro-lore h4{font-size:.95rem}
   .arena-retro-lore p,.arena-retro-lore span{font-size:.82rem}
+}
+
+
+.arena-retro-lore::before{
+  content:'';
+  display:block;
+  width:42px;
+  height:2px;
+  margin-bottom:12px;
+  background:linear-gradient(90deg,#d9b65b,transparent);
+  opacity:.8;
+}
+.arena-retro-lore h4{
+  font-family:Cinzel,serif;
+}
+@media(prefers-reduced-motion:reduce){
+  .arena-retro-lore{animation:none}
 }
