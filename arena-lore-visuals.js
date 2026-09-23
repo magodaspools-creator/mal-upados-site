@@ -30,7 +30,7 @@
     el.classList.add('fragment-earned');
     setTimeout(()=>el.classList.remove('fragment-earned'),760);
   }
-  root.addEventListener('arena:fragment-earned',pulseFragmentProgress);
+  window.addEventListener('arena:fragment-earned',pulseFragmentProgress);
   const bootFragments=()=>setTimeout(renderFragmentProgress,220);
   if(root.readyState==='loading')root.addEventListener('DOMContentLoaded',bootFragments);else bootFragments();
   let transitionTimer=null;
