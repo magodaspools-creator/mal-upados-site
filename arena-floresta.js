@@ -47,6 +47,21 @@
       card.querySelector('.boss-battle-warning')?.after(warning);
     },0);
   }
+  function renderBossLine(){
+    if(typeof battle==='undefined'||!battle?.isBoss||Number(battle.zoneIndex)!==ZONE)return;
+    const n=narrative();
+    if(!n||n.hasFlag('map1_boss_my_king'))return;
+    const max=Number(battle.maxHp)||0, hp=Number(battle.hp)||0;
+    if(!max||hp/max>0.30)return;
+    n.setFlag('map1_boss_my_king',true);
+    const card=document.querySelector('.boss-battle-card');
+    if(!card)return;
+    const line=document.createElement('div');
+    line.className='forest-boss-line';
+    line.textContent='“Meu Rei... você voltou para nos punir?”';
+    const warning=card.querySelector('.boss-battle-warning');
+    (warning||card.querySelector('.battle-head'))?.after(line);
+  }
   function installBossRewardHook(){
     if(window.__arenaForestWinHook)return;
     const original=window.winBattle; if(typeof original!=='function')return;
@@ -69,10 +84,10 @@
   }
   function observe(){
     const map=document.getElementById('map'); if(!map)return;
-    new MutationObserver(()=>setTimeout(()=>{renderScene();applyDefensiveBoss();installBossRewardHook()},0))
+    new MutationObserver(()=>setTimeout(()=>{renderScene();applyDefensiveBoss();renderBossLine();installBossRewardHook()},0))
       .observe(map,{subtree:true,childList:true,attributes:true,attributeFilter:['class','data-zone']});
     setInterval(()=>{renderScene();applyDefensiveBoss();installBossRewardHook()},350);
-    setTimeout(()=>{renderScene();installBossRewardHook()},250);
+    setTimeout(()=>{renderScene();renderBossLine();installBossRewardHook()},250);
   }
   function boot(){if(!narrative())return;narrative().setChapter(MAP_ID);observe()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
