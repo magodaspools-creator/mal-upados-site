@@ -18,6 +18,64 @@
 - [ ] **Não alterar nada nesta etapa antes de concluir a auditoria.**
 - [ ] Registrar o resultado antes de qualquer implementação.
 
+## Resultado da Etapa 1 — Auditoria da progressão entre mapas
+
+**Auditoria concluída sem alteração de gameplay.**
+
+### Fluxo atual encontrado
+
+- O desbloqueio das 5 áreas em `arena.js` é controlado **exclusivamente pelo Arena Level**:
+  - Floresta: Level 1
+  - Acampamento Orc: Level 10
+  - Deserto Perdido: Level 20
+  - Covil dos Dragões: Level 35
+  - Abismo Demoníaco: Level 50
+- O jogador pode selecionar diretamente qualquer área cujo requisito de nível já tenha sido alcançado.
+- A vitória de uma batalha comum não força a mudança para a próxima área.
+- O Boss elemental é um encontro separado e opcional dentro da área. `arena-bosses.js` só exige nível mínimo + amuleto elemental para iniciar o Boss; não existe bloqueio de área baseado em vitória do Boss.
+- Portanto, **atualmente não existe uma progressão "matar Boss → liberar próximo mapa"** no sistema de gameplay.
+
+### Relação com a lore
+
+A camada narrativa criou eventos de derrota dos chefes:
+
+- Mapa 1 → `map1_boss_defeat`
+- Mapa 2 → `map2_boss_defeat`
+- Mapa 3 → `map3_boss_defeat`
+- Mapa 4 → `map4_boss_defeat`
+
+Essas vitórias também alimentam os fragmentos narrativos. Logo:
+
+**o mapa pode ser desbloqueado pelo nível mesmo que o jogador nunca derrote o Boss**, mas algumas partes da lore ficam sem conclusão.
+
+Isso é diferente de um bug de progressão: é uma **decisão de design que precisa ser definida**.
+
+### Opções para a próxima decisão
+
+**Opção A — Manter o sistema atual**
+- Mapas continuam sendo liberados por nível.
+- Bosses continuam opcionais.
+- A lore funciona como conteúdo narrativo opcional ligado às vitórias.
+- Não exige mudança no sistema de progressão.
+
+**Opção B — Tornar Boss obrigatório para a progressão narrativa**
+- O nível continua liberando o acesso técnico à área.
+- A história só considera o capítulo concluído depois da vitória do Boss.
+- Pode existir bloqueio narrativo antes de avançar para a próxima região, sem necessariamente alterar o sistema global de níveis.
+
+**Opção C — Tornar Boss obrigatório para liberar o próximo mapa**
+- Mudança real no gameplay/progressão.
+- Exigiria alterar a regra atual de desbloqueio das áreas.
+- É a opção de maior impacto e, por isso, não deve ser aplicada automaticamente.
+
+### Decisão
+
+**Nenhuma opção foi aplicada nesta etapa.**
+
+A auditoria confirma que a afirmação "é preciso matar o Boss para passar de mapa" **não corresponde ao funcionamento atual**. Antes de qualquer mudança, precisamos decidir se a lore deve apenas acompanhar o gameplay existente ou se a progressão narrativa deve passar a exigir os chefes.
+
+---
+
 ## Etapa 2 — Auditoria visual geral
 
 Objetivo: avaliar a campanha inteira como experiência visual, não apenas verificar se os elementos existem.
