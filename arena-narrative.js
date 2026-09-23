@@ -27,7 +27,7 @@
       id:'map4', name:'Covil dos Dragões', order:4,
       npcs:['kaelen'],
       events:['map4_chains_reveal','map4_kaelen_break','map4_boss_defeat','map4_descent'],
-      clues:['map4_dragon_turbines','map4_kaelen_crest','map4_exploitation']
+      clues:['map4_dragon_turbines','map4_kaelen_crest','map4_exploitation','map4_final_words']
     },
     map5:{
       id:'map5', name:'Abismo Demoníaco', order:5,
