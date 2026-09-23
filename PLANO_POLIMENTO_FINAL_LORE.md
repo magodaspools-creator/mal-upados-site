@@ -811,27 +811,60 @@ Backup criado antes da etapa:
 A auditoria foi estrutural via GitHub. Ainda não houve execução real no navegador nem inspeção do console em uma campanha completa. Isso permanece como objetivo da Etapa 12.
 ## Etapa 12 — Teste narrativo completo
 
-Executar a campanha do início ao fim:
+### Resultado da Etapa 12 — Teste estrutural completo
 
-- [ ] Mapa 1 → Mapa 2
-- [ ] Mapa 2 → Mapa 3
-- [ ] Mapa 3 → Mapa 4
-- [ ] Mapa 4 → Mapa 5
-- [ ] Cadáver → Revelação
-- [ ] Revelação → Mirror Match
-- [ ] Mirror Match → Absorção
-- [ ] Absorção → Segundo Impacto
-- [ ] Segundo Impacto → Rejogabilidade
+**Teste estrutural concluído e fluxo narrativo auditado ponta a ponta via código e estado do repositório.**
 
-Durante o teste:
+### Fluxo validado
 
-- [ ] Verificar diálogos.
-- [ ] Verificar eventos.
-- [ ] Verificar fragmentos.
-- [ ] Verificar transições.
-- [ ] Verificar visuais.
-- [ ] Verificar ausência de erros visíveis.
-- [ ] Verificar que não existe bloqueio acidental de progressão.
+- [x] **Mapa 1 → Mapa 2:** `map1_fragment` é concedido pelo Boss da Floresta e é o requisito narrativo do Mapa 2.
+- [x] **Mapa 2 → Mapa 3:** `map2_gate_open` é concedido pela derrota do Boss Orc e libera o Deserto.
+- [x] **Mapa 3 → Mapa 4:** `map3_flashback` é concluído após a derrota do General da Magia e libera o Covil dos Dragões.
+- [x] **Mapa 4 → Mapa 5:** `map4_descent` é concluído após a derrota do General das Feras e libera o Abismo.
+- [x] **Cadáver → Revelação:** `map5_boss_defeat` + `map5_throne_room` são obrigatórios antes de `finale_kaelen_reveal`.
+- [x] **Revelação → Mirror Match:** `finale_kaelen_reveal` libera o confronto com Kaelen.
+- [x] **Mirror Match → Absorção:** `arena:mirror-defeated` libera a absorção; `finale_absorption` é registrado somente pelo botão de absorção.
+- [x] **Absorção → Segundo Impacto:** `arena:mirror-absorbed` aciona a cena do Trono; `finale_second_impact` é concluído após a entrada na cena.
+- [x] **Segundo Impacto → Rejogabilidade:** `finale_second_impact` é o gate único da camada de releitura.
+
+### Verificações técnicas
+
+- [x] Os cinco hooks de Boss verificam `battle.isBoss` e o `battle.zoneIndex` correto antes de registrar progresso narrativo.
+- [x] Cada fragmento é concedido uma única vez pelo Boss correspondente.
+- [x] A progressão de mapas continua exigindo nível mínimo **e** evento narrativo.
+- [x] O amuleto elemental não bloqueia mais o Boss; quando presente, fornece apenas proteção.
+- [x] A Grande Revelação não pode ser acionada antes da Guarda Real.
+- [x] O Mirror Match não inicia antes da revelação.
+- [x] As escolhas do Segundo Impacto continuam não interativas.
+- [x] A camada de Rejogabilidade só aparece depois do final.
+
+### Resultado dos deploys
+
+O último deploy do `main` analisado corresponde ao commit `4d2151d615aee17365f26e8aab49a5edf8d99e2a`.
+
+- GitHub Pages **build:** sucesso.
+- GitHub Pages **deploy:** sucesso.
+- **report-build-status:** sucesso.
+
+### Limitação importante
+
+A execução acima é uma validação estrutural ponta a ponta, não um playthrough real em navegador. O ambiente disponível nesta etapa não fornece automação de navegador/console para clicar pela campanha e observar cada transição visual em runtime.
+
+Portanto, ficam pendentes apenas:
+- [ ] Playthrough manual no navegador.
+- [ ] Conferência visual/console em desktop.
+- [ ] Conferência visual/console em mobile.
+
+Não foi feita alteração de gameplay durante esta etapa.
+
+### Backup
+
+Criado antes do teste:
+- `backup/pre-etapa-12-teste-completo-2026-09-23`
+
+### Escopo
+
+Durante o teste, nenhum arquivo funcional da lore foi alterado. A única alteração desta etapa é o registro deste resultado no plano.
 
 ## Etapa 13 — Rejogabilidade
 
