@@ -80,6 +80,7 @@
       if(!boss)return;
       const n=narrative();if(!n||n.hasEvent(BOSS_EVENT))return;
       n.completeEvent(BOSS_EVENT,{source:'orc_war_chief'});
+      n.addFragment(1);
       n.setFlag(GATE_FLAG,true);
       n.discoverClue('map2_two_shadows');
       if(typeof toast==='function')toast('A linha de defesa caiu. O portão colossal começa a se abrir.');
