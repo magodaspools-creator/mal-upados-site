@@ -76,6 +76,44 @@ A auditoria confirma que a afirmação "é preciso matar o Boss para passar de m
 
 ---
 
+## Resultado da Etapa 1 — Decisão e implementação
+
+A decisão foi aplicar **progressão por Boss + Lore**.
+
+### Regra final
+
+- Cada nova área exige:
+  1. requisito de Arena Level;
+  2. derrota do Boss da área anterior;
+  3. conclusão do evento narrativo que abre a passagem.
+- O Boss continua sendo o encontro necessário para concluir o capítulo, mas **o amuleto elemental não é mais obrigatório para iniciar o combate**.
+- O amuleto agora funciona como proteção: equipado, reduz o risco do combate; sem ele, o jogador enfrenta a dificuldade integral.
+- O Abismo também exige a derrota da Guarda Real antes da interação com o cadáver e da Grande Revelação.
+
+### Fluxo
+
+- Floresta → Boss + `map1_fragment` → Acampamento Orc
+- Orcs → Boss + `map2_gate_open` → Deserto Perdido
+- Deserto → Boss + `map3_flashback` → Covil dos Dragões
+- Dragões → Boss + `map4_descent` → Abismo Demoníaco
+- Abismo → Boss + `map5_throne_room` → cadáver/revelação
+
+### Implementado
+
+- Bloqueio real das áreas em `arena.js`.
+- Mensagem de bloqueio indicando Boss + Lore.
+- Bosses não exigem mais amuleto para serem enfrentados.
+- Interface do Boss diferencia proteção equipada de combate sem proteção.
+- Guarda Real registra `map5_boss_defeat`.
+- Cadáver não pode mais iniciar a revelação antes da derrota da Guarda Real.
+- Evento do Boss do Abismo foi registrado no capítulo narrativo.
+
+### Validação pendente
+
+A lógica foi aplicada no código, mas ainda falta o **teste jogável completo no navegador** para confirmar cada transição e estado persistido. Isso fica para a Etapa 12.
+
+---
+
 ## Etapa 2 — Auditoria visual geral
 
 Objetivo: avaliar a campanha inteira como experiência visual, não apenas verificar se os elementos existem.
