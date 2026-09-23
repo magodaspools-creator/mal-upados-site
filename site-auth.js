@@ -34,6 +34,60 @@
       .mal-auth-success h2{margin:0 0 10px}
       .mal-auth-success p{margin-bottom:20px}
       @media(max-width:850px){.mal-account{margin-left:0}.mal-account-user{max-width:130px}}
+      @media(max-width:600px){
+        header.top .nav{
+          display:grid;
+          grid-template-columns:minmax(0,1fr) auto;
+          align-items:center;
+          gap:8px 10px;
+          padding:9px 12px;
+        }
+        header.top .brand{min-width:0}
+        header.top .links{
+          grid-column:1 / -1;
+          width:100%;
+          min-width:0;
+          display:flex;
+          flex-wrap:nowrap;
+          overflow-x:auto;
+          overflow-y:hidden;
+          gap:4px;
+          padding:1px 0 3px;
+          margin:0;
+          scrollbar-width:none;
+          -webkit-overflow-scrolling:touch;
+        }
+        header.top .links::-webkit-scrollbar{display:none}
+        header.top .links a{
+          flex:0 0 auto;
+          white-space:nowrap;
+          padding:7px 8px;
+          font-size:.57rem;
+          line-height:1;
+        }
+        .mal-account{
+          grid-column:2;
+          grid-row:1;
+          margin:0;
+          gap:5px;
+          justify-content:flex-end;
+          min-width:0;
+        }
+        .mal-account-btn{
+          padding:7px 8px;
+          font-size:10px;
+          line-height:1;
+          border-radius:7px;
+        }
+        .mal-account-user{max-width:82px;font-size:10px}
+      }
+      @media(max-width:360px){
+        header.top .nav{padding-left:9px;padding-right:9px;gap:6px 7px}
+        header.top .links a{padding-left:7px;padding-right:7px;font-size:.55rem}
+        .mal-account{gap:4px}
+        .mal-account-btn{padding:6px 7px;font-size:9px}
+        .mal-account-user{max-width:62px}
+      }
     `;document.head.appendChild(s)
   };
 
