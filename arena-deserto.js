@@ -13,7 +13,7 @@
       const html='<section id="arenaDesertScene" class="arena-desert-scene" aria-label="Narrativa do Deserto Perdido">'
        +'<div class="desert-header"><div><div class="eyebrow">Capítulo III · Deserto Perdido</div><h3>A cidade que caiu para dentro de si mesma</h3></div><span class="desert-mark">AREIA DE VIDRO</span></div>'
        +'<div class="desert-city"><div class="desert-sky"><i></i><i></i><i></i></div><div class="desert-palace"><span></span><span></span><span></span></div><div class="desert-tower"></div><div class="desert-glass"></div></div>'
-       +'<div class="desert-clues"><article><strong>☼ Cidade invertida</strong><p>Torres e palácios parecem enterrados de cabeça para baixo, como se a própria cidade tivesse sido puxada para dentro da areia.</p></article><article><strong>◇ Vidro e areia</strong><p>O solo brilha como vidro moído. Não há marcas de um exército chegando de fora.</p></article><article><strong>⇲ Destruição interna</strong><p>O epicentro está no palácio central: corredores queimados de dentro para fora.</p></article></div>'
+       +'<div class="desert-clues"><article><strong>☼ Cidade invertida</strong><p>Torres e palácios parecem enterrados de cabeça para baixo, como se a própria cidade tivesse sido puxada para dentro da areia.</p></article><article><strong>◇ Vidro e areia</strong><p>O solo brilha como vidro moído. Não há marcas de um exército chegando de fora.</p></article><article><strong>⇲ Destruição interna</strong><p>O epicentro está no palácio central: corredores queimados de dentro para fora.</p></article><article class="desert-foreshadow"><strong>♢ Um símbolo sob a areia</strong><p>Um fragmento de pedra preserva parte de um selo. A rachadura no desenho parece deliberada — e antiga.</p></article></div>'
        +'<div class="desert-kaelen-note"><strong>Kaelen:</strong> “O Abismo está abaixo de nós. Os demônios destruíram esta cidade. Não deixe que o medo desvie você do caminho.”</div>'
        +'<div class="desert-drain"><div class="drain-ring"></div><div><strong>Os ralos gigantes</strong><span>A areia escorre lentamente para baixo. Há calor vindo do fundo — e um caminho para o núcleo vulcânico.</span></div></div>'
        +'</section>';
@@ -25,6 +25,7 @@
           n.completeEvent('map3_elias_encounter',{entry:'lost_desert'});
           n.discoverClue('map3_destruction_inside_out');
           n.discoverClue('map3_no_invasion_marks');
+          n.discoverClue('map3_split_seal');
           if(window.ArenaNarrativeNPCs?.openDialogue)window.ArenaNarrativeNPCs.openDialogue('elias',MAP_ID);
         },220);
       }
