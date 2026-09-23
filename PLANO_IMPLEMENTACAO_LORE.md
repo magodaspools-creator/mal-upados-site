@@ -114,14 +114,18 @@ Objetivo: criar uma camada de dados sem espalhar textos pelo código.
 - [ ] Queda para o Abismo.
 
 ## Fase 8 — Mapa 5: Abismo Demoníaco
-- [ ] Catedral de cristal negro.
-- [ ] Atmosfera silenciosa.
-- [ ] Demônios/guarda real.
-- [ ] Animações com comportamento melancólico.
-- [ ] Arquitetura perfeita.
-- [ ] Sala do Trono.
-- [ ] Corpo do Soberano.
-- [ ] Preparar a revelação sem explicá-la antes da hora.
+- [x] Catedral de cristal negro.
+- [x] Atmosfera silenciosa.
+- [x] Demônios/guarda real.
+- [x] Animações com comportamento melancólico.
+- [x] Arquitetura perfeita.
+- [x] Sala do Trono.
+- [x] Corpo do Soberano.
+- [x] Preparar a revelação sem explicá-la antes da hora.
+- [x] Camada isolada em `arena-abismo.js` / `arena-abismo.css`.
+- [x] Integrada somente ao `arena.html`.
+- [x] Sem alteração em `arena-sobreviva.html`.
+- [x] Sem substituição do renderer/combat/progressão existentes.
 
 ## Fase 9 — Grande revelação
 - [ ] Interação com o cadáver.
