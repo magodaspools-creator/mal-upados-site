@@ -33,3 +33,5 @@
  .tube-left,.flow-left{left:17%}.tube-right,.flow-right{right:17%}
  .fresco-arena{width:62px;height:45px;top:76px}
 }
+.impact-sequence{opacity:0;transform:translateY(10px);animation:impactSequence .7s var(--impact-delay) ease-out forwards}
+@keyframes impactSequence{to{opacity:1;transform:none}}
