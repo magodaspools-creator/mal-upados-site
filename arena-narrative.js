@@ -9,25 +9,25 @@
       id:'map1', name:'Floresta Sombria', order:1,
       npcs:['kaelen'],
       events:['map1_intro','map1_boss_defeat','map1_fragment'],
-      clues:['map1_statues_outward','map1_water_shadow','map1_kaelen_shadow_absent','map1_first_fragment']
+      clues:['map1_statues_outward','map1_water_shadow','map1_kaelen_shadow_absent','map1_split_crown_mark','map1_first_fragment']
     },
     map2:{
       id:'map2', name:'Acampamento Orc', order:2,
       npcs:['kaelen','vara'],
       events:['map2_kaelen_warning','map2_boss_defeat','map2_gate_open'],
-      clues:['map2_broken_sun','map2_orc_defense','map2_two_shadows']
+      clues:['map2_broken_sun','map2_orc_defense','map2_split_crown_mark','map2_two_shadows']
     },
     map3:{
       id:'map3', name:'Deserto Perdido', order:3,
       npcs:['kaelen','elias'],
       events:['map3_elias_encounter','map3_boss_defeat','map3_flashback'],
-      clues:['map3_destruction_inside_out','map3_no_invasion_marks','map3_key_in_mind']
+      clues:['map3_destruction_inside_out','map3_no_invasion_marks','map3_split_seal','map3_key_in_mind']
     },
     map4:{
       id:'map4', name:'Covil dos Dragões', order:4,
       npcs:['kaelen'],
       events:['map4_chains_reveal','map4_kaelen_break','map4_boss_defeat','map4_descent'],
-      clues:['map4_dragon_turbines','map4_kaelen_crest','map4_exploitation','map4_final_words']
+      clues:['map4_dragon_turbines','map4_kaelen_crest','map4_exploitation','map4_split_seal','map4_final_words']
     },
     map5:{
       id:'map5', name:'Abismo Demoníaco', order:5,
