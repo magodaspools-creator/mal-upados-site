@@ -18,6 +18,7 @@
        +'<article class="forest-clue forest-statues"><span class="forest-clue-icon">◈</span><div><strong>Estátuas voltadas para fora</strong><p>Os Generais da Vida estão de costas para o centro da floresta, como se vigiassem algo que vem de dentro.</p></div></article>'
        +'<article class="forest-clue forest-lakes"><span class="forest-clue-icon">≈</span><div><strong>Lagos sem reflexo</strong><p>A superfície dos lagos deveria devolver o céu. Em vez disso, as sombras chegam atrasadas.</p></div></article>'
        +'<article class="forest-clue forest-shadow"><span class="forest-clue-icon">☀</span><div><strong>A sombra que falta</strong><p>Kaelen está diante de você. A luz alcança seu corpo. O chão, porém, não recebe sua sombra.</p><span class="forest-shadow-note">Ausência registrada</span></div></article>'
+       +'<article class="forest-clue forest-foreshadow"><span class="forest-clue-icon">◇</span><div><strong>Uma marca partida</strong><p>Entre as raízes há um selo quase apagado. Seu desenho parece uma coroa atravessada por uma única rachadura.</p><span class="forest-shadow-note">Você não reconhece o símbolo.</span></div></article>'
        +'</div><div class="forest-roots '+(rootsOpen?'open':'')+'"><div class="forest-roots-art" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div><strong>'+(rootsOpen?'As raízes se abriram.':'As raízes aguardam.')+'</strong><span>'+(rootsOpen?'O caminho para baixo está preparado.':'Há algo selado sob a floresta.')+'</span></div></div></section>';
       battleArea.insertAdjacentHTML('beforebegin',html);
       if(n&&!n.hasEvent('map1_intro')){
@@ -27,6 +28,7 @@
           n.discoverClue('map1_statues_outward');
           n.discoverClue('map1_water_shadow');
           n.discoverClue('map1_kaelen_shadow_absent');
+          n.discoverClue('map1_split_crown_mark');
         },180);
       }
     }
