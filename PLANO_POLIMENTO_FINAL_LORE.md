@@ -324,14 +324,58 @@ Nenhum arquivo de combate, progressão, XP, ranking, renderer ou Sobreviva foi a
 A validação desta etapa foi estrutural via GitHub. Ainda não houve teste visual real no navegador nesta etapa. O teste jogável completo permanece programado para a Etapa 12.
 ## Etapa 4 — Foreshadowing mínimo
 
-- [ ] Revisar as pistas de Kaelen.
-- [ ] Revisar as correntes e símbolos.
-- [ ] Revisar elementos do Abismo.
-- [ ] Verificar se existem pistas suficientes antes da revelação.
-- [ ] Garantir que nenhuma pista entregue explicitamente o twist.
-- [ ] Adicionar somente pistas de alto valor narrativo.
+- [x] Revisar as pistas de Kaelen.
+- [x] Revisar as correntes e símbolos.
+- [x] Revisar elementos do Abismo.
+- [x] Verificar se existem pistas suficientes antes da revelação.
+- [x] Garantir que nenhuma pista entregue explicitamente o twist.
+- [x] Adicionar somente pistas de alto valor narrativo.
 - [ ] Validar primeira jogada e rejogabilidade.
 
+### Resultado da Etapa 4 — Foreshadowing mínimo
+
+**Auditoria e implementação concluídas.**
+
+A campanha já possuía pistas fortes antes da revelação — especialmente a ausência da sombra de Kaelen, os dois lados do Sol Partido, as correntes dos dragões, a marca de Kaelen e o luto do Abismo. Em vez de aumentar a quantidade de texto, foi criada uma única linha de foreshadowing recorrente: **um símbolo de coroa/selo atravessado pela mesma rachadura**, reaparecendo discretamente nos quatro primeiros domínios.
+
+### Pistas adicionadas
+
+- **Floresta:** selo quase apagado entre as raízes; o jogador ainda não reconhece o símbolo.
+- **Orcs:** a mesma rachadura aparece em uma pedra junto ao portão.
+- **Deserto:** fragmento de selo preservado sob a areia.
+- **Dragões:** a mesma marca aparece na âncora de uma corrente.
+- **Abismo:** nenhuma nova pista explícita foi adicionada; a arquitetura perfeita e a Guarda Real já cumprem a função de preparar a revelação sem entregar a identidade do corpo.
+
+### Regra narrativa preservada
+
+A pista recorrente **não diz que o jogador é o Soberano, não identifica Kaelen como a outra metade e não revela o rosto do cadáver**.
+
+Ela só estabelece, em retrospecto, que os cinco domínios compartilham uma autoridade antiga e que existe uma conexão entre a coroa, o Cisma e as estruturas encontradas ao longo da campanha.
+
+Isso mantém a revelação dependente da cena do trono, em vez de transformar o foreshadowing em spoiler.
+
+### Escopo
+
+Alterados somente:
+- `arena-floresta.js`
+- `arena-orcs.js`
+- `arena-deserto.js`
+- `arena-dragoes.js`
+- `arena-narrative.js`
+
+Não alterados:
+- combate;
+- progressão;
+- XP;
+- ranking;
+- renderer;
+- `arena-sobreviva.html`;
+- Mirror Match;
+- Segundo Impacto.
+
+### Validação pendente
+
+A estrutura foi revisada via GitHub. Ainda falta observar a pista durante uma primeira jogada e, depois da revelação, verificar se ela ganha significado retrospectivo sem parecer óbvia demais. Isso permanece programado para as etapas de teste narrativo/rejogabilidade.
 ## Etapa 5 — Grande Revelação
 
 - [ ] Revisar a cena do cadáver.
