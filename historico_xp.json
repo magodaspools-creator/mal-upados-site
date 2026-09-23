@@ -2020,5 +2020,187 @@
       "experience_exact": false,
       "experience_vocation": null
     }
+  },
+  "2026-09-23": {
+    "Chines Protetor": {
+      "level": 507,
+      "experience": 2150254248,
+      "experience_exact": true,
+      "experience_vocation": "TibiaData/highscores"
+    },
+    "Bella Longuinho": {
+      "level": 151,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Lugas": {
+      "level": 284,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Nico Eternity": {
+      "level": 327,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Shyn Chan": {
+      "level": 133,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Braiz da Lucas": {
+      "level": 55,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Brunett Full Bebezinha": {
+      "level": 247,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Cotrijal": {
+      "level": 140,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Dolly Benzetacil": {
+      "level": 160,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Dro Uid": {
+      "level": 158,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Ezra Gladius": {
+      "level": 487,
+      "experience": 1904160149,
+      "experience_exact": true,
+      "experience_vocation": "TibiaData/highscores"
+    },
+    "Gepone": {
+      "level": 147,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Lordebumbumole": {
+      "level": 192,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Sir Bilu": {
+      "level": 50,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Tapa Monstro": {
+      "level": 394,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Acidos Graxos": {
+      "level": 311,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Tal do Pampinha": {
+      "level": 33,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Arm llock": {
+      "level": 230,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Bestiary Track": {
+      "level": 62,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Dono de Terreno": {
+      "level": 8,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Hardzin rpzinn": {
+      "level": 106,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Nykor": {
+      "level": 169,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Promocao Relampago": {
+      "level": 103,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Pugas": {
+      "level": 15,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Shopee Ofertas": {
+      "level": 63,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Soucharlove Nomain": {
+      "level": 71,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Sylvie Stormbringer": {
+      "level": 30,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Verginia Junior": {
+      "level": 82,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Vialacto": {
+      "level": 221,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    },
+    "Viny Pavillongo": {
+      "level": 93,
+      "experience": null,
+      "experience_exact": false,
+      "experience_vocation": null
+    }
   }
 }
