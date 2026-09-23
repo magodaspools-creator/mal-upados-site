@@ -87,6 +87,14 @@
       +'<blockquote>“Você foi uma excelente espada, minha criança. Mas a mente deve governar o corpo. Volte para mim.”</blockquote>'
       +'<div class="revelation-handoff"><span>VERDADE EXPOSTA</span><strong>Kaelen quer recuperar a outra metade.</strong><p>O salão de cristal está pronto. O próximo confronto será contra um espelho do próprio jogador.</p></div>'
       +'</div></section>';
+    const revelation=document.getElementById('arenaRevelation');
+    if(revelation){
+      revelation.classList.add('reveal-enter');
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        revelation.classList.remove('reveal-enter');
+        revelation.classList.add('reveal-active');
+      }));
+    }
   }
 
   function escapeHtml(value){
