@@ -449,6 +449,64 @@ A estrutura e o diff foram revisados via GitHub. Ainda falta executar a cena no 
 - [ ] Garantir que o combate continue usando o sistema existente.
 - [ ] Validar vitória, derrota e absorção.
 
+## Resultado da Etapa 6 — Mirror Match
+
+**Polimento aplicado mantendo o sistema de combate existente.**
+
+### Alterações realizadas
+
+- O duelo agora usa uma composição visual explicitamente espelhada: jogador e Kaelen em painéis simétricos com um eixo central VS.
+- Os dois combatentes recebem identidades visuais opostas, mantendo a leitura de que são duas metades do mesmo ser.
+- Os ícones dos dois lados usam transformação horizontal para reforçar a linguagem de reflexo.
+- O lado do jogador recebe a marca **VOCÊ** e o lado de Kaelen recebe **SEU ESPELHO**.
+- O golpe agora possui um pulso visual sincronizado: primeiro o jogador reage e, em seguida, Kaelen responde visualmente, acompanhando o ritmo do combate já existente.
+- O combate continua sem fuga e continua usando `ArenaCombat.startMirror()`, `attack()`, `winMirrorBattle()` e `loseMirrorBattle()`.
+- O HP e ATK continuam derivados dos mesmos valores do jogador; nenhuma nova regra de dano foi criada.
+- O layout mobile foi preservado com uma versão compacta da composição espelhada.
+
+### Regra narrativa preservada
+
+O objetivo é mostrar visualmente que Kaelen não é apenas um chefe com poderes parecidos: ele é o reflexo do protagonista.
+
+Não foram adicionados poderes, fases, cooldowns ou sistemas paralelos. A mudança é de apresentação e sincronização visual.
+
+### Escopo
+
+Alterados somente:
+- `arena-mirror.js`
+- `arena-mirror.css`
+- `arena.js`
+
+O `arena.js` recebeu apenas o disparo do pulso visual após a resolução normal de um ataque no Mirror Match.
+
+Não alterados:
+- progressão;
+- XP;
+- ranking;
+- renderer de sprites;
+- `arena-sobreviva.html`;
+- sistema de combate geral;
+- Segundo Impacto.
+
+### Backup
+
+Criado antes da etapa:
+- `backup/pre-etapa-6-mirror-2026-09-23`
+
+### Validação pendente
+
+A estrutura foi revisada via GitHub. Ainda falta testar no navegador:
+- entrada no Mirror Match;
+- composição dos dois lados;
+- animação do golpe e resposta espelhada;
+- vitória;
+- derrota;
+- retry;
+- absorção de Kaelen;
+- comportamento em mobile.
+
+Isso permanece dentro da validação jogável das etapas posteriores.
+
 ## Etapa 7 — Segundo Impacto
 
 - [ ] Revisar a entrada no Trono.
