@@ -9,6 +9,7 @@ BASE = "https://api.tibiadata.com/v4"
 HISTORICO_LEVEL = "historico.json"
 HISTORICO_XP = "historico_xp.json"
 MAX_SNAPSHOTS = 2
+MAX_HIGHSCORE_ENTRIES = 1000
 
 
 def get_json(url):
@@ -62,10 +63,11 @@ nomes_guild = {m["name"].casefold() for m in membros}
 experiencias = {}
 fontes = {}
 
-# TibiaData expõe o total de páginas do Highscore. Percorremos exatamente
-# as páginas disponibilizadas pela fonte, sem inventar páginas adicionais.
+# TibiaData expõe o total de páginas do Highscore. Percorremos apenas
+# o necessário para cobrir o Top 1000, sem consultar páginas adicionais.
 first_page = 1
 total_pages = 1
+processed_entries = 0
 
 try:
     first_data = get_highscore_page(world, first_page)
@@ -88,16 +90,18 @@ for page in range(1, total_pages + 1):
         continue
 
     for item in entries:
+        processed_entries += 1
         nome = str(item.get("name", "")).strip()
-        if not nome or nome.casefold() not in nomes_guild:
-            continue
+        if nome and nome.casefold() in nomes_guild:
+            value = item.get("value")
+            if isinstance(value, int) and value >= 0:
+                experiencias[nome.casefold()] = value
+                fontes[nome.casefold()] = "TibiaData/highscores"
 
-        value = item.get("value")
-        if isinstance(value, int) and value >= 0:
-            experiencias[nome.casefold()] = value
-            fontes[nome.casefold()] = "TibiaData/highscores"
+        if processed_entries >= MAX_HIGHSCORE_ENTRIES:
+            break
 
-    if processed_entries >= 1000:
+    if processed_entries >= MAX_HIGHSCORE_ENTRIES:
         break
 
 
@@ -150,5 +154,7 @@ exatos = sum(
 print(
     f"Historico atualizado: {hoje} {captured_at_iso} | mundo: {world} | "
     f"membros: {len(membros)} | XP exata: {exatos}/{len(membros)} | "
-    f"paginas consultadas: {total_pages} | fonte: TibiaData/highscores"
+    f"entradas processadas: {processed_entries}/{MAX_HIGHSCORE_ENTRIES} | "
+    f"paginas consultadas: {min(total_pages, (processed_entries + 99) // 100)} | "
+    f"fonte: TibiaData/highscores"
 )
