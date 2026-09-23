@@ -83,7 +83,7 @@
       +'</div>'
       +'<div class="revelation-copy">'
       +'<p class="revelation-impact">Kaelen se materializa fisicamente diante do trono. Ele remove o capacete.</p>'
-      +'<p>Não existe um guia histórico separado do jogador. Durante o Cisma, a alma do Soberano foi partida em duas: <strong>a Inocência</strong>, que preservou o poder e a pureza sem as memórias, e <strong>a Ambição e a Culpa</strong>, que tomou a forma de Kaelen.</p>'
+      +'<p>Não existe um guia histórico separado do jogador. Durante o Cisma, a alma do Soberano foi partida em duas: <strong>a Inocência</strong>, que preservou o poder e a pureza sem as memórias, e a outra metade, formada por <strong>Ambição e Culpa</strong>, que tomou a forma de Kaelen.</p>'
       +'<blockquote>“Você foi uma excelente espada, minha criança. Mas a mente deve governar o corpo. Volte para mim.”</blockquote>'
       +'<div class="revelation-handoff"><span>VERDADE EXPOSTA</span><strong>Kaelen quer recuperar a outra metade.</strong><p>O salão de cristal está pronto. O próximo confronto será contra um espelho do próprio jogador.</p></div>'
       +'</div></section>';
