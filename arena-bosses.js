@@ -133,8 +133,25 @@
   window.renderBattle=function(){if(battle?.isBoss){renderBossBattle();setTimeout(bindBossAttack,0)}else originalRenderBattle()};
   window.__arenaBossAttackDirect=bossAttackDirect;
 
+  function appendBossCardToResult(zoneIndex){
+    const area=document.getElementById('battleArea');
+    if(!area)return;
+    const result=area.querySelector('.battle-empty.result');
+    if(!result||result.querySelector('.arena-boss-wrap'))return;
+    const boss=bossCard(zoneIndex);
+    if(!boss)return;
+    result.insertAdjacentHTML('beforeend',`<div class="arena-boss-wrap arena-boss-result-wrap">${boss}</div>`);
+    const btn=result.querySelector('.boss-fight-btn');
+    if(btn)btn.onclick=()=>startBoss(Number(btn.dataset.bossZone));
+  }
+
   window.winBattle=function(){
-    if(!battle?.isBoss){originalWinBattle();return}
+    if(!battle?.isBoss){
+      const zoneIndex=Number(battle?.zoneIndex);
+      originalWinBattle();
+      if(Number.isInteger(zoneIndex))appendBossCardToResult(zoneIndex);
+      return;
+    }
     ensureState();
     const zone=battle.zoneIndex,b=bossFor(zone),tokenDrop=b.tokens||(Math.random()<b.tokenChance?1:0),oldKills=kills(zone);
     game.bossKills[key(zone)]=oldKills+1;
