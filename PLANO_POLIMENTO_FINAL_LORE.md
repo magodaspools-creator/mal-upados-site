@@ -378,15 +378,67 @@ Não alterados:
 A estrutura foi revisada via GitHub. Ainda falta observar a pista durante uma primeira jogada e, depois da revelação, verificar se ela ganha significado retrospectivo sem parecer óbvia demais. Isso permanece programado para as etapas de teste narrativo/rejogabilidade.
 ## Etapa 5 — Grande Revelação
 
-- [ ] Revisar a cena do cadáver.
-- [ ] Verificar se o rosto do jogador recebe atenção visual suficiente.
-- [ ] Verificar entrada de Kaelen.
-- [ ] Verificar remoção do capacete.
-- [ ] Verificar comparação visual entre os dois rostos.
-- [ ] Avaliar a quantidade de elementos da interface durante a revelação.
-- [ ] **Não reduzir a interface automaticamente:** primeiro avaliar se ela realmente está excessiva.
-- [ ] Se houver excesso, criar apenas uma redução temporária e controlada.
-- [ ] Validar a cena completa antes de avançar.
+- [x] Revisar a cena do cadáver.
+- [x] Verificar se o rosto do jogador recebe atenção visual suficiente.
+- [x] Verificar entrada de Kaelen.
+- [x] Verificar remoção do capacete.
+- [x] Verificar comparação visual entre os dois rostos.
+- [x] Avaliar a quantidade de elementos da interface durante a revelação.
+- [x] **Não reduzir a interface automaticamente:** primeiro avaliar se ela realmente está excessiva.
+- [x] Se houver excesso, criar apenas uma redução temporária e controlada.
+- [x] Validar a cena estruturalmente antes de avançar.
+
+### Resultado da Etapa 5 — Grande Revelação
+
+**Polimento aplicado sem alterar a lógica do combate ou da progressão.**
+
+A cena já possuía os elementos narrativos corretos: cadáver, rosto do jogador, Kaelen, remoção do capacete e explicação do Cisma. O problema principal era a apresentação: a revelação acontecia de forma imediata e os dois rostos não tinham peso visual proporcional à importância do twist.
+
+### Alterações realizadas
+
+- A revelação agora entra em uma composição mais cinematográfica, com maior escala e espaço visual.
+- O rosto do jogador e o rosto de Kaelen recebem mais destaque e contraste.
+- A composição ganhou uma separação central sutil para reforçar visualmente a ideia de duas metades.
+- O capacete de Kaelen recebe uma camada visual própria antes do rosto aparecer.
+- A cena utiliza uma entrada controlada: os elementos começam discretamente afastados/escurecidos e entram em foco.
+- O texto explicativo permanece presente, mas abaixo da cena principal, evitando que a explicação roube o impacto visual.
+- A interface geral **não foi removida**; apenas a própria cena recebeu hierarquia visual maior.
+- O layout mobile existente foi preservado.
+
+### Regra narrativa preservada
+
+A revelação continua dependendo de:
+1. entrada no Abismo;
+2. sala do trono;
+3. derrota da Guarda Real;
+4. interação com o cadáver.
+
+O conteúdo da revelação não foi alterado. Continuam sendo estabelecidos:
+- o rosto do jogador no cadáver;
+- Kaelen como o outro rosto;
+- a alma do Soberano dividida em duas partes;
+- Kaelen como Ambição e Culpa;
+- o próximo confronto como espelho do jogador.
+
+### Escopo
+
+Alterados somente:
+- `arena-revelacao.js`
+- `arena-revelacao.css`
+
+Não alterados:
+- combate;
+- progressão;
+- XP;
+- ranking;
+- renderer;
+- `arena-sobreviva.html`;
+- Mirror Match;
+- Segundo Impacto.
+
+### Validação pendente
+
+A estrutura e o diff foram revisados via GitHub. Ainda falta executar a cena no navegador para verificar o timing real da entrada, a leitura dos rostos e o comportamento em desktop/mobile. Isso permanece dentro da validação jogável das etapas posteriores.
 
 ## Etapa 6 — Mirror Match
 
