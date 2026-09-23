@@ -759,15 +759,56 @@ Backup criado antes da etapa:
 O conteúdo foi revisado diretamente nos arquivos atuais do repositório e as correções foram limitadas aos trechos identificados na auditoria. A validação visual/jogável continua pendente para a Etapa 12.
 ## Etapa 11 — Auditoria técnica de integração
 
-- [ ] Verificar listeners duplicados.
-- [ ] Verificar MutationObservers duplicados.
-- [ ] Verificar intervals/timers que possam ser registrados várias vezes.
-- [ ] Verificar eventos narrativos duplicados.
-- [ ] Verificar chamadas de renderização desnecessárias.
-- [ ] Verificar dependências entre arquivos.
-- [ ] Verificar se cada camada é carregada somente onde precisa.
-- [ ] Verificar se nenhuma etapa interfere no Sobreviva.
+- [x] Verificar listeners duplicados.
+- [x] Verificar MutationObservers duplicados.
+- [x] Verificar intervals/timers que possam ser registrados várias vezes.
+- [x] Verificar eventos narrativos duplicados.
+- [x] Verificar chamadas de renderização desnecessárias.
+- [x] Verificar dependências entre arquivos.
+- [x] Verificar se cada camada é carregada somente onde precisa.
+- [x] Verificar se nenhuma etapa interfere no Sobreviva.
 
+### Resultado da Etapa 11 — Auditoria técnica de integração
+
+**Auditoria concluída com uma correção funcional pontual.**
+
+### Achado corrigido
+
+O evento `arena:fragment-earned` é emitido pelo `arena-narrative.js` em `window`, mas o feedback visual dos fragmentos estava escutando esse evento em `document`. Como o evento não fazia bubbling de `window` para `document`, o contador podia atualizar, mas o pulso visual de fragmento não era garantido.
+
+Correção aplicada:
+- `arena-lore-visuals.js` agora usa `window.addEventListener('arena:fragment-earned', ...)`.
+
+### Auditoria das camadas
+
+- Os scripts narrativos aparecem uma única vez no `arena.html`; não foram encontrados carregamentos duplicados das camadas da lore.
+- Os `MutationObserver` estão associados às respectivas camadas/zonas e não há registro duplicado dentro de uma mesma inicialização.
+- Os `setInterval` existentes são usados como polling de integração porque o estado de combate/progressão é alterado por outras camadas. Eles permanecem isolados por arquivo e não criam novos intervalos a cada renderização.
+- Os hooks de vitória relevantes possuem flags de instalação para evitar wrapping repetido de `winBattle`.
+- Os eventos de lore principais permanecem centralizados em `ArenaNarrative`; a auditoria não encontrou um segundo contador independente de fragmentos.
+- O Mirror Match e o Segundo Impacto usam eventos próprios para sincronizar as transições entre camadas.
+- Não foi identificado carregamento da camada narrativa dentro de `arena-sobreviva.html`.
+
+### Dependências confirmadas
+
+Fluxo principal:
+
+`ArenaNarrative` → cenas/zonas → Bosses → fragmentos → Grande Revelação → Mirror Match → Absorção → Segundo Impacto → Rejogabilidade.
+
+As dependências continuam unidirecionais o suficiente para manter as camadas separadas, sem refatoração estrutural.
+
+### Escopo
+
+Alterados somente:
+- `arena-lore-visuals.js`
+- `PLANO_POLIMENTO_FINAL_LORE.md`
+
+Backup criado antes da etapa:
+- `backup/pre-etapa-11-integracao-2026-09-23`
+
+### Limitação da validação
+
+A auditoria foi estrutural via GitHub. Ainda não houve execução real no navegador nem inspeção do console em uma campanha completa. Isso permanece como objetivo da Etapa 12.
 ## Etapa 12 — Teste narrativo completo
 
 Executar a campanha do início ao fim:
