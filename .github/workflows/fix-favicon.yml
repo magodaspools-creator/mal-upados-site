@@ -6,6 +6,7 @@ on:
     paths:
       - '**/*.html'
       - 'guilda.jpg'
+      - '.github/workflows/fix-favicon.yml'
 
 permissions:
   contents: write
