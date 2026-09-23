@@ -19,6 +19,7 @@
        +'<article class="orc-defense-card"><span class="orc-defense-icon">🛡</span><strong>Formações de escudo</strong><p>Os Orcs não avançam em massa. Escudos fecham corredores e recuam em ordem quando a pressão aumenta.</p></article>'
        +'<article class="orc-defense-card"><span class="orc-defense-icon">⚔</span><strong>Retirada tática</strong><p>Cada grupo parece ganhar tempo para os que estão atrás. A defesa é organizada em camadas.</p></article>'
        +'<article class="orc-defense-card"><span class="orc-defense-icon">☀</span><strong>Estandartes do Sol Partido</strong><p>O mesmo símbolo dourado aparece entre os defensores: um sol dividido ao meio, antigo demais para ser uma simples bandeira de guerra.</p></article>'
+       +'<article class="orc-defense-card orc-foreshadow"><span class="orc-defense-icon">◇</span><strong>O mesmo corte</strong><p>Em uma pedra junto ao portão, há uma marca antiga: uma forma de coroa dividida pela mesma rachadura vista na floresta.</p></article>'
        +'</div>'
        +'<div class="orc-banner"><strong>O portão colossal</strong> — ferro, rebites e marcas de vigília fecham uma passagem muito maior do que seria necessária para proteger um acampamento comum.</div>'
        +'<div class="orc-gate '+(open?'open':'closed')+'"><div class="orc-gate-art" aria-hidden="true"></div><div><strong>'+(open?'O portão se abriu.':'O portão permanece fechado.')+'</strong><span>'+(open?'Do outro lado existe um deserto subterrâneo de areia brilhante.':'Os defensores estão guardando o que existe além dele.')+'</span></div></div>'
@@ -30,6 +31,7 @@
           n.completeEvent(INTRO_EVENT,{entry:'orc_camp'});
           n.discoverClue('map2_broken_sun');
           n.discoverClue('map2_orc_defense');
+          n.discoverClue('map2_split_crown_mark');
           if(window.ArenaNarrativeNPCs?.openDialogue)window.ArenaNarrativeNPCs.openDialogue('vara',MAP_ID);
         },220);
       }
