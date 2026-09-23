@@ -9,7 +9,7 @@
       id:'map1', name:'Floresta Sombria', order:1,
       npcs:['kaelen'],
       events:['map1_intro','map1_boss_defeat','map1_fragment'],
-      clues:['map1_statues_outward','map1_water_shadow','map1_kaelen_shadow_absent']
+      clues:['map1_statues_outward','map1_water_shadow','map1_kaelen_shadow_absent','map1_first_fragment']
     },
     map2:{
       id:'map2', name:'Acampamento Orc', order:2,
