@@ -1,7 +1,7 @@
 // Arena — Fase 8: Abismo Demoníaco.
 // Camada narrativa isolada. Não substitui combate, renderer, XP, ranking ou progressão.
 (()=> {
-  const ZONE=4, MAP_ID='map5', ENTRY_EVENT='map5_cathedral', THRONE_EVENT='map5_throne_room';
+  const ZONE=4, MAP_ID='map5', ENTRY_EVENT='map5_cathedral', THRONE_EVENT='map5_throne_room', BOSS_EVENT='map5_boss_defeat';
   const narrative=()=>window.ArenaNarrative||null;
   const selectedZone=()=>{const el=document.querySelector('.zone.selected');return el?Number(el.dataset.zone):null};
 
@@ -38,12 +38,27 @@
     }
   }
 
+  function installBossHook(){
+    if(window.__arenaAbyssWinHook)return;
+    const original=window.winBattle;if(typeof original!=='function')return;
+    window.winBattle=function(){
+      const abyssBoss=typeof battle!=='undefined'&&battle?.isBoss&&Number(battle.zoneIndex)===ZONE;
+      original.apply(this,arguments);
+      if(!abyssBoss)return;
+      const n=narrative();if(!n||n.hasEvent(BOSS_EVENT))return;
+      n.completeEvent(BOSS_EVENT,{source:'royal_guard',boss:'deathbringer'});
+      if(typeof toast==='function')toast('A última vigília caiu. O caminho para o trono está aberto.');
+      setTimeout(renderScene,100);
+    };
+    window.__arenaAbyssWinHook=true;
+  }
+
   function observe(){
     const map=document.getElementById('map'); if(!map)return;
-    new MutationObserver(()=>setTimeout(()=>{renderScene();renderBossNarrative()},0))
+    new MutationObserver(()=>setTimeout(()=>{renderScene();renderBossNarrative();installBossHook()},0))
       .observe(map,{subtree:true,childList:true,attributes:true,attributeFilter:['class','data-zone']});
-    setInterval(()=>{renderScene();renderBossNarrative()},350);
-    setTimeout(()=>{renderScene();renderBossNarrative()},250);
+    setInterval(()=>{renderScene();renderBossNarrative();installBossHook()},350);
+    setTimeout(()=>{renderScene();renderBossNarrative();installBossHook()},250);
   }
 
   function boot(){if(narrative())observe()}
