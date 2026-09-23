@@ -162,6 +162,7 @@
     const n=Math.max(0,Number(count)||0);
     state.fragments+=n;
     persist();
+    window.dispatchEvent(new CustomEvent('arena:fragment-earned',{detail:{count:state.fragments,added:n}}));
     return state.fragments;
   }
 
