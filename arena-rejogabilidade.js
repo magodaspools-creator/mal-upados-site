@@ -1,4 +1,4 @@
-// Arena — Fase 12: Rejogabilidade narrativa.
+// Arena — Fase 13: Rejogabilidade narrativa.
 // Camada isolada. Só aparece depois do Segundo Impacto e não altera a leitura inicial.
 (()=>{
   const FINAL_EVENT='finale_second_impact';
@@ -40,11 +40,13 @@
 
   function selectedMap(){
     const el=document.querySelector('.zone.selected');
-    return el?Number(el.dataset.zone):null;
+    if(!el)return null;
+    const zone=Number(el.dataset.zone);
+    return Number.isInteger(zone)&&zone>=0&&zone<5?zone:null;
   }
 
   function addRetro(scene, data){
-    if(!scene||scene.querySelector('.arena-retro-lore'))return;
+    if(!scene||!data||scene.querySelector('.arena-retro-lore'))return;
     const el=document.createElement('article');
     el.className='arena-retro-lore';
     el.innerHTML='<div class="arena-retro-label">MEMÓRIA RETROATIVA · O QUE AGORA FAZ SENTIDO</div>'
@@ -57,6 +59,7 @@
   function renderRetro(){
     if(!finalUnlocked())return;
     const zone=selectedMap();
+    if(zone===null)return;
     const key='map'+(zone+1);
     const data=SCENES[key];
     if(!data)return;
