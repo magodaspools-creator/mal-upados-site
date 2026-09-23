@@ -38,11 +38,30 @@
 
   function renderAll(){
     const select=document.getElementById('surviveCharacterSelect');
-    const stats=document.getElementById('surviveCharacterStats');
-    if(select&&currentRecord){
-      select.value=currentRecord.name;
+    const picker=document.getElementById('surviveCharacterPicker');
+    const pickerBtn=document.getElementById('surviveCharacterPickerBtn');
+    const pickerName=document.getElementById('surviveCharacterPickerName');
+    if(select){
+      select.value=currentRecord?.name||'';
       select.disabled=loading;
     }
+    if(pickerBtn){
+      pickerBtn.disabled=loading||!members.length;
+      pickerBtn.setAttribute('aria-expanded',picker?.classList.contains('open')?'true':'false');
+    }
+    if(pickerName){
+      pickerName.textContent=currentRecord?.name||(
+        loading?'Carregando personagens...':
+        currentUser?'Nenhum personagem encontrado':
+        'Faça login para carregar'
+      );
+    }
+    if(picker){
+      picker.querySelectorAll('.survive-character-picker-option').forEach(option=>{
+        option.classList.toggle('selected',option.dataset.name===currentRecord?.name);
+      });
+    }
+    const stats=document.getElementById('surviveCharacterStats');
     if(stats){
       if(currentRecord){
         stats.textContent='Level '+num(game.level)+' · Gold '+fmt(game.gold)+' · Recorde '+num(game.arenaMode?.bestWave);
@@ -101,19 +120,74 @@
     if(typeof window.arenaSurviveCharacterChanged==='function')window.arenaSurviveCharacterChanged();
   }
 
+  function closeCharacterPicker(){
+    const picker=document.getElementById('surviveCharacterPicker');
+    const btn=document.getElementById('surviveCharacterPickerBtn');
+    if(!picker)return;
+    picker.classList.remove('open');
+    const menu=document.getElementById('surviveCharacterPickerMenu');
+    if(menu)menu.hidden=true;
+    if(btn)btn.setAttribute('aria-expanded','false');
+  }
+
+  function openCharacterPicker(){
+    const picker=document.getElementById('surviveCharacterPicker');
+    const btn=document.getElementById('surviveCharacterPickerBtn');
+    const menu=document.getElementById('surviveCharacterPickerMenu');
+    if(!picker||!btn||!menu||btn.disabled)return;
+    const open=!picker.classList.contains('open');
+    picker.classList.toggle('open',open);
+    menu.hidden=!open;
+    btn.setAttribute('aria-expanded',open?'true':'false');
+  }
+
+  function bindCharacterPicker(){
+    const btn=document.getElementById('surviveCharacterPickerBtn');
+    const menu=document.getElementById('surviveCharacterPickerMenu');
+    if(!btn||!menu||btn.dataset.bound)return;
+    btn.dataset.bound='1';
+    btn.addEventListener('click',event=>{
+      event.stopPropagation();
+      openCharacterPicker();
+    });
+    menu.addEventListener('click',event=>{
+      const option=event.target.closest('.survive-character-picker-option');
+      if(!option)return;
+      event.stopPropagation();
+      closeCharacterPicker();
+      selectCharacter(option.dataset.name);
+    });
+    document.addEventListener('click',event=>{
+      const picker=document.getElementById('surviveCharacterPicker');
+      if(picker&&!picker.contains(event.target))closeCharacterPicker();
+    });
+  }
+
   function renderCharacters(){
     const select=document.getElementById('surviveCharacterSelect');
-    if(!select)return;
+    const menu=document.getElementById('surviveCharacterPickerMenu');
+    if(!select||!menu)return;
     select.innerHTML='';
+    menu.innerHTML='';
     members.forEach(m=>{
       const opt=document.createElement('option');
       opt.value=m.name;
       opt.textContent=m.name+' · '+(m.vocation||'Aventureiro');
       select.appendChild(opt);
+
+      const option=document.createElement('button');
+      option.type='button';
+      option.className='survive-character-picker-option';
+      option.dataset.name=m.name;
+      option.setAttribute('role','option');
+      option.textContent=m.name+' · '+(m.vocation||'Aventureiro');
+      option.setAttribute('aria-selected',m.name===currentRecord?.name?'true':'false');
+      menu.appendChild(option);
     });
     select.disabled=false;
-    select.onchange=()=>selectCharacter(select.value);
     if(currentRecord)select.value=currentRecord.name;
+    bindCharacterPicker();
+    renderAll();
   }
 
   async function loadCharacters(){
