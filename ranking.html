@@ -1,9 +1,36 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/jpeg" href="guilda.jpg?v=4-ranking"><title>Ranking XP | Mal Upados</title><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"></head><body><header class="top"><div class="nav"><a class="brand" href="index.html">⛧ MAL UPADOS</a><div class="links"><a href="index.html">Início</a><a class="active" href="ranking.html">Ranking</a><a href="guilda.html">Guilda</a><a href="stash.html">Stash</a><a href="hunting.html">Guia de Hunts</a><a href="arena.html">Arena</a><a href="arena-sobreviva.html">Sobreviva</a><a href="caos.html">Caos</a></div></div></header><main><div class="hero"><div class="sigil">⚔</div><div class="eyebrow">Competição da guilda</div><h1>Ranking <span>XP</span></h1></div><section><div class="filters"><button class="btn active" data-days="1">Últimas 24 horas</button></div><div class="period" id="period">Calculando…</div><div class="podium" id="podium"></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Nome</th><th>XP feita nas últimas 24h</th></tr></thead><tbody id="body"></tbody></table></div></section></main><footer>Mal Upados · Jadebra · <a href="index.html">Início</a> · <a href="ranking.html">Ranking</a> · <a href="guilda.html">Guilda</a> · <a href="stash.html">Stash</a> · <a href="hunting.html">Guia de Hunts</a> · <a href="arena.html">Arena</a> · <a href="caos.html">Caos</a></footer><script>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/jpeg" href="guilda.jpg?v=4-ranking"><title>Ranking XP | Mal Upados</title><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"></head><body><header class="top"><div class="nav"><a class="brand" href="index.html">⛧ MAL UPADOS</a><div class="links"><a href="index.html">Início</a><a class="active" href="ranking.html">Ranking</a><a href="guilda.html">Guilda</a><a href="stash.html">Stash</a><a href="hunting.html">Guia de Hunts</a><a href="arena.html">Arena</a><a href="arena-sobreviva.html">Sobreviva</a><a href="caos.html">Caos</a></div></div></header><main><div class="hero"><div class="sigil">⚔</div><div class="eyebrow">Competição da guilda</div><h1>Ranking <span>XP</span></h1></div><section><div class="filters"><button class="btn active" data-days="1">Últimas 24 horas</button></div><div class="period" id="period">Calculando…</div><div class="podium" id="podium"></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Nome</th><th>XP feita nas últimas 24h</th><th>Fonte</th></tr></thead><tbody id="body"></tbody></table></div></section></main><footer>Mal Upados · Jadebra · <a href="index.html">Início</a> · <a href="ranking.html">Ranking</a> · <a href="guilda.html">Guilda</a> · <a href="stash.html">Stash</a> · <a href="hunting.html">Guia de Hunts</a> · <a href="arena.html">Arena</a> · <a href="caos.html">Caos</a></footer><script>
 function fmt(n){return new Intl.NumberFormat('pt-BR').format(Math.round(n))}
 function signed(n){return (n>=0?'+':'')+fmt(n)}
 function esc(v){return String(v??'').replace(/[&<>\\\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\\\"':'&quot;',"'":'&#39;'}[c]))}
 let history={};
+
+/*
+  Para quem está no Top 1000 do Highscore:
+  XP exata = XP atual - XP anterior.
+
+  Para quem não está no Top 1000:
+  usamos apenas a progressão de level observada nos dois snapshots.
+  A fórmula oficial é a experiência acumulada necessária para atingir cada level.
+  Se o level não mudou, a XP ganha é desconhecida — não mostramos 0.
+*/
+function xpAtLevel(level){
+  level=Number(level);
+  if(!Number.isFinite(level)||level<1)return null;
+  const x=level-1;
+  return Math.floor((50*x*x*x-150*x*x+400*x)/3);
+}
+
+function xpEstimated(previousLevel,currentLevel){
+  previousLevel=Number(previousLevel);
+  currentLevel=Number(currentLevel);
+  if(!Number.isInteger(previousLevel)||!Number.isInteger(currentLevel))return null;
+  if(currentLevel<=previousLevel)return null;
+  const previousXp=xpAtLevel(previousLevel);
+  const currentXp=xpAtLevel(currentLevel);
+  if(previousXp===null||currentXp===null)return null;
+  return currentXp-previousXp;
+}
 
 async function load(){
   try{
@@ -16,7 +43,7 @@ async function load(){
   }
 }
 
-function xpOf(date,name){
+function exactXpOf(date,name){
   let v=(history[date]||{})[name];
   if(!v||v.experience_exact!==true||typeof v.experience!=='number')return null;
   return v.experience;
@@ -25,8 +52,8 @@ function xpOf(date,name){
 function render(){
   let ds=Object.keys(history).sort();
   if(ds.length<2){
-    document.getElementById('period').textContent='Aguardando duas coletas reais de XP para calcular as últimas 24 horas.';
-    document.getElementById('body').innerHTML='<tr><td colspan="3">Ainda não há duas coletas reais de XP.</td></tr>';
+    document.getElementById('period').textContent='Aguardando duas coletas para calcular as últimas 24 horas.';
+    document.getElementById('body').innerHTML='<tr><td colspan="4">Ainda não há duas coletas.</td></tr>';
     document.getElementById('podium').innerHTML='';
     return;
   }
@@ -39,32 +66,80 @@ function render(){
 
   if(hours!==24){
     document.getElementById('period').innerHTML='<strong>XP das últimas 24 horas:</strong> aguardando duas coletas consecutivas de 24h.';
-    document.getElementById('body').innerHTML='<tr><td colspan="3">Não há um intervalo de exatamente 24 horas disponível.</td></tr>';
+    document.getElementById('body').innerHTML='<tr><td colspan="4">Não há um intervalo de exatamente 24 horas disponível.</td></tr>';
     document.getElementById('podium').innerHTML='';
     return;
   }
 
-  let names=new Set([
-    ...Object.keys(history[previous]||{}),
-    ...Object.keys(history[end]||{})
-  ]);
+  let previousData=history[previous]||{};
+  let currentData=history[end]||{};
+  let names=new Set([...Object.keys(previousData),...Object.keys(currentData)]);
 
   let rows=[...names].map(name=>{
-    let initial=xpOf(previous,name);
-    let current=xpOf(end,name);
-    if(initial===null||current===null)return null;
-    return {name,gain:current-initial};
-  }).filter(Boolean).sort((a,b)=>b.gain-a.gain||a.name.localeCompare(b.name));
+    let prev=previousData[name];
+    let cur=currentData[name];
+    if(!prev||!cur)return null;
 
-  document.getElementById('period').innerHTML='<strong>Período:</strong> últimas 24 horas · '+previous+' → '+end+' · somente XP ganha no intervalo';
+    const exactCurrent=exactXpOf(end,name);
+    const exactPrevious=exactXpOf(previous,name);
 
-  document.getElementById('body').innerHTML=rows.map((x,i)=>
-    '<tr><td class="rank">'+(i+1)+'</td><td><strong>'+esc(x.name)+'</strong></td><td class="xp">'+signed(x.gain)+' XP</td></tr>'
-  ).join('')||'<tr><td colspan="3">Nenhum jogador possui duas coletas reais de XP no intervalo.</td></tr>';
+    if(exactCurrent!==null && exactPrevious!==null){
+      return {
+        name,
+        gain:exactCurrent-exactPrevious,
+        method:'exata',
+        previousLevel:prev.level,
+        currentLevel:cur.level
+      };
+    }
 
-  let top=rows.slice(0,3),slots=[top[1],top[0],top[2]];
+    const estimated=xpEstimated(prev.level,cur.level);
+    if(estimated!==null){
+      return {
+        name,
+        gain:estimated,
+        method:'estimada',
+        previousLevel:prev.level,
+        currentLevel:cur.level
+      };
+    }
+
+    return {
+      name,
+      gain:null,
+      method:'indisponivel',
+      previousLevel:prev.level,
+      currentLevel:cur.level
+    };
+  }).filter(Boolean);
+
+  rows.sort((a,b)=>{
+    if(a.gain===null&&b.gain!==null)return 1;
+    if(a.gain!==null&&b.gain===null)return -1;
+    if(a.gain!==null&&b.gain!==null&&b.gain!==a.gain)return b.gain-a.gain;
+    return a.name.localeCompare(b.name);
+  });
+
+  document.getElementById('period').innerHTML='<strong>Período:</strong> últimas 24 horas · '+previous+' → '+end+' · XP exata no Top 1000 e estimada pela progressão de level fora dele';
+
+  document.getElementById('body').innerHTML=rows.map((x,i)=>{
+    const rank=x.gain===null?'—':(i+1);
+    const xp=x.gain===null
+      ? '<span class="small">Level '+x.previousLevel+' → '+x.currentLevel+' · XP não determinável sem o XP absoluto</span>'
+      : signed(x.gain)+' XP';
+    const tag=x.method==='exata'
+      ? '<span class="small">Exata</span>'
+      : x.method==='estimada'
+        ? '<span class="small">Estimada · Lv '+x.previousLevel+' → '+x.currentLevel+'</span>'
+        : '<span class="small">Sem variação de level</span>';
+
+    return '<tr><td class="rank">'+rank+'</td><td><strong>'+esc(x.name)+'</strong></td><td class="xp">'+xp+'</td><td>'+tag+'</td></tr>';
+  }).join('')||'<tr><td colspan="4">Nenhum membro disponível no intervalo.</td></tr>';
+
+  const ranked=rows.filter(x=>x.gain!==null);
+  let top=ranked.slice(0,3),slots=[top[1],top[0],top[2]];
   document.getElementById('podium').innerHTML=slots.filter(Boolean).map((x,i)=>
-    '<div class="'+(i===1?'first':'')+'"><div class="pplace">'+['2º','1º','3º'][i]+'</div><div class="pname">'+esc(x.name)+'</div><div class="xp">'+signed(x.gain)+' XP</div><div class="small">XP ganha nas últimas 24h</div></div>'
+    '<div class="'+(i===1?'first':'')+'"><div class="pplace">'+['2º','1º','3º'][i]+'</div><div class="pname">'+esc(x.name)+'</div><div class="xp">'+signed(x.gain)+' XP</div><div class="small">'+(x.method==='exata'?'XP exata':'XP estimada pela progressão de level')+'</div></div>'
   ).join('');
 }
 
