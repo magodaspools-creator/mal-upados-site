@@ -118,20 +118,151 @@ A lógica foi aplicada no código, mas ainda falta o **teste jogável completo n
 
 Objetivo: avaliar a campanha inteira como experiência visual, não apenas verificar se os elementos existem.
 
-- [ ] Revisar Floresta Sombria.
-- [ ] Revisar Acampamento Orc.
-- [ ] Revisar Deserto Perdido.
-- [ ] Revisar Covil dos Dragões.
-- [ ] Revisar Abismo Demoníaco.
-- [ ] Revisar Grande Revelação.
-- [ ] Revisar Mirror Match.
-- [ ] Revisar Segundo Impacto.
-- [ ] Identificar elementos visualmente fracos, genéricos ou pouco integrados.
-- [ ] Identificar excesso de caixas, bordas, textos ou elementos de interface.
-- [ ] Identificar oportunidades de iluminação, partículas, profundidade, contraste, camadas e ambientação.
-- [ ] Separar melhorias de alto impacto das melhorias cosméticas.
-- [ ] **Nesta etapa apenas diagnosticar; não sair alterando vários arquivos.**
+- [x] Revisar Floresta Sombria.
+- [x] Revisar Acampamento Orc.
+- [x] Revisar Deserto Perdido.
+- [x] Revisar Covil dos Dragões.
+- [x] Revisar Abismo Demoníaco.
+- [x] Revisar Grande Revelação.
+- [x] Revisar Mirror Match.
+- [x] Revisar Segundo Impacto.
+- [x] Identificar elementos visualmente fracos, genéricos ou pouco integrados.
+- [x] Identificar excesso de caixas, bordas, textos ou elementos de interface.
+- [x] Identificar oportunidades de iluminação, partículas, profundidade, contraste, camadas e ambientação.
+- [x] Separar melhorias de alto impacto das melhorias cosméticas.
+- [x] **Nesta etapa apenas diagnosticar; não sair alterando vários arquivos.**
 
+## Resultado da Etapa 2 — Auditoria visual geral
+
+**Auditoria concluída sem alteração de gameplay ou da arquitetura visual nesta etapa.**
+
+### Diagnóstico geral
+
+A campanha já possui identidade visual própria, mas a apresentação ainda está mais próxima de uma **interface narrativa estilizada** do que de uma experiência visual de RPG. O principal problema não é falta de elementos: é **falta de profundidade, escala e integração entre ambientação, combate e narrativa**.
+
+O padrão se repete em quase todas as regiões: painel escuro + borda + pequenos cards de texto + uma ilustração CSS central. Isso deixa as áreas legíveis, mas visualmente parecidas entre si.
+
+### Pontos fortes encontrados
+
+- Identidade consistente de Cinzel + Inter, tons escuros e dourados.
+- Cada capítulo possui nomenclatura e marca visual própria.
+- Floresta, Orcs, Deserto, Dragões e Abismo já possuem composição específica.
+- Grande Revelação e Segundo Impacto possuem linguagem visual mais cinematográfica que as primeiras áreas.
+- Não foi identificado, nesta leitura, necessidade de trocar a arquitetura existente ou adicionar dependências externas.
+- As cenas estão isoladas em arquivos próprios, permitindo polimento regional sem mexer no núcleo de combate.
+
+### Problemas prioritários
+
+#### P1 — Ambientação ainda muito abstrata
+
+As principais cenas são construídas quase exclusivamente com CSS: silhuetas, gradientes, bordas, formas geométricas e pequenos elementos animados.
+
+Isso funciona como conceito visual, mas não transmite a escala de um mundo de RPG com a força esperada para uma campanha que culmina em uma revelação grande.
+
+**Impacto:** alto.
+
+#### P1 — As cinco regiões não parecem suficientemente diferentes
+
+Apesar de existirem diferenças de cor e conteúdo, a estrutura visual se repete:
+
+- cabeçalho do capítulo;
+- selo lateral;
+- bloco visual;
+- 3 ou 4 cards;
+- texto complementar;
+- bloco de boss.
+
+A sensação é de cinco variações do mesmo componente.
+
+**Impacto:** alto.
+
+#### P1 — Lore e combate ainda parecem dois sistemas separados
+
+A narrativa é inserida acima do battleArea, enquanto o combate continua com a interface tradicional da Arena.
+
+O jogador lê uma cena narrativa e logo abaixo encontra uma UI de combate bastante convencional. Falta uma transição visual forte entre os dois estados.
+
+**Impacto:** alto.
+
+#### P1 — Bosses ainda têm pouca presença cinematográfica
+
+Os rótulos narrativos dos bosses são pequenos e ficam dentro da interface de batalha.
+
+Como a nova regra tornou o Boss obrigatório para a progressão, ele passou a ser também um marco narrativo. Visualmente, porém, ainda não recebe peso proporcional a essa função.
+
+**Impacto:** alto.
+
+#### P2 — Tipografia narrativa está pequena demais em vários pontos
+
+Grande parte dos textos de ambientação usa tamanhos próximos de .5rem a .7rem.
+
+Isso mantém a interface compacta, mas reduz a sensação de cena e dificulta a leitura de frases importantes.
+
+**Impacto:** médio.
+
+#### P2 — Excesso de caixas e bordas
+
+Há muitas divisões por border, pequenos painéis e cards. A estrutura fica organizada, porém o olhar encontra poucos elementos realmente dominantes.
+
+**Impacto:** médio.
+
+#### P2 — Grande Revelação é conceitualmente forte, mas visualmente simples
+
+A cena já possui a comparação entre jogador e Kaelen, porém os rostos são formas geométricas em CSS.
+
+Para o twist central da campanha, o rosto é o elemento que deveria receber maior atenção visual.
+
+**Impacto:** alto.
+
+#### P2 — Mirror Match ainda não entrega visualmente o conceito de espelho
+
+A camada atual comunica Kaelen por cor, brilho e texto. O próprio arquivo descreve o espelhamento, mas a composição visual ainda não mostra claramente que ele é uma duplicação do jogador.
+
+**Impacto:** alto.
+
+#### P2 — Segundo Impacto é a cena visualmente mais ambiciosa, mas ainda abstrata
+
+A composição com Titãs, tubos, Arena, correntes e controles já é melhor integrada.
+
+Mesmo assim, tudo é representado por formas geométricas CSS. A ideia é clara, mas ainda falta sensação de escala e de acontecimento.
+
+**Impacto:** médio/alto.
+
+### O que NÃO será feito automaticamente
+
+Nesta etapa não serão feitas mudanças indiscriminadas em todos os arquivos CSS.
+
+O diagnóstico indica que o próximo ganho relevante virá de **polimento por região**, exatamente como previsto na Etapa 3.
+
+A ordem recomendada permanece:
+
+1. Floresta Sombria — criar profundidade e sensação de floresta viva/morta.
+2. Acampamento Orc — reforçar escala defensiva, portão e identidade dos defensores.
+3. Deserto Perdido — reforçar calor, ruína, vidro e profundidade vertical.
+4. Covil dos Dragões — reforçar escala dos dragões, correntes e maquinaria.
+5. Abismo Demoníaco — transformar a catedral e o trono em uma cena de maior peso.
+6. Grande Revelação — dar prioridade visual aos dois rostos e à entrada de Kaelen.
+7. Mirror Match — tornar o espelhamento visível, não apenas textual.
+8. Segundo Impacto — aumentar sensação de escala sem perder a ambiguidade.
+
+### Decisão da Etapa 2
+
+A principal conclusão é:
+
+> **Não precisamos de mais elementos. Precisamos de elementos mais fortes.**
+
+Portanto, a Etapa 3 deve priorizar **composição, escala, iluminação, profundidade, contraste e hierarquia visual**, reduzindo a dependência de pequenos cards e textos como mecanismo principal de ambientação.
+
+Não foi alterado nesta etapa:
+
+- combate;
+- progressão;
+- XP;
+- ranking;
+- renderer de sprites;
+- arena-sobreviva.html;
+- movimentação;
+- arquitetura geral da Arena.
 ## Etapa 3 — Polimento visual por região
 
 Depois da auditoria da Etapa 2, corrigir uma região por vez.
