@@ -39,10 +39,18 @@
       +'<div class="impact-choice"><span>O ÚLTIMO COMANDO</span><strong>Você precisa escolher o que será sacrificado.</strong><div class="choice-options"><div class="choice-option"><b>DESTRUIR ESTE MUNDO</b><small>Interromper a Arena e condenar tudo que vive nela.</small></div><div class="choice-option"><b>DESTRUIR OS OUTROS</b><small>Retomar a drenagem das dimensões inocentes.</small></div></div><p class="choice-note">As opções não respondem ao toque. O trono não aceita uma escolha fácil.</p></div>'
       +'<div class="impact-end">As correntes começam a esticar. Engrenagens antigas voltam a girar. A luz dourada escorre pelo rosto do Soberano.</div>'
       +'</div>';
-    n.completeEvent(SECOND_IMPACT_EVENT,{source:'throne',ending:'ambiguous_tragic',choices:['destroy_this_world','destroy_others'],interactive:false});
-    n.setFlag('second_impact_complete',true);
-    window.dispatchEvent(new CustomEvent('arena:second-impact',{detail:{event:SECOND_IMPACT_EVENT}}));
+    n.discoverClue('finale_world_parasite',{source:'second_impact',dimensions:'other_titans'});
     root.querySelector('.impact-first-person')?.classList.add('impact-awakened');
+    if(root.dataset.completionScheduled!=='1'){
+      root.dataset.completionScheduled='1';
+      window.setTimeout(()=>{
+        const current=window.ArenaNarrative;
+        if(!current||current.hasEvent(SECOND_IMPACT_EVENT))return;
+        current.completeEvent(SECOND_IMPACT_EVENT,{source:'throne',ending:'ambiguous_tragic',choices:['destroy_this_world','destroy_others'],interactive:false});
+        current.setFlag('second_impact_complete',true);
+        window.dispatchEvent(new CustomEvent('arena:second-impact',{detail:{event:SECOND_IMPACT_EVENT}}));
+      },1800);
+    }
   }
 
   function observe(){
