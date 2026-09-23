@@ -18,3 +18,17 @@
 @keyframes arenaChapterBattleIn{from{opacity:.35;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 @media (prefers-reduced-motion:reduce){.arena-chapter-transition,.arena-chapter-transition.is-leaving,.arena-chapter-changing #battleArea{animation:none}.arena-chapter-transition{opacity:1;transform:none}.arena-chapter-transition.is-leaving{opacity:0}}
 @media (max-width:700px){.arena-chapter-transition{inset:0 8px}.arena-chapter-transition strong{font-size:1.05rem;text-align:center}}
+
+
+/* Etapa 9 — progresso de memória discreto, sem HUD invasivo. */
+.arena-fragments-progress{position:absolute;top:12px;right:14px;z-index:7;display:flex;align-items:center;gap:8px;padding:6px 9px;border:1px solid rgba(226,195,111,.2);background:rgba(10,9,7,.72);box-shadow:0 8px 24px rgba(0,0,0,.24);pointer-events:none;opacity:.82;transition:opacity .2s ease,transform .2s ease,border-color .2s ease}
+.arena-fragments-label{font:800 .48rem Inter,sans-serif;letter-spacing:1.6px;color:#a99773}
+.arena-fragments-count{font:800 .58rem Inter,sans-serif;color:#e2c36f}
+.arena-fragments-pips{display:flex;gap:3px}
+.arena-fragments-pips i{display:block;width:7px;height:7px;border:1px solid rgba(226,195,111,.34);transform:rotate(45deg);background:transparent}
+.arena-fragments-pips i.filled{background:#e2c36f;box-shadow:0 0 8px rgba(226,195,111,.42)}
+.arena-fragments-progress.complete{border-color:rgba(226,195,111,.5);opacity:1}
+.arena-fragments-progress.fragment-earned{animation:arenaFragmentEarned .76s ease both}
+@keyframes arenaFragmentEarned{0%{transform:scale(1);opacity:.82}22%{transform:scale(1.08);opacity:1;border-color:rgba(226,195,111,.72)}55%{transform:scale(1.03);opacity:1}100%{transform:scale(1);opacity:.82}}
+@media (max-width:700px){.arena-fragments-progress{top:8px;right:8px;padding:5px 7px;gap:6px}.arena-fragments-label{font-size:.42rem}.arena-fragments-count{font-size:.52rem}.arena-fragments-pips i{width:6px;height:6px}}
+@media (prefers-reduced-motion:reduce){.arena-fragments-progress.fragment-earned{animation:none;opacity:1}}
