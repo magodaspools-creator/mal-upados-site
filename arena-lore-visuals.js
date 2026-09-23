@@ -31,6 +31,8 @@
     setTimeout(()=>el.classList.remove('fragment-earned'),760);
   }
   root.addEventListener('arena:fragment-earned',pulseFragmentProgress);
+  const bootFragments=()=>setTimeout(renderFragmentProgress,220);
+  if(root.readyState==='loading')root.addEventListener('DOMContentLoaded',bootFragments);else bootFragments();
   let transitionTimer=null;
   function chapterTransition(to,from=null){
     const panel=root.querySelector('.adventure-panel');
