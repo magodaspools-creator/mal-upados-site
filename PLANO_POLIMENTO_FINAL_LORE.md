@@ -897,14 +897,23 @@ A camada de rejogabilidade foi revisada para funcionar estritamente como uma **s
 
 ## Etapa 14 — Fechamento
 
-- [ ] Criar backup final antes de qualquer última alteração.
-- [ ] Revisar diff completo.
-- [ ] Confirmar que arquivos fora do escopo não foram alterados.
-- [ ] Confirmar que `arena-sobreviva.html` permanece intacto.
-- [ ] Confirmar que renderer, XP, ranking e movimentação permanecem intactos.
-- [ ] Validar GitHub Actions / Pages.
-- [ ] Fazer teste final no navegador.
-- [ ] Se tudo estiver estável: **congelar a lore.**
+### Resultado da Etapa 14
+
+- [x] **Backup final criado:** `backup/pre-etapa-14-fechamento-2026-09-23`, a partir do commit `9708a3bbe3395d8a425f3351c8b393bed89d7ffa`.
+- [x] **Diff completo revisado:** comparação entre `backup/pre-progressao-boss-2026-09-23` e `main` mostrou 58 commits e somente arquivos pertencentes à implementação/polimento da lore.
+- [x] **Arquivos fora do escopo:** nenhum arquivo de `arena-sobreviva.html`, renderer de sprites, XP, ranking ou movimentação apareceu no diff completo.
+- [x] **`arena-sobreviva.html` permanece intacto** dentro do período auditado.
+- [x] **GitHub Actions / Pages:** run #1352, commit `9708a3bbe3395d8a425f3351c8b393bed89d7ffa`, terminou com sucesso. Build, deploy e report-build-status concluíram com sucesso.
+- [ ] **Teste final no navegador:** permanece pendente. O ambiente atual não fornece automação de navegador/console para executar o playthrough completo em desktop e mobile.
+- [ ] **Congelamento definitivo:** fica condicionado somente ao playthrough manual final.
+
+### Estado de fechamento
+
+A auditoria estrutural está concluída e o código da lore está estável no GitHub Pages. Não foi encontrado desvio de escopo no diff completo nem falha no pipeline de publicação.
+
+A única pendência real é a validação visual/runtime manual: percorrer a campanha do primeiro mapa ao Segundo Impacto, conferindo console, transições e responsividade em desktop e mobile.
+
+Até essa conferência, **não serão feitas novas alterações de lore** sem uma nova etapa explícita.
 
 ---
 
