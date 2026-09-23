@@ -162,15 +162,25 @@ Objetivo: criar uma camada de dados sem espalhar textos pelo código.
 - Nenhuma alteração foi feita em `arena-sobreviva.html` ou no renderer de sprites.
 
 ## Fase 11 — Segundo Impacto
-- [ ] Trono.
-- [ ] Recuperação das memórias.
-- [ ] Câmera em primeira pessoa.
-- [ ] Afrescos.
-- [ ] Revelação das dimensões drenadas.
-- [ ] Controles do trono.
-- [ ] Duas opções internas não clicáveis.
-- [ ] Som de correntes/engrenagens.
-- [ ] Final ambíguo e trágico.
+- [x] Trono.
+- [x] Recuperação das memórias.
+- [x] Câmera em primeira pessoa.
+- [x] Afrescos.
+- [x] Revelação das dimensões drenadas.
+- [x] Controles do trono.
+- [x] Duas opções internas não clicáveis.
+- [x] Som/representação visual de correntes e engrenagens.
+- [x] Final ambíguo e trágico.
+
+### Implementação da Fase 11
+- Camada isolada em `arena-segundo-impacto.js` / `arena-segundo-impacto.css`.
+- A cena só é liberada após `finale_absorption`, mantendo a sequência narrativa da Fase 10.
+- O jogador entra no Trono por uma ação explícita e a cena muda para uma apresentação em primeira pessoa.
+- Os afrescos mostram visualmente o Mundo da Arena sendo sustentado pela drenagem de Titãs de outras dimensões.
+- Os dois controles do trono são apenas elementos visuais; não há ação automática ou escolha programável.
+- As opções internas `Destruir este mundo` e `Destruir os outros` são deliberadamente não clicáveis.
+- O evento `finale_second_impact` registra o encerramento da cena como final ambíguo e trágico.
+- Nenhuma alteração foi feita em `arena-sobreviva.html`, renderer de sprites, XP, ranking ou combate.
 
 ## Fase 12 — Rejogabilidade narrativa
 Depois de toda a campanha funcional:
