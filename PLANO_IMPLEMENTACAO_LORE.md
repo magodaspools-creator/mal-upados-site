@@ -26,7 +26,7 @@ Objetivo: criar uma camada de dados sem espalhar textos pelo código.
 - [x] Criar estado de progressão narrativa.
 - [x] Persistir o estado narrativo isoladamente em `localStorage` (`arena_narrative_v1`).
 - [x] Integrar a camada narrativa exclusivamente ao `arena.html` (Arena normal).
-- [x] Remover a integração indevida do `arena-sobreviva.html`).
+- [x] Remover a integração indevida do `arena-sobreviva.html`.
 - [x] Não alterar combate/movimento.
 
 ## Fase 2 — Elementos visuais globais
