@@ -1,25 +1,25 @@
 /* Arena — Fase 4: Floresta Sombria */
-.arena-forest-scene{margin:0 0 14px;padding:16px;border:1px solid #3d403b;background:radial-gradient(circle at 50% 0%,rgba(86,98,66,.18),transparent 58%),linear-gradient(145deg,#111611,#0b0e0c);box-shadow:inset 0 0 0 1px rgba(255,255,255,.018),0 10px 24px rgba(0,0,0,.2)}
-.arena-forest-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:12px}
-.arena-forest-head h3{margin:2px 0 0;color:#d9d6c8;font-family:Cinzel,serif;font-size:1rem}
+.arena-forest-scene{position:relative;isolation:isolate;overflow:hidden;margin:0 0 14px;padding:18px;border:1px solid #42493d;background:radial-gradient(circle at 50% 10%,rgba(137,150,93,.18),transparent 30%),radial-gradient(circle at 18% 75%,rgba(49,73,39,.22),transparent 28%),linear-gradient(180deg,#111912 0%,#0b100d 52%,#070a09 100%);box-shadow:inset 0 0 45px rgba(91,112,66,.08),0 14px 32px rgba(0,0,0,.32)}.arena-forest-scene:before{content:"";position:absolute;inset:0;z-index:-1;opacity:.7;background:radial-gradient(circle at 12% 18%,rgba(178,187,128,.5) 0 1px,transparent 2px),radial-gradient(circle at 26% 33%,rgba(139,159,102,.38) 0 1px,transparent 2px),radial-gradient(circle at 78% 24%,rgba(174,185,128,.4) 0 1px,transparent 2px),radial-gradient(circle at 91% 63%,rgba(130,151,96,.35) 0 1px,transparent 2px),linear-gradient(102deg,transparent 0 18%,rgba(39,54,36,.18) 19% 20%,transparent 21% 47%,rgba(35,51,34,.16) 48% 49%,transparent 50%);background-size:auto,auto,auto,auto,100% 100%}.arena-forest-scene:after{content:"";position:absolute;left:-8%;right:-8%;bottom:-20px;height:90px;z-index:-1;background:radial-gradient(ellipse at 50% 100%,rgba(68,83,51,.28),transparent 68%);filter:blur(8px)}
+.arena-forest-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(116,129,83,.18)}
+.arena-forest-head h3{margin:2px 0 0;color:#e0dfcf;font-family:Cinzel,serif;font-size:1.08rem;text-shadow:0 2px 12px rgba(0,0,0,.65)}
 .arena-forest-mark{padding:5px 8px;border:1px solid #5a5135;color:#bda968;font-size:.58rem;letter-spacing:.16em}
-.arena-forest-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.forest-clue{display:flex;gap:9px;padding:10px;border:1px solid #2e332e;background:rgba(7,10,8,.72);min-height:62px}
+.arena-forest-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.forest-clue{position:relative;display:flex;gap:10px;padding:11px;border:1px solid rgba(69,79,64,.72);background:linear-gradient(135deg,rgba(14,21,15,.86),rgba(7,10,8,.58));min-height:70px;box-shadow:inset 0 0 22px rgba(83,103,62,.035);transition:transform .25s ease,border-color .25s ease,background .25s ease}.forest-clue:hover{transform:translateY(-2px);border-color:rgba(133,145,91,.5);background:linear-gradient(135deg,rgba(20,29,19,.92),rgba(7,10,8,.62))}
 .forest-clue-icon{width:28px;height:28px;display:grid;place-items:center;flex:0 0 28px;border:1px solid #41483e;color:#a9b17f;font-size:.78rem}
-.forest-clue strong{display:block;color:#c8c9bd;font-size:.72rem}
-.forest-clue p{margin:4px 0 0;color:#777e78;font-size:.62rem;line-height:1.5}
+.forest-clue strong{display:block;color:#d1d4c4;font-size:.75rem}
+.forest-clue p{margin:5px 0 0;color:#858d82;font-size:.65rem;line-height:1.55}
 .forest-shadow{border-color:#51472e;background:linear-gradient(145deg,rgba(22,20,14,.9),rgba(8,10,9,.8))}
 .forest-shadow .forest-clue-icon{color:#d0b65e}
 .forest-shadow-note{display:inline-block;margin-top:5px;color:#bda968;font-size:.55rem;text-transform:uppercase;letter-spacing:.1em}
-.forest-roots{display:flex;align-items:center;gap:12px;margin-top:9px;padding:10px;border-top:1px solid #282d28;color:#6f766e}
+.forest-roots{display:flex;align-items:center;gap:12px;margin-top:11px;padding:12px;border-top:1px solid rgba(91,103,69,.25);color:#747d71;background:linear-gradient(90deg,rgba(35,48,29,.18),transparent 72%)}
 .forest-roots-art{position:relative;width:54px;height:30px;overflow:hidden;flex:0 0 54px}
 .forest-roots-art i{position:absolute;bottom:-7px;width:4px;height:42px;background:#39432f;transform-origin:bottom;border-radius:5px}
 .forest-roots-art i:nth-child(1){left:9px;transform:rotate(-32deg)}
 .forest-roots-art i:nth-child(2){left:22px;transform:rotate(17deg)}
 .forest-roots-art i:nth-child(3){left:34px;transform:rotate(-10deg)}
 .forest-roots-art i:nth-child(4){left:44px;transform:rotate(28deg)}
-.forest-roots strong{display:block;color:#9a9f95;font-size:.66rem}
-.forest-roots span{display:block;margin-top:2px;font-size:.58rem}
+.forest-roots strong{display:block;color:#b1b69f;font-size:.7rem}
+.forest-roots span{display:block;margin-top:3px;font-size:.61rem}
 .forest-roots.open{border-color:#554a2b;background:linear-gradient(90deg,rgba(63,54,27,.2),transparent)}
 .forest-roots.open .forest-roots-art i{background:#8a7439;animation:forestRootsPulse 1.8s ease-in-out infinite alternate}
 .forest-defensive-note{margin:8px 0;padding:7px 10px;border:1px solid #4a4635;background:#15150f;color:#b9b29b;font-size:.62rem;text-align:center}
