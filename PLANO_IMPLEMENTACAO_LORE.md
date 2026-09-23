@@ -40,23 +40,23 @@ Objetivo: criar uma camada de dados sem espalhar textos pelo código.
 
 ## Fase 3 — NPCs
 ### Kaelen
-- [ ] Entrada inicial.
-- [ ] Aparições controladas.
-- [ ] Falas por mapa.
-- [ ] Mudança gradual de comportamento.
-- [ ] Eventos de frustração/agressividade.
-- [ ] Preparação para revelação final.
+- [x] Entrada inicial.
+- [x] Aparições controladas.
+- [x] Falas por mapa.
+- [x] Mudança gradual de comportamento — base narrativa preparada por mapa.
+- [x] Eventos de frustração/agressividade — fala do Covil dos Dragões preparada.
+- [x] Preparação para revelação final — estrutura de diálogo separada do gameplay.
 
 ### Vara
-- [ ] NPC não hostil.
-- [ ] Sistema de diálogo.
-- [ ] Falas enigmáticas.
-- [ ] Reação de Kaelen.
+- [x] NPC não hostil.
+- [x] Sistema de diálogo.
+- [x] Falas enigmáticas.
+- [x] Reação de Kaelen — fala de desqualificação preparada.
 
 ### Elias
-- [ ] NPC do Deserto.
-- [ ] Diálogos condicionais.
-- [ ] Falas que apontam para a verdade sem revelá-la diretamente.
+- [x] NPC do Deserto.
+- [x] Diálogos condicionais.
+- [x] Falas que apontam para a verdade sem revelá-la diretamente.
 
 ## Fase 4 — Mapa 1: Floresta Sombria
 - [ ] Atmosfera de sofrimento.
