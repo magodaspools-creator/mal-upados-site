@@ -88,15 +88,19 @@ Objetivo: criar uma camada de dados sem espalhar textos pelo código.
 - [x] Sem substituição do renderer/combat/progressão existentes.
 
 ## Fase 6 — Mapa 3: Deserto Perdido
-- [ ] Cidade invertida.
-- [ ] Vidro/areia.
-- [ ] Ruínas destruídas de dentro para fora.
-- [ ] Elias.
-- [ ] Diálogos do Arquivista.
-- [ ] Chefe General da Magia.
-- [ ] Terceiro fragmento.
-- [ ] Flashback.
-- [ ] Transição para o núcleo vulcânico.
+- [x] Cidade invertida.
+- [x] Vidro/areia.
+- [x] Ruínas destruídas de dentro para fora.
+- [x] Elias.
+- [x] Diálogos do Arquivista.
+- [x] Chefe General da Magia.
+- [x] Terceiro fragmento.
+- [x] Flashback.
+- [x] Transição para o núcleo vulcânico.
+- [x] Camada isolada em arena-deserto.js / arena-deserto.css.
+- [x] Integrada somente ao arena.html.
+- [x] Sem alteração em arena-sobreviva.html.
+- [x] Sem substituição do renderer/combat/progressão existentes.
 
 ## Fase 7 — Mapa 4: Covil dos Dragões
 - [ ] Magma.
