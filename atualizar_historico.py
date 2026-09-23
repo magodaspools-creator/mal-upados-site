@@ -97,6 +97,9 @@ for page in range(1, total_pages + 1):
             experiencias[nome.casefold()] = value
             fontes[nome.casefold()] = "TibiaData/highscores"
 
+    if processed_entries >= 1000:
+        break
+
 
 # Level e XP usam o mesmo snapshot e o mesmo horario de coleta.
 level_historico = load_json(HISTORICO_LEVEL, {})
