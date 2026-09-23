@@ -3,6 +3,7 @@
 (()=> {
   const ZONE=4;
   const THRONE_EVENT='map5_throne_room';
+  const BOSS_EVENT='map5_boss_defeat';
   const CORPSE_EVENT='map5_corpse_reveal';
   const REVEAL_EVENT='finale_kaelen_reveal';
   const narrative=()=>window.ArenaNarrative||null;
@@ -22,6 +23,11 @@
 
     const warning=scene.querySelector('.abyss-warning');
     if(warning){
+      if(!n.hasEvent(BOSS_EVENT)){
+        warning.innerHTML='<span>A ÚLTIMA VIGÍLIA</span><strong>A Guarda Real ainda protege o trono.</strong><p>O corpo está diante de você, mas o caminho até a verdade passa primeiro pelo guardião deste lugar.</p>';
+        document.getElementById('arenaRevelationPrompt')?.remove();
+        return;
+      }
       warning.innerHTML='<span>O ÚLTIMO SEGREDO</span><strong>O corpo não está vazio.</strong><p>Uma presença parece esperar pelo toque de alguém que já esteve aqui antes.</p><button type="button" class="btn active revelation-trigger" id="revelationTrigger">TOCAR O CADÁVER</button>';
     }
 
@@ -46,7 +52,7 @@
   function triggerReveal(){
     const n=narrative();
     if(!n||n.hasEvent(REVEAL_EVENT))return;
-    if(!n.hasEvent(THRONE_EVENT))return;
+    if(!n.hasEvent(THRONE_EVENT)||!n.hasEvent(BOSS_EVENT))return;
     n.completeEvent(CORPSE_EVENT,{source:'sovereign_corpse',zone:'map5'});
     n.discoverClue('finale_same_face',{source:'corpse',identity:'player'});
     n.discoverClue('finale_two_halves',{source:'revelation'});
