@@ -25,3 +25,5 @@
 .forest-defensive-note{margin:8px 0;padding:7px 10px;border:1px solid #4a4635;background:#15150f;color:#b9b29b;font-size:.62rem;text-align:center}
 @keyframes forestRootsPulse{from{opacity:.55;transform:translateY(2px) rotate(-18deg)}to{opacity:1;transform:translateY(-2px) rotate(18deg)}}
 @media(max-width:620px){.arena-forest-grid{grid-template-columns:1fr}.arena-forest-head{flex-direction:column}.forest-clue{min-height:auto}}
+
+.forest-boss-line{margin:8px 0;padding:10px 12px;border:1px solid #655735;background:linear-gradient(90deg,rgba(73,59,25,.32),rgba(20,18,12,.8));color:#d5c27d;font-family:Cinzel,serif;font-size:.7rem;text-align:center;box-shadow:inset 0 0 18px rgba(189,169,104,.04)}
