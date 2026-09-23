@@ -32,7 +32,7 @@
     map5:{
       id:'map5', name:'Abismo Demoníaco', order:5,
       npcs:['kaelen'],
-      events:['map5_cathedral','map5_throne_room','map5_corpse_reveal'],
+      events:['map5_cathedral','map5_throne_room','map5_boss_defeat','map5_corpse_reveal'],
       clues:['map5_mourning_guard','map5_perfect_architecture']
     },
     finale:{
