@@ -61,6 +61,7 @@
 
   window.ArenaMirrorMatch={
     canStart,
+    pulse:refreshMirrorVisual,
     start(){
       if(!canStart()){console.warn('[Arena Mirror] revelação de Kaelen ainda não foi concluída.');return false;}
       if(typeof window.ArenaCombat?.startMirror==='function')return window.ArenaCombat.startMirror();
