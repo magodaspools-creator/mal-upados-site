@@ -1,0 +1,61 @@
+/* Arena — Fase 12: Rejogabilidade narrativa. */
+.arena-retro-lore{
+  margin-top:18px;
+  padding:18px 20px;
+  border:1px solid rgba(224,180,82,.38);
+  border-radius:14px;
+  background:linear-gradient(135deg,rgba(42,31,15,.94),rgba(18,18,22,.96));
+  box-shadow:0 10px 30px rgba(0,0,0,.22);
+  animation:arenaRetroReveal .45s ease both;
+}
+.arena-retro-label{
+  font-size:.68rem;
+  letter-spacing:.14em;
+  font-weight:800;
+  color:#d9b65b;
+  margin-bottom:7px;
+}
+.arena-retro-lore h4{
+  margin:0 0 7px;
+  color:#f4df9b;
+  font-size:1rem;
+}
+.arena-retro-lore p{
+  margin:0 0 8px;
+  color:#eee7d7;
+  line-height:1.55;
+}
+.arena-retro-lore span{
+  display:block;
+  color:#aaa397;
+  font-size:.84rem;
+  line-height:1.5;
+}
+.arena-retro-dialogue{
+  margin-top:14px;
+  padding:12px 14px;
+  border-left:3px solid #d9b65b;
+  background:rgba(217,182,91,.08);
+  display:grid;
+  gap:4px;
+}
+.arena-retro-dialogue strong{
+  color:#d9b65b;
+  font-size:.72rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.arena-retro-dialogue span{
+  color:#d9d3c8;
+  font-size:.84rem;
+  line-height:1.5;
+}
+@keyframes arenaRetroReveal{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@media(max-width:700px){
+  .arena-retro-lore{padding:15px}
+  .arena-retro-lore h4{font-size:.95rem}
+  .arena-retro-lore p,.arena-retro-lore span{font-size:.82rem}
+}
