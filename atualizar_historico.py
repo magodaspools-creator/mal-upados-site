@@ -8,6 +8,7 @@ GUILD = "Mal Upados"
 BASE = "https://api.tibiadata.com/v4"
 HISTORICO_LEVEL = "historico.json"
 HISTORICO_XP = "historico_xp.json"
+MAX_SNAPSHOTS = 2
 
 
 def get_json(url):
@@ -27,25 +28,42 @@ def get_highscore_page(world, page):
     return get_json(url)
 
 
+def load_json(path, default):
+    if not os.path.exists(path):
+        return default
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def save_json(path, data):
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+def keep_last_snapshots(history):
+    dates = sorted(
+        key for key, value in history.items()
+        if isinstance(value, dict) and "captured_at" in value
+    )
+    keep = set(dates[-MAX_SNAPSHOTS:])
+    return {key: value for key, value in history.items() if key in keep}
+
+
 guild_data = get_json(f"{BASE}/guild/{urllib.parse.quote(GUILD)}")
 guild = guild_data["guild"]
 membros = guild["members"]
 world = guild["world"]
-hoje = datetime.date.today().isoformat()
 
-historico = {}
-if os.path.exists(HISTORICO_LEVEL):
-    with open(HISTORICO_LEVEL, "r", encoding="utf-8") as f:
-        historico = json.load(f)
-
-historico[hoje] = {m["name"]: m["level"] for m in membros}
-with open(HISTORICO_LEVEL, "w", encoding="utf-8") as f:
-    json.dump(historico, f, ensure_ascii=False, indent=2)
+captured_at = datetime.datetime.now(datetime.timezone.utc)
+hoje = captured_at.date().isoformat()
+captured_at_iso = captured_at.isoformat().replace("+00:00", "Z")
 
 nomes_guild = {m["name"].casefold() for m in membros}
 experiencias = {}
 fontes = {}
 
+# TibiaData expõe o total de páginas do Highscore. Percorremos exatamente
+# as páginas disponibilizadas pela fonte, sem inventar páginas adicionais.
 first_page = 1
 total_pages = 1
 
@@ -57,8 +75,9 @@ try:
         .get("total_pages") or 1
     )
 except Exception as exc:
-    print(f"Falha ao consultar TibiaData pagina 1: {exc}")
-    first_data = {"highscores": {"highscore_list": []}}
+    raise RuntimeError(
+        f"Falha ao consultar TibiaData pagina 1: {exc}"
+    ) from exc
 
 for page in range(1, total_pages + 1):
     try:
@@ -68,41 +87,51 @@ for page in range(1, total_pages + 1):
         print(f"Falha ao consultar TibiaData pagina {page}/{total_pages}: {exc}")
         continue
 
-    if not entries:
-        continue
-
     for item in entries:
         nome = str(item.get("name", "")).strip()
         if not nome or nome.casefold() not in nomes_guild:
             continue
 
         value = item.get("value")
-        if isinstance(value, int):
+        if isinstance(value, int) and value >= 0:
             experiencias[nome.casefold()] = value
             fontes[nome.casefold()] = "TibiaData/highscores"
 
 
-xp_historico = {}
-if os.path.exists(HISTORICO_XP):
-    with open(HISTORICO_XP, "r", encoding="utf-8") as f:
-        xp_historico = json.load(f)
-
-xp_historico[hoje] = {
-    m["name"]: {
-        "level": m["level"],
-        "experience": experiencias.get(m["name"].casefold()),
-        "experience_exact": m["name"].casefold() in experiencias,
-        "experience_vocation": fontes.get(m["name"].casefold()),
-    }
-    for m in membros
+# Level e XP usam o mesmo snapshot e o mesmo horario de coleta.
+level_historico = load_json(HISTORICO_LEVEL, {})
+level_historico[hoje] = {
+    "captured_at": captured_at_iso,
+    "members": {m["name"]: m["level"] for m in membros},
 }
+level_historico = keep_last_snapshots(level_historico)
+save_json(HISTORICO_LEVEL, level_historico)
 
-with open(HISTORICO_XP, "w", encoding="utf-8") as f:
-    json.dump(xp_historico, f, ensure_ascii=False, indent=2)
 
-exatos = sum(1 for v in xp_historico[hoje].values() if v["experience_exact"])
+xp_historico = load_json(HISTORICO_XP, {})
+xp_historico[hoje] = {
+    "captured_at": captured_at_iso,
+    "world": world,
+    "members": {
+        m["name"]: {
+            "level": m["level"],
+            "experience": experiencias.get(m["name"].casefold()),
+            "experience_exact": m["name"].casefold() in experiencias,
+            "experience_source": fontes.get(m["name"].casefold()),
+        }
+        for m in membros
+    },
+}
+xp_historico = keep_last_snapshots(xp_historico)
+save_json(HISTORICO_XP, xp_historico)
+
+exatos = sum(
+    1
+    for v in xp_historico[hoje]["members"].values()
+    if v["experience_exact"]
+)
 print(
-    f"Historico atualizado: {hoje} | mundo: {world} | "
+    f"Historico atualizado: {hoje} {captured_at_iso} | mundo: {world} | "
     f"membros: {len(membros)} | XP exata: {exatos}/{len(membros)} | "
-    f"paginas consultadas: {total_pages} | fonte: TibiaData/all"
+    f"paginas consultadas: {total_pages} | fonte: TibiaData/highscores"
 )
