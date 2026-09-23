@@ -108,6 +108,24 @@ save_json(HISTORICO_LEVEL, level_historico)
 
 
 xp_historico = load_json(HISTORICO_XP, {})
+
+# Migração única do formato antigo (um dicionário de jogadores por data)
+# para o formato com timestamp + members. O horário 10:00 UTC corresponde
+# à coleta agendada das 07:00 no horário de Brasília.
+migrated_xp = {}
+for date, snapshot in xp_historico.items():
+    if not isinstance(snapshot, dict):
+        continue
+    if isinstance(snapshot.get("members"), dict) and snapshot.get("captured_at"):
+        migrated_xp[date] = snapshot
+    elif date == str(date):
+        migrated_xp[date] = {
+            "captured_at": f"{date}T10:00:00Z",
+            "world": world,
+            "members": snapshot,
+        }
+xp_historico = migrated_xp
+
 xp_historico[hoje] = {
     "captured_at": captured_at_iso,
     "world": world,
