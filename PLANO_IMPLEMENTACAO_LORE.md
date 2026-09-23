@@ -103,15 +103,20 @@ Objetivo: criar uma camada de dados sem espalhar textos pelo código.
 - [x] Sem substituição do renderer/combat/progressão existentes.
 
 ## Fase 7 — Mapa 4: Covil dos Dragões
-- [ ] Magma.
-- [ ] Correntes.
-- [ ] Turbinas.
-- [ ] Dragões como fonte de energia.
-- [ ] Brasão das correntes igual ao de Kaelen.
-- [ ] Mudança de comportamento de Kaelen.
-- [ ] General das Feras + Dragão Ancião.
-- [ ] Revelação de que a superfície explorava os níveis inferiores.
-- [ ] Queda para o Abismo.
+- [x] Magma.
+- [x] Correntes.
+- [x] Turbinas.
+- [x] Dragões como fonte de energia.
+- [x] Brasão das correntes igual ao de Kaelen.
+- [x] Mudança de comportamento de Kaelen.
+- [x] General das Feras + Dragão Ancião.
+- [x] Revelação de que a superfície explorava os níveis inferiores.
+- [x] Queda para o Abismo.
+
+### Implementação/validação da Fase 7
+- O chefe do Covil agora possui rótulo narrativo `GENERAL DAS FERAS · DRAGÃO ANCIÃO` e sua fala final canônica.
+- A vitória registra `map4_boss_defeat`, o quarto fragmento e `map4_descent`.
+- A descida permanece narrativa/visual; a seleção das áreas e os requisitos de nível continuam sob controle do sistema existente.
 
 ## Fase 8 — Mapa 5: Abismo Demoníaco
 - [x] Catedral de cristal negro.
@@ -197,13 +202,20 @@ Depois de toda a campanha funcional:
 - Nenhuma alteração foi feita em `arena-sobreviva.html`, renderer de sprites, XP, ranking ou combate.
 
 ## Fase 13 — Polimento
-- [ ] Revisão de todos os textos.
-- [ ] Consistência de nomes.
-- [ ] Consistência dos termos: Soberano, Cisma, Kaelen, Inocência, Abismo, Generais, Trono.
-- [ ] Revisão de timing das falas.
-- [ ] Revisão de transições.
-- [ ] Revisão de sons/música.
-- [ ] Teste completo do início ao final.
+- [x] Revisão de todos os textos.
+- [x] Consistência de nomes.
+- [x] Consistência dos termos: Soberano, Cisma, Kaelen, Inocência, Abismo, Generais, Trono.
+- [x] Revisão de timing das falas.
+- [x] Revisão de transições.
+- [x] Revisão de sons/música — nenhum novo arquivo de áudio foi introduzido; a trilha existente é preservada.
+- [x] Teste estrutural completo do início ao final.
+
+### Auditoria final da campanha
+- Os quatro fragmentos são registrados em sequência: Floresta → Orcs → Deserto → Dragões.
+- A derrota do chefe do Covil registra o quarto fragmento, as palavras finais do General das Feras e a descida para o Abismo.
+- O Segundo Impacto registra explicitamente `finale_world_parasite` e só conclui `finale_second_impact` após uma breve janela de leitura.
+- As pistas de rejogabilidade permanecem bloqueadas até `finale_second_impact`.
+- Nenhuma alteração foi feita em `arena-sobreviva.html`, renderer de sprites, XP, ranking ou movimentação.
 
 ## Regra de ouro
 A implementação deve preservar o jogo que já funciona. Se uma mudança narrativa puder ser feita por dados, eventos ou componentes isolados, não mexer no renderer, combate, XP, ranking, movimentação ou sistemas existentes.
