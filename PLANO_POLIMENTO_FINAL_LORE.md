@@ -702,15 +702,61 @@ O diff da etapa será comparado com o backup antes de considerar a etapa fechada
 
 ## Etapa 10 — Auditoria de consistência textual
 
-- [ ] Procurar termos antigos que contradigam a lore.
-- [ ] Procurar referências incompatíveis com a identidade do protagonista.
-- [ ] Revisar uso de Soberano, Cisma, Kaelen, Inocência, Ambição, Culpa, Abismo, Trono e Generais.
-- [ ] Procurar textos duplicados ou contraditórios.
-- [ ] Procurar mensagens de debug esquecidas.
-- [ ] Procurar textos provisórios.
-- [ ] Revisar pontuação e acentuação.
-- [ ] Não alterar textos narrativos sem validar o contexto.
+- [x] Procurar termos antigos que contradigam a lore.
+- [x] Procurar referências incompatíveis com a identidade do protagonista.
+- [x] Revisar uso de Soberano, Cisma, Kaelen, Inocência, Ambição, Culpa, Abismo, Trono e Generais.
+- [x] Procurar textos duplicados ou contraditórios.
+- [x] Procurar mensagens de debug esquecidas.
+- [x] Procurar textos provisórios.
+- [x] Revisar pontuação e acentuação.
+- [x] Não alterar textos narrativos sem validar o contexto.
 
+### Resultado da Etapa 10 — Auditoria de consistência textual
+
+**Auditoria concluída com correções pontuais, sem alterar a estrutura narrativa.**
+
+### Correções aplicadas
+
+- **General da Vida:** corrigido o uso indevido do plural na Floresta; o domínio possui um General da Vida.
+- **Inocência / Ambição / Culpa:** a Grande Revelação agora descreve explicitamente a alma como duas metades, evitando a construção ambígua “a Ambição e a Culpa”.
+- **Kaelen:** removida do documento de lore a descrição de sua existência como “projeção esquizofrênica”; a formulação foi alinhada à ideia de uma manifestação ligada à própria alma.
+- **Segundo Impacto:** o documento deixou de afirmar um desfecho já escolhido pelo jogador. A implementação atual apresenta duas consequências e mantém ambas não clicáveis, portanto o texto de referência agora preserva essa ambiguidade.
+- **Soberano:** a descrição inicial foi ajustada para distinguir a percepção histórica de benevolência da verdade revelada posteriormente.
+- **Elias:** a formulação sobre sua condição foi suavizada e alinhada ao papel de testemunha perturbada da verdade, sem transformar saúde mental em explicação narrativa.
+
+### Termos consolidados
+
+A terminologia central permanece:
+
+- **Soberano**
+- **O Cisma**
+- **Kaelen**
+- **Inocência**
+- **Ambição**
+- **Culpa**
+- **Abismo**
+- **Trono**
+- **Generais**
+- **Guarda Real**
+
+### Regra preservada
+
+A auditoria não reescreveu a campanha nem alterou eventos, combate, progressão ou interpretação do twist. Foram corrigidas somente inconsistências textuais objetivas e formulações que contradiziam o estado atual da implementação.
+
+### Escopo
+
+Alterados somente:
+- `arena-floresta.js`
+- `arena-revelacao.js`
+- `LORE_ARENA_O_CISMA_DO_SOBERANO.md`
+- `PLANO_POLIMENTO_FINAL_LORE.md`
+
+Backup criado antes da etapa:
+- `backup/pre-etapa-10-consistencia-2026-09-23`
+
+### Validação estrutural
+
+O conteúdo foi revisado diretamente nos arquivos atuais do repositório e as correções foram limitadas aos trechos identificados na auditoria. A validação visual/jogável continua pendente para a Etapa 12.
 ## Etapa 11 — Auditoria técnica de integração
 
 - [ ] Verificar listeners duplicados.
