@@ -72,16 +72,20 @@ Objetivo: criar uma camada de dados sem espalhar textos pelo código.
 - [x] Validar mapa inteiro antes de prosseguir.
 
 ## Fase 5 — Mapa 2: Acampamento Orc
-- [ ] Arquitetura defensiva.
-- [ ] Formações/táticas dos Orcs.
-- [ ] Estandartes do Sol Partido.
-- [ ] Portão colossal.
-- [ ] Vara.
-- [ ] Diálogo "duas sombras".
-- [ ] Reação de Kaelen.
-- [ ] Chefe ajoelhando diante do portão.
-- [ ] "Perdoe-nos, Majestade."
-- [ ] Transição para o Deserto.
+- [x] Arquitetura defensiva.
+- [x] Formações/táticas dos Orcs.
+- [x] Estandartes do Sol Partido.
+- [x] Portão colossal.
+- [x] Vara.
+- [x] Diálogo "duas sombras".
+- [x] Reação de Kaelen.
+- [x] Chefe ajoelhando diante do portão.
+- [x] "Perdoe-nos, Majestade."
+- [x] Transição para o Deserto.
+- [x] Camada isolada em arena-orcs.js / arena-orcs.css.
+- [x] Integrada somente ao arena.html.
+- [x] Sem alteração em arena-sobreviva.html.
+- [x] Sem substituição do renderer/combat/progressão existentes.
 
 ## Fase 6 — Mapa 3: Deserto Perdido
 - [ ] Cidade invertida.
