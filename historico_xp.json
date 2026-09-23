@@ -2023,13 +2023,13 @@
   },
   "2026-09-23": {
     "Chines Protetor": {
-      "level": 507,
+      "level": 508,
       "experience": 2150254248,
       "experience_exact": true,
       "experience_vocation": "TibiaData/highscores"
     },
     "Bella Longuinho": {
-      "level": 151,
+      "level": 152,
       "experience": null,
       "experience_exact": false,
       "experience_vocation": null
@@ -2089,7 +2089,7 @@
       "experience_vocation": "TibiaData/highscores"
     },
     "Gepone": {
-      "level": 147,
+      "level": 148,
       "experience": null,
       "experience_exact": false,
       "experience_vocation": null
