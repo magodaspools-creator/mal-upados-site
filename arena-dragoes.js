@@ -70,6 +70,8 @@
       if(!n||n.hasEvent(BOSS_EVENT))return;
       n.completeEvent(BOSS_EVENT,{source:'general_of_beasts',boss:'frost_wyrm'});
       n.addFragment(1);
+      n.completeEvent('map4_fragment',{source:'general_of_beasts'});
+      n.discoverClue('map4_fourth_fragment');
       n.completeEvent(DESCENT_EVENT,{source:'dragon_lair',destination:'abyss'});
       n.discoverClue('map4_final_words',{text:'Nós acorrentamos o mundo... para que você não precisasse... O Abismo está aberto. O Trono o aguarda.'});
       if(typeof toast==='function')toast('Quarto fragmento absorvido. O chão começa a ceder para o Abismo.');
