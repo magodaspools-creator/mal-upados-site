@@ -128,13 +128,21 @@ Objetivo: criar uma camada de dados sem espalhar textos pelo código.
 - [x] Sem substituição do renderer/combat/progressão existentes.
 
 ## Fase 9 — Grande revelação
-- [ ] Interação com o cadáver.
-- [ ] Rosto do jogador.
-- [ ] Materialização física de Kaelen.
-- [ ] Remoção do capacete.
-- [ ] Mesmo rosto, envelhecido.
-- [ ] Exposição da verdade sobre as duas metades.
-- [ ] Preparar arena do Mirror Match.
+- [x] Interação com o cadáver.
+- [x] Rosto do jogador.
+- [x] Materialização física de Kaelen.
+- [x] Remoção do capacete.
+- [x] Mesmo rosto, envelhecido.
+- [x] Exposição da verdade sobre as duas metades.
+- [x] Preparar arena do Mirror Match.
+
+### Implementação da Fase 9
+- Camada isolada em `arena-revelacao.js` / `arena-revelacao.css`.
+- A revelação só aparece no Abismo, depois de `map5_throne_room`, e começa por interação explícita com o cadáver.
+- O evento `map5_corpse_reveal` registra a interação; `finale_kaelen_reveal` registra a revelação completa e libera a infraestrutura do Mirror Match.
+- O rosto do cadáver é apresentado como o próprio personagem atual; Kaelen se materializa sem capacete e é apresentado com o mesmo rosto, envelhecido.
+- A cena estabelece que a alma do Soberano foi dividida em duas metades: a Inocência do jogador e a Ambição/Culpa de Kaelen.
+- Nenhuma alteração foi feita em `arena-sobreviva.html`, renderer de sprites, XP, ranking ou motor de combate.
 
 ## Fase 10 — Mirror Match
 - [x] Kaelen usar habilidades equivalentes às do jogador.
