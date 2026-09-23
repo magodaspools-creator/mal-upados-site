@@ -62,11 +62,12 @@
     if(typeof battle==='undefined'||!battle?.isBoss||Number(battle.zoneIndex)!==ZONE)return;
     const n=narrative(); if(!n)return;
     const max=Number(battle.maxHp)||0,hp=Number(battle.hp)||0;
-    if(!max||hp/max>0.30||n.hasFlag('map2_boss_majestade'))return;
-    n.setFlag('map2_boss_majestade',true);
+    if(!max||hp/max>0.30)return;
     const card=document.querySelector('.boss-battle-card'); if(!card)return;
+    if(!n.hasFlag('map2_boss_majestade'))n.setFlag('map2_boss_majestade',true);
+    if(card.querySelector('.orc-boss-line'))return;
     const line=document.createElement('div');line.className='orc-boss-line';
-    line.innerHTML='<div class="orc-boss-label">ÚLTIMO SUSPIRO</div>“Perdoe-nos, Majestade.”';
+    line.innerHTML='<div class="orc-boss-label">O CHEFE SE AJOELHA DIANTE DO PORTÃO</div>“Perdoe-nos, Majestade.”';
     (card.querySelector('.boss-battle-warning')||card.querySelector('.battle-head'))?.after(line);
   }
 
