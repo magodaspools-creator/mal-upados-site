@@ -59,7 +59,6 @@
     if(game.level<(ZONES[zoneIndex]?.min||1)){toast('Você ainda não pode enfrentar este Boss.');return}
     const left=cooldownLeft(zoneIndex);
     if(left>0){toast(`Boss em cooldown: ${fmtTime(left)}.`);showZone(zoneIndex);return}
-    if(!hasAmulet(b.element)){toast(`Você precisa do amuleto de ${b.element} para enfrentar este Boss.`);return}
     cleanupBossEntries(zoneIndex);
     const tuple=bossTuple(zoneIndex),list=ZONES[zoneIndex].monsters,index=list.length;
     list.push(tuple);
