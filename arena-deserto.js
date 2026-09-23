@@ -61,6 +61,8 @@
       const n=narrative();if(!n||n.hasEvent(BOSS_EVENT))return;
       n.completeEvent(BOSS_EVENT,{source:'general_magic'});
       n.addFragment(1);
+      n.completeEvent('map3_fragment',{source:'general_magic'});
+      n.discoverClue('map3_third_fragment');
       n.setFlag(FLASH_FLAG,true);
       n.completeEvent('map3_flashback',{source:'arena_desert'});
       n.discoverClue('map3_key_in_mind');
