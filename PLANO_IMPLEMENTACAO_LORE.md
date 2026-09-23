@@ -13,19 +13,19 @@ Implementar em partes pequenas, isoladas e verificáveis. Nenhuma alteração na
 7. Não misturar alterações de XP/ranking, sprites, combate ou sistemas não relacionados com uma etapa narrativa, salvo necessidade técnica comprovada.
 
 ## Fase 0 — Fundação narrativa
-- [ ] Lore salva em `LORE_ARENA_O_CISMA_DO_SOBERANO.md`.
-- [ ] Plano salvo em `PLANO_IMPLEMENTACAO_LORE.md`.
-- [ ] Definir um ponto de restauração antes de começar a implementação.
-- [ ] Não alterar gameplay nesta fase.
+- [x] Lore salva em `LORE_ARENA_O_CISMA_DO_SOBERANO.md`.
+- [x] Plano salvo em `PLANO_IMPLEMENTACAO_LORE.md`.
+- [x] Definir um ponto de restauração antes de começar a implementação (`backup/pre-lore-fase-1-2026-09-23`).
+- [x] Não alterar gameplay nesta fase.
 
 ## Fase 1 — Estrutura técnica de narrativa
 Objetivo: criar uma camada de dados sem espalhar textos pelo código.
-- [ ] Criar estrutura central para capítulos/mapas.
-- [ ] Separar diálogos de lógica de gameplay.
-- [ ] Definir IDs estáveis para NPCs, eventos, falas, pistas e revelações.
-- [ ] Criar estado de progressão narrativa.
-- [ ] Persistir progresso somente quando necessário.
-- [ ] Não alterar combate/movimento.
+- [x] Criar estrutura central para capítulos/mapas em `arena-narrative.js`.
+- [x] Separar IDs de diálogos da lógica de gameplay em `arena-narrative.js`.
+- [x] Definir IDs estáveis para NPCs, eventos, falas, pistas e revelações.
+- [x] Criar estado de progressão narrativa.
+- [x] Persistir o estado narrativo isoladamente em `localStorage` (`arena_narrative_v1`).
+- [x] Não alterar combate/movimento.
 
 ## Fase 2 — Elementos visuais globais
 - [ ] Identidade visual da campanha.
