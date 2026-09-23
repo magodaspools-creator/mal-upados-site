@@ -184,10 +184,17 @@ Objetivo: criar uma camada de dados sem espalhar textos pelo código.
 
 ## Fase 12 — Rejogabilidade narrativa
 Depois de toda a campanha funcional:
-- [ ] Adicionar pequenas pistas retroativas.
-- [ ] Ajustar diálogos já existentes.
-- [ ] Adicionar detalhes que só fazem sentido após o final.
-- [ ] Não alterar a leitura inicial de forma que entregue o twist.
+- [x] Adicionar pequenas pistas retroativas.
+- [x] Ajustar diálogos já existentes.
+- [x] Adicionar detalhes que só fazem sentido após o final.
+- [x] Não alterar a leitura inicial de forma que entregue o twist.
+
+### Implementação da Fase 12
+- Camada isolada em `arena-rejogabilidade.js` / `arena-rejogabilidade.css`.
+- As pistas retroativas só aparecem depois do evento `finale_second_impact`; a primeira leitura da campanha permanece intacta.
+- Ao revisitar cada mapa, uma memória retroativa explica o significado dos elementos já vistos: a sombra de Kaelen, a defesa dos Orcs, as falas de Elias, as correntes dos Dragões e o luto da Guarda Real.
+- Os diálogos existentes recebem uma pequena camada de contexto posterior à lembrança, sem substituir as falas originais.
+- Nenhuma alteração foi feita em `arena-sobreviva.html`, renderer de sprites, XP, ranking ou combate.
 
 ## Fase 13 — Polimento
 - [ ] Revisão de todos os textos.
