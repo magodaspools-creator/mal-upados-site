@@ -23,8 +23,16 @@ body{min-height:100vh}
 .survive-shell{max-width:1100px;margin:0 auto}
 .survive-character{border:1px solid #39342c;background:#15171a;padding:12px 15px;margin-bottom:14px;display:flex;justify-content:space-between;gap:12px;align-items:center}
 .survive-character-main{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.survive-character-picker select{min-width:220px;border:1px solid #4a4030;background:#0f1114;color:#e0e3e7;padding:8px 10px;font:800 .66rem Inter,sans-serif}
-.survive-character-picker select:disabled{opacity:.55}
+.survive-character-picker{position:relative;min-width:220px}
+.survive-character-picker-btn{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:38px;box-sizing:border-box;border:1px solid #4a4030;background:#0f1114;color:#e0e3e7;padding:8px 10px;font:800 .66rem Inter,sans-serif;cursor:pointer;text-align:left}
+.survive-character-picker-btn:hover,.survive-character-picker.open .survive-character-picker-btn{border-color:#d3ad5b}
+.survive-character-picker-btn:disabled{opacity:.55;cursor:wait}
+.survive-character-picker-menu{position:absolute;z-index:200;left:0;right:0;top:calc(100% + 5px);max-height:260px;overflow:auto;border:1px solid #4a4030;background:#0f1114;box-shadow:0 14px 30px rgba(0,0,0,.5)}
+.survive-character-picker-menu[hidden]{display:none}
+.survive-character-picker-option{display:block;width:100%;border:0;border-bottom:1px solid #282b30;background:#0f1114;color:#e0e3e7;padding:9px 10px;text-align:left;font:800 .66rem Inter,sans-serif;cursor:pointer}
+.survive-character-picker-option:last-child{border-bottom:0}
+.survive-character-picker-option:hover,.survive-character-picker-option.selected{background:#211d15;color:#e5c76e}
+.survive-character-legacy-select{display:none!important}
 .survive-character .label{color:#737a83;font:800 .55rem Inter,sans-serif;text-transform:uppercase}
 .survive-character strong{color:#e0e3e7;font:900 .82rem Cinzel,serif}
 .survive-character .stats{color:#8d939b;font-size:.62rem}
@@ -32,7 +40,7 @@ body{min-height:100vh}
 .survive-back:hover{color:#e2c36f}
 .survive-game-host{margin-top:18px}footer{margin-top:20px}
 .mage-visual-panel{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-left:auto;padding:7px 9px;border:1px solid #39342c;background:#101215;color:#8d939b;font:700 .58rem Inter,sans-serif;text-transform:uppercase}.mage-visual-panel[hidden]{display:none}.mage-visual-panel .label{color:#d3ad5b}.mage-visual-panel button{border:1px solid #4a4030;background:#171a1e;color:#aaa;padding:5px 8px;font:800 .55rem Inter,sans-serif;cursor:pointer;text-transform:uppercase}.mage-visual-panel button.active{border-color:#d3ad5b;background:#2a2418;color:#e5c76e}.mage-color-panel{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-left:auto;padding:7px 9px;border:1px solid #39342c;background:#101215;color:#8d939b;font:700 .58rem Inter,sans-serif;text-transform:uppercase}.mage-color-panel[hidden]{display:none}.mage-color-panel .label{color:#d3ad5b}.mage-color-panel label{display:inline-flex;align-items:center;gap:4px}.mage-color-panel input[type=color]{width:24px;height:24px;padding:0;border:1px solid #4a4030;background:#0f1114;cursor:pointer}.outfit-preview-wrap{display:flex;align-items:center;gap:7px;margin-left:4px;padding-left:8px;border-left:1px solid #39342c}.outfit-preview-wrap span{color:#d3ad5b}.outfit-preview-wrap canvas{width:64px;height:64px;image-rendering:pixelated;image-rendering:crisp-edges;display:block}
-@media(max-width:650px){.survive-page{padding-top:25px}.survive-hero h1{font-size:1.65rem}.survive-character{align-items:flex-start;flex-direction:column}.survive-character-main{width:100%;align-items:flex-start;flex-direction:column}.survive-character-picker,.survive-character-picker select{width:100%}}
+@media(max-width:650px){.survive-page{padding-top:25px}.survive-hero h1{font-size:1.65rem}.survive-character{align-items:flex-start;flex-direction:column}.survive-character-main{width:100%;align-items:flex-start;flex-direction:column}.survive-character-picker{width:100%}}
 </style>
 </head>
 <body>
@@ -70,8 +78,13 @@ body{min-height:100vh}
     <div class="survive-character">
       <div class="survive-character-main">
         <div class="label">Personagem da Arena</div>
-        <div class="survive-character-picker">
-          <select id="surviveCharacterSelect" aria-label="Selecionar personagem da Arena">
+        <div class="survive-character-picker" id="surviveCharacterPicker">
+          <button type="button" id="surviveCharacterPickerBtn" class="survive-character-picker-btn" aria-haspopup="listbox" aria-expanded="false" disabled>
+            <span id="surviveCharacterPickerName">Carregando personagens...</span>
+            <span class="picker-arrow">▾</span>
+          </button>
+          <div id="surviveCharacterPickerMenu" class="survive-character-picker-menu" role="listbox" hidden></div>
+          <select id="surviveCharacterSelect" aria-hidden="true" tabindex="-1" class="survive-character-legacy-select">
             <option value="">Carregando personagens...</option>
           </select>
         </div>
