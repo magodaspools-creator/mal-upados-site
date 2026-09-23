@@ -24,6 +24,7 @@
        +'<article><strong>⛓ Dragões acorrentados</strong><p>Os dragões não estão livres. Correntes e estruturas de contenção os mantêm presos ao interior do covil.</p></article>'
        +'<article><strong>⚙ O poder das turbinas</strong><p>As estruturas do covil aproveitam a força dos dragões para manter o mecanismo funcionando.</p></article>'
        +'<article><strong>☀ A marca de Kaelen</strong><p>O símbolo associado a Kaelen aparece no local. A presença dele deixa de parecer apenas a de um guia.</p></article>'
+       +'<article class="dragon-foreshadow"><strong>◇ O selo nas correntes</strong><p>Na âncora de uma corrente há o mesmo corte visto nos outros domínios. O símbolo parece pertencer a alguém que já comandou este lugar.</p></article>'
        +'</div>'
        +'<div class="dragon-double-reading"><div class="dragon-reading-head"><span>DUAS LEITURAS</span><strong>O que realmente aconteceu aqui?</strong></div>'
        +'<div class="dragon-reading-grid"><div><b>Escravidão</b><p>Os dragões podem ter sido capturados e transformados em ferramentas pelos responsáveis pela corrupção deste mundo.</p></div><div><b>Uma máquina improvisada</b><p>As correntes e mecanismos também podem ser parte de uma gambiarra dos Generais para manter o mundo funcionando depois do desaparecimento do Soberano.</p></div></div></div>'
@@ -38,6 +39,7 @@
         n.discoverClue('map4_dragon_turbines');
         n.discoverClue('map4_kaelen_crest');
         n.discoverClue('map4_exploitation');
+        n.discoverClue('map4_split_seal');
         setTimeout(()=>{
           if(window.ArenaNarrativeNPCs?.openDialogue)window.ArenaNarrativeNPCs.openDialogue('kaelen',MAP_ID);
           setTimeout(()=>{
