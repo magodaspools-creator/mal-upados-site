@@ -583,11 +583,51 @@ Isso permanece dentro da validação jogável das etapas posteriores.
 
 ## Etapa 8 — Transições e ritmo
 
-- [ ] Revisar passagem entre cada capítulo.
-- [ ] Verificar se existem saltos bruscos de uma região para outra.
-- [ ] Adicionar transições somente onde realmente melhorarem o ritmo.
-- [ ] Evitar telas de carregamento ou bloqueios artificiais.
-- [ ] Garantir que o gameplay continue fluido.
+- [x] Revisar passagem entre cada capítulo.
+- [x] Verificar se existem saltos bruscos de uma região para outra.
+- [x] Adicionar transições somente onde realmente melhorarem o ritmo.
+- [x] Evitar telas de carregamento ou bloqueios artificiais.
+- [x] Garantir que o gameplay continue fluido.
+
+### Resultado da Etapa 8 — Transições e ritmo
+
+**Transições leves aplicadas somente na troca real de capítulo/área.**
+
+### O que entrou
+
+- Ao trocar de área, a Arena agora apresenta uma identificação curta de capítulo e nome da região.
+- A transição usa uma camada visual sobre o painel da aventura, sem navegação, carregamento ou espera artificial.
+- O conteúdo de batalha recebe uma entrada curta para suavizar a troca do cenário.
+- A transição é disparada somente quando a área anterior e a nova área são diferentes; a carga inicial da Arena não recebe a animação.
+- A camada possui pointer-events: none, portanto não intercepta cliques nem bloqueia o gameplay.
+- Existe tratamento para prefers-reduced-motion.
+- O cache dos dois assets globais foi atualizado no arena.html.
+
+### Escopo
+
+Alterados somente:
+- arena.js
+- arena-lore-visuals.js
+- arena-lore-visuals.css
+- arena.html
+- PLANO_POLIMENTO_FINAL_LORE.md
+
+Não alterados:
+- combate;
+- progressão;
+- XP;
+- ranking;
+- renderer de sprites;
+- arena-sobreviva.html;
+- regras do Mirror Match;
+- Segundo Impacto.
+
+### Validação estrutural
+
+Foi criado o backup:
+- backup/pre-etapa-8-transicoes-2026-09-23
+
+A validação final de timing e aparência no navegador permanece pendente para a Etapa 12.
 
 ## Etapa 9 — Fragmentos e progressão narrativa
 
