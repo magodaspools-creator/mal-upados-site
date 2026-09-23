@@ -59,17 +59,17 @@ Objetivo: criar uma camada de dados sem espalhar textos pelo código.
 - [x] Falas que apontam para a verdade sem revelá-la diretamente.
 
 ## Fase 4 — Mapa 1: Floresta Sombria
-- [ ] Atmosfera de sofrimento.
-- [ ] Estátuas voltadas para fora.
-- [ ] Lagos/reflexos.
-- [ ] Ausência da sombra de Kaelen.
-- [ ] Entrada de Kaelen.
-- [ ] Diálogos iniciais.
-- [ ] Chefe com comportamento defensivo.
-- [ ] Frase "Meu Rei...".
-- [ ] Fragmento dourado.
-- [ ] Abertura das raízes.
-- [ ] Validar mapa inteiro antes de prosseguir.
+- [x] Atmosfera de sofrimento.
+- [x] Estátuas voltadas para fora.
+- [x] Lagos/reflexos.
+- [x] Ausência da sombra de Kaelen.
+- [x] Entrada de Kaelen.
+- [x] Diálogos iniciais.
+- [x] Chefe com comportamento defensivo.
+- [x] Frase "Meu Rei..." — preparada como próximo evento do chefe; não antecipar a revelação.
+- [x] Fragmento dourado.
+- [x] Abertura das raízes.
+- [x] Validar mapa inteiro antes de prosseguir.
 
 ## Fase 5 — Mapa 2: Acampamento Orc
 - [ ] Arquitetura defensiva.
