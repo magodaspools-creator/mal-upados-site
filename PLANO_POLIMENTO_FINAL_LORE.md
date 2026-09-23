@@ -631,11 +631,74 @@ A validação final de timing e aparência no navegador permanece pendente para 
 
 ## Etapa 9 — Fragmentos e progressão narrativa
 
-- [ ] Revisar apresentação dos quatro fragmentos.
-- [ ] Verificar sequência Floresta → Orcs → Deserto → Dragões.
-- [ ] Avaliar se o jogador entende que está reunindo partes de uma memória.
-- [ ] Melhorar feedback visual quando um fragmento é absorvido.
-- [ ] Não transformar isso em um sistema invasivo de HUD.
+- [x] Revisar apresentação dos quatro fragmentos.
+- [x] Verificar sequência Floresta → Orcs → Deserto → Dragões.
+- [x] Avaliar se o jogador entende que está reunindo partes de uma memória.
+- [x] Melhorar feedback visual quando um fragmento é absorvido.
+- [x] Não transformar isso em um sistema invasivo de HUD.
+
+### Resultado da Etapa 9 — Fragmentos e progressão narrativa
+
+**Os quatro fragmentos agora possuem uma sequência narrativa explícita e um feedback visual discreto.**
+
+### Sequência consolidada
+
+1. **Floresta — primeiro fragmento:** map1_fragment
+2. **Orcs — segundo fragmento:** map2_fragment
+3. **Deserto — terceiro fragmento:** map3_fragment
+4. **Dragões — quarto fragmento:** map4_fragment
+
+Cada fragmento continua sendo concedido pela derrota do Boss correspondente. A progressão dos mapas permanece baseada nos eventos de lore já existentes; nenhum requisito de nível, XP ou combate foi alterado.
+
+### Feedback visual
+
+- Foi criado um indicador discreto **MEMÓRIA · X / 4**.
+- O indicador mostra quatro fragmentos como pequenos selos visuais, sem ocupar a interface principal.
+- Quando um fragmento é absorvido, o indicador recebe um pulso curto para comunicar a conquista.
+- Ao completar os quatro fragmentos, o indicador assume um estado visual de conclusão.
+- O indicador não captura cliques e não interfere no gameplay.
+- O sistema respeita prefers-reduced-motion.
+
+### Estado narrativo
+
+Foram registrados eventos e pistas específicos para os quatro fragmentos:
+- map1_fragment / map1_first_fragment
+- map2_fragment / map2_second_fragment
+- map3_fragment / map3_third_fragment
+- map4_fragment / map4_fourth_fragment
+
+A contagem continua centralizada em ArenaNarrative.fragments, evitando um segundo contador paralelo.
+
+### Escopo
+
+Alterados somente:
+- arena-narrative.js
+- arena-orcs.js
+- arena-deserto.js
+- arena-dragoes.js
+- arena-lore-visuals.js
+- arena-lore-visuals.css
+- arena.html
+- PLANO_POLIMENTO_FINAL_LORE.md
+
+Não alterados:
+- arena-floresta.js;
+- combate;
+- XP;
+- ranking;
+- renderer de sprites;
+- arena-sobreviva.html;
+- Mirror Match;
+- Segundo Impacto.
+
+### Backup
+
+Criado antes da etapa:
+- backup/pre-etapa-9-fragmentos-2026-09-23
+
+### Validação estrutural
+
+O diff da etapa será comparado com o backup antes de considerar a etapa fechada. A validação visual/jogável completa permanece programada para a Etapa 12.
 
 ## Etapa 10 — Auditoria de consistência textual
 
