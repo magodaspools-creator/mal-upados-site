@@ -40,7 +40,17 @@
       +'<div class="impact-end">As correntes começam a esticar. Engrenagens antigas voltam a girar. A luz dourada escorre pelo rosto do Soberano.</div>'
       +'</div>';
     n.discoverClue('finale_world_parasite',{source:'second_impact',dimensions:'other_titans'});
-    root.querySelector('.impact-first-person')?.classList.add('impact-awakened');
+    const firstPerson=root.querySelector('.impact-first-person');
+    firstPerson?.classList.add('impact-awakened');
+    if(firstPerson){
+      ['.impact-memory','.impact-controls','.impact-choice','.impact-end'].forEach((selector,index)=>{
+        const el=firstPerson.querySelector(selector);
+        if(el){
+          el.classList.add('impact-sequence');
+          el.style.setProperty('--impact-delay',`${0.35+index*0.28}s`);
+        }
+      });
+    }
     if(root.dataset.completionScheduled!=='1'){
       root.dataset.completionScheduled='1';
       window.setTimeout(()=>{
