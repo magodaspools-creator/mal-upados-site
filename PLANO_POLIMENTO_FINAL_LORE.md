@@ -269,14 +269,14 @@ Depois da auditoria da Etapa 2, corrigir uma região por vez.
 
 Ordem:
 
-1. [ ] Floresta Sombria
-2. [ ] Acampamento Orc
-3. [ ] Deserto Perdido
-4. [ ] Covil dos Dragões
-5. [ ] Abismo Demoníaco
-6. [ ] Grande Revelação
-7. [ ] Mirror Match
-8. [ ] Segundo Impacto
+1. [x] Floresta Sombria
+2. [x] Acampamento Orc
+3. [x] Deserto Perdido
+4. [x] Covil dos Dragões
+5. [x] Abismo Demoníaco
+6. [x] Grande Revelação
+7. [x] Mirror Match
+8. [x] Segundo Impacto
 
 Para cada região:
 
@@ -287,6 +287,41 @@ Para cada região:
 - [ ] Evitar adicionar dependências externas desnecessárias.
 - [ ] Validar a região antes de passar para a próxima.
 
+## Resultado da Etapa 3 — Polimento visual por região
+
+**Polimento aplicado de forma controlada nas oito regiões/cenas previstas.**
+
+### Alterações realizadas
+
+- **Floresta Sombria:** maior profundidade de fundo, iluminação ambiental, partículas discretas, hierarquia tipográfica e cartões menos planos.
+- **Acampamento Orc:** reforço de escala do cenário, textura visual do acampamento/portão, contraste e presença das estruturas defensivas.
+- **Deserto Perdido:** aumento da área visual da cidade/ruínas, iluminação quente e maior profundidade no cenário.
+- **Covil dos Dragões:** aumento da escala da fornalha/covil, atmosfera de maquinaria e contraste das estruturas.
+- **Abismo Demoníaco:** aumento da escala da catedral e da sala do trono, iluminação central e maior sensação de profundidade.
+- **Grande Revelação:** maior destaque para a cena central e para os rostos do jogador e de Kaelen.
+- **Mirror Match:** maior identidade visual de espelho e reforço do contraste do combatente de Kaelen.
+- **Segundo Impacto:** aumento de escala da memória/fresco, Titãs e elementos centrais do impacto.
+
+### Validação estrutural
+
+O backup criado antes das alterações é `backup/pre-etapa-3-visual-2026-09-23`.
+
+O diff desde esse backup contém somente oito arquivos CSS da camada narrativa:
+
+- `arena-floresta.css`
+- `arena-orcs.css`
+- `arena-deserto.css`
+- `arena-dragoes.css`
+- `arena-abismo.css`
+- `arena-revelacao.css`
+- `arena-mirror.css`
+- `arena-segundo-impacto.css`
+
+Nenhum arquivo de combate, progressão, XP, ranking, renderer ou Sobreviva foi alterado.
+
+### Limitação da validação
+
+A validação desta etapa foi estrutural via GitHub. Ainda não houve teste visual real no navegador nesta etapa. O teste jogável completo permanece programado para a Etapa 12.
 ## Etapa 4 — Foreshadowing mínimo
 
 - [ ] Revisar as pistas de Kaelen.
