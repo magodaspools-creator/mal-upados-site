@@ -137,13 +137,21 @@ Objetivo: criar uma camada de dados sem espalhar textos pelo código.
 - [ ] Preparar arena do Mirror Match.
 
 ## Fase 10 — Mirror Match
-- [ ] Kaelen usar habilidades equivalentes às do jogador.
-- [ ] Reutilizar sistemas existentes sempre que possível.
-- [ ] Evitar criar um segundo sistema de combate.
-- [ ] Energia sombria como camada visual.
-- [ ] Derrota de Kaelen.
-- [ ] Cena sem explosão clichê.
-- [ ] Absorção da metade sombria.
+- [x] Kaelen usar habilidades equivalentes às do jogador.
+- [x] Reutilizar sistemas existentes sempre que possível.
+- [x] Evitar criar um segundo sistema de combate.
+- [x] Energia sombria como camada visual.
+- [x] Derrota de Kaelen.
+- [x] Cena sem explosão clichê.
+- [x] Absorção da metade sombria.
+
+### Implementação da Fase 10
+- Camada isolada em `arena-mirror.js` / `arena-mirror.css`.
+- O Mirror Match reutiliza `battle`, `attack()` e `renderBattle()` de `arena.js`, em vez de criar um segundo motor de combate.
+- Kaelen recebe os mesmos valores derivados do personagem atual para HP/ATK e usa a mesma resolução de ataque do combate normal, com apresentação de energia sombria.
+- O confronto só pode ser iniciado depois do evento narrativo `finale_kaelen_reveal`, deixando a execução dependente da Fase 9.
+- A derrota dispara `finale_mirror_match`; a absorção é uma segunda ação narrativa e registra `finale_absorption` + `soul_complete`.
+- Nenhuma alteração foi feita em `arena-sobreviva.html` ou no renderer de sprites.
 
 ## Fase 11 — Segundo Impacto
 - [ ] Trono.
