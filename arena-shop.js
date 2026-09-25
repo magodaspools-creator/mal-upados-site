@@ -438,3 +438,46 @@ setTimeout(initArenaShop,1500);
  }
  window.arenaShopBalanceReport={count:Object.keys(stats).length,ids:[...officialIds]};
 })();
+
+
+/* Arena progression + economy rebalance — 2026-09-25.
+   Tibia level remains the source for PRICE progression only.
+   Arena minLevel is intentionally compressed because Arena Level 200 is already endgame-scale. */
+(()=>{
+ const arenaLevelFromTibia=tibiaLevel=>{
+  tibiaLevel=Number(tibiaLevel)||1;
+  if(tibiaLevel<=50)return 5;
+  if(tibiaLevel<=80)return 10;
+  if(tibiaLevel<=100)return 15;
+  if(tibiaLevel<=120)return 20;
+  if(tibiaLevel<=150)return 25;
+  if(tibiaLevel<=180)return 30;
+  if(tibiaLevel<=200)return 35;
+  if(tibiaLevel<=230)return 40;
+  if(tibiaLevel<=250)return 45;
+  if(tibiaLevel<=270)return 50;
+  if(tibiaLevel<=300)return 60;
+  return 70;
+ };
+ const priceFromTibiaLevel=tibiaLevel=>{
+  tibiaLevel=Math.max(1,Number(tibiaLevel)||1);
+  return Math.round(1200+(120*tibiaLevel)+(0.45*tibiaLevel*tibiaLevel));
+ };
+ let count=0;
+ for(const item of SHOP_ITEMS){
+  if(item.shopDisabled && item.name==='Heat Core')continue;
+  if(!item.id?.startsWith('real-') && item.sprite && !/^\\d+\\.png$/.test(String(item.sprite).split('/').pop()||''))continue;
+  const spriteFile=String(item.sprite||'').split('/').pop()||'';
+  const tibiaLevel=Number(item.tibiaLevel||(/^\\d+\\.png$/.test(spriteFile)?item.minLevel:0));
+  if(!tibiaLevel)continue;
+  item.tibiaLevel=tibiaLevel;
+  item.minLevel=arenaLevelFromTibia(tibiaLevel);
+  item.price=priceFromTibiaLevel(tibiaLevel);
+  count++;
+ }
+ window.arenaShopEconomyReport={
+  count,
+  rule:'Tibia level -> price; compressed Arena level requirement',
+  arenaLevelMap:'<=50:5, <=80:10, <=100:15, <=120:20, <=150:25, <=180:30, <=200:35, <=230:40, <=250:45, <=270:50, <=300:60, >300:70'
+ };
+})();
