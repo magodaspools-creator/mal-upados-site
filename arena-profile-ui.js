@@ -10,7 +10,7 @@
   function itemFor(slot){
     const id=game?.shopEquipped?.[slot];
     if(id&&typeof SHOP_ITEMS!=='undefined'){const item=SHOP_ITEMS.find(x=>x.id===id);if(item)return item}
-    const fallback={amulet:{name:'Nenhum',icon:'—',bonus:'',category:'amulets'},helmets:{name:'Nenhum',icon:'—',bonus:'',category:'helmets'},backpack:{name:'Nenhuma',icon:'—',bonus:'',category:'backpack'},weapon:{name:'Espada de Bronze',icon:'⚔️',bonus:'',category:'weapons',id:'base-weapon'},armor:{name:'Leather Armor',icon:'🛡️',bonus:'',category:'armor',id:'base-armor'},shield:{name:'Nenhum',icon:'—',bonus:'',category:'shields'},rings:{name:'Nenhum',icon:'—',bonus:'',category:'rings'},boots:{name:'Nenhuma',icon:'—',bonus:'',category:'boots'}};
+    const fallback={amulet:{name:'Nenhum',icon:'—',bonus:'',category:'amulets'},helmets:{name:'Nenhum',icon:'—',bonus:'',category:'helmets'},backpack:{name:'Nenhuma',icon:'—',bonus:'',category:'backpack'},weapon:{name:'Espada de Bronze',icon:'⚔️',bonus:'',category:'weapons',id:'base-weapon'},armor:{name:'Leather Armor',icon:'🛡️',bonus:'',category:'armor',id:'base-armor'},shield:{name:'Nenhum',icon:'—',bonus:'',category:'shields'},rings:{name:'Nenhum',icon:'—',bonus:'',category:'rings'},boots:{name:'Nenhuma',icon:'—',bonus:'',category:'boots'},ammo:{name:'Nenhuma',icon:'—',bonus:'',category:'ammo'}};
     return fallback[slot]||fallback.weapon;
   }
 
