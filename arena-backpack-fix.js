@@ -7,6 +7,24 @@
     {id:'dragon-backpack',name:'Dragon Backpack',icon:'🎒',category:'backpacks',price:9000,attack:0,defense:0,minLevel:12,slots:6,bonus:'6 slots · Amuletos + Trinkets'},
     {id:'demon-backpack',name:'Demon Backpack',icon:'🎒',category:'backpacks',price:18000,attack:0,defense:0,minLevel:20,slots:7,bonus:'7 slots · Amuletos + Trinkets'},
     {id:'infernal-backpack',name:'Infernal Backpack',icon:'🎒',category:'backpacks',price:35000,attack:0,defense:0,minLevel:35,slots:8,bonus:'8 slots · Amuletos + Trinkets'}
+
+    {id:'real-bp-20-years',name:'20 Years Backpack',icon:'🎒',sprite:'20 years backpack.png',category:'backpacks',price:5000,attack:0,defense:0,minLevel:5,slots:6,bonus:'6 slots · Amuletos + Trinkets'},
+    {id:'real-bp-adventurer',name:"Adventurer's Backpack",icon:'🎒',sprite:"adventurer's backpack.png",category:'backpacks',price:3500,attack:0,defense:0,minLevel:5,slots:5,bonus:'5 slots · Amuletos + Trinkets'},
+    {id:'real-bp-blossom',name:'Blossom Backpack',icon:'🎒',sprite:'blossom backpack.png',category:'backpacks',price:6500,attack:0,defense:0,minLevel:8,slots:6,bonus:'6 slots · Amuletos + Trinkets'},
+    {id:'real-bp-book',name:'Book Backpack',icon:'🎒',sprite:'book backpack.png',category:'backpacks',price:7000,attack:0,defense:0,minLevel:10,slots:6,bonus:'6 slots · Amuletos + Trinkets'},
+    {id:'real-bp-boss',name:'Boss Backpack',icon:'🎒',sprite:'boss backpack.png',category:'backpacks',price:12000,attack:0,defense:0,minLevel:15,slots:7,bonus:'7 slots · Amuletos + Trinkets'},
+    {id:'real-bp-captain',name:'Captain Backpack',icon:'🎒',sprite:'captain backpack.png',category:'backpacks',price:8500,attack:0,defense:0,minLevel:12,slots:6,bonus:'6 slots · Amuletos + Trinkets'},
+    {id:'real-bp-crystalline',name:'Crystalline Backpack',icon:'🎒',sprite:'crystalline backpack.png',category:'backpacks',price:10000,attack:0,defense:0,minLevel:14,slots:7,bonus:'7 slots · Amuletos + Trinkets'},
+    {id:'real-bp-deepling',name:'Deepling Backpack',icon:'🎒',sprite:'deepling backpack.png',category:'backpacks',price:9000,attack:0,defense:0,minLevel:13,slots:7,bonus:'7 slots · Amuletos + Trinkets'},
+    {id:'real-bp-energetic',name:'Energetic Backpack',icon:'🎒',sprite:'energetic backpack.png',category:'backpacks',price:11000,attack:0,defense:0,minLevel:16,slots:7,bonus:'7 slots · Amuletos + Trinkets'},
+    {id:'real-bp-ghost',name:'Ghost Backpack',icon:'🎒',sprite:'ghost backpack.png',category:'backpacks',price:12500,attack:0,defense:0,minLevel:18,slots:8,bonus:'8 slots · Amuletos + Trinkets'},
+    {id:'real-bp-glooth',name:'Glooth Backpack',icon:'🎒',sprite:'glooth backpack.png',category:'backpacks',price:10500,attack:0,defense:0,minLevel:15,slots:7,bonus:'7 slots · Amuletos + Trinkets'},
+    {id:'real-bp-gnome',name:'Gnome Backpack',icon:'🎒',sprite:'gnome backpack.png',category:'backpacks',price:13000,attack:0,defense:0,minLevel:20,slots:8,bonus:'8 slots · Amuletos + Trinkets'},
+    {id:'real-bp-ladybug',name:'Ladybug Backpack',icon:'🎒',sprite:'ladybug backpack.png',category:'backpacks',price:7500,attack:0,defense:0,minLevel:10,slots:6,bonus:'6 slots · Amuletos + Trinkets'},
+    {id:'real-bp-mouth',name:'Mouth Backpack',icon:'🎒',sprite:'mouth backpack.png',category:'backpacks',price:9500,attack:0,defense:0,minLevel:14,slots:7,bonus:'7 slots · Amuletos + Trinkets'},
+    {id:'real-bp-pillow',name:'Pillow Backpack',icon:'🎒',sprite:'pillow backpack.png',category:'backpacks',price:8000,attack:0,defense:0,minLevel:11,slots:6,bonus:'6 slots · Amuletos + Trinkets'},
+    {id:'real-bp-rascacoon',name:'Rascacoon Backpack',icon:'🎒',sprite:'rascacoon backpack.png',category:'backpacks',price:11500,attack:0,defense:0,minLevel:17,slots:7,bonus:'7 slots · Amuletos + Trinkets'},
+    {id:'real-bp-wolf',name:'Wolf Backpack',icon:'🎒',sprite:'wolf backpack.png',category:'backpacks',price:9000,attack:0,defense:0,minLevel:13,slots:7,bonus:'7 slots · Amuletos + Trinkets'}
   ];
   if(typeof SHOP_CATEGORIES!=='undefined'&&!SHOP_CATEGORIES.some(x=>x.id==='backpacks'))SHOP_CATEGORIES.push({id:'backpacks',label:'Backpacks'});
   if(typeof SHOP_ITEMS!=='undefined')BACKPACKS.forEach(item=>{if(!SHOP_ITEMS.some(x=>x.id===item.id))SHOP_ITEMS.push(item)});
