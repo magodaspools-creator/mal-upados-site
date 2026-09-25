@@ -378,3 +378,14 @@ setTimeout(initArenaShop,1500);
    SHOP_ITEMS.push({id:'real-'+slug(name),name,icon:icon(category),sprite:'arena-godot/'+file,category,price:500,attack:0,defense:0,minLevel:1,bonus:'Sprite real · sem bônus adicional'});
  });
 })();
+
+/* real-missing-upload-fix */
+(()=>{
+ const set=(name,file,category)=>{
+  let x=SHOP_ITEMS.find(i=>String(i.name||'').toLowerCase()===name.toLowerCase());
+  if(!x){x={id:'real-'+name.toLowerCase().replace(/[^a-z0-9]+/g,'-'),name,icon:'✦',category,price:500,attack:0,defense:0,minLevel:1,bonus:'Sprite real · sem bônus adicional'};SHOP_ITEMS.push(x)}
+  x.sprite='arena-godot/'+file;x.category=category;
+ };
+ set('Fabulous Legs','fabulous legs.png','legs');
+ set('Naga Rod','naga rod.png','rods');
+})();
