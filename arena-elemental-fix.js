@@ -46,12 +46,15 @@
     if(!id||typeof SHOP_ITEMS==='undefined')return null;
     return SHOP_ITEMS.find(x=>x.id===id)||null;
   }
+  // Amuletos com cargas finitas definidas no Passo 2.
+  // Os demais permanecem infinitos no sistema atual.
   const FINITE_AMULET_CHARGES={
-    'Protection Amulet':250,
-    'Prismatic Necklace':750,
+    'Prismatic Necklace':500,
     'Glacier Amulet':200,
     'Terra Amulet':200,
-    'Magma Amulet':200
+    'Magma Amulet':200,
+    'Gill Necklace':500,
+    'Greater Garlic Necklace':500
   };
   function ensureAmuletCharges(amulet){
     if(!amulet||!FINITE_AMULET_CHARGES[amulet.name]||!game)return null;
