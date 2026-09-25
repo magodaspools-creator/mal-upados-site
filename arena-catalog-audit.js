@@ -150,6 +150,7 @@
       if(id==='real-218726' || id==='real-240132'){
         item.category='trinkets';
         item.shopDisabled=false;
+        if(id==='real-218726')item.vocations=['knight','paladin','sorcerer','druid','monk'];
       }
 
       // As Ink reais ficam em Trinkets, nunca em Wands/Rods.
