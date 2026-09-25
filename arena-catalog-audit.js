@@ -120,48 +120,71 @@
 
   function cleanStep1WrongItems(){
     if(typeof SHOP_ITEMS==='undefined')return;
-    const removeNames=new Set([
-      'Starlight Vial',
-      'Bounty Talisman',
-      'Ink Blade',
-      'Ink Brush',
-      'Ink Claw',
-      'Ink Quill',
-      'Ink Vine'
-    ]);
-    const removeIds=new Set([
-      'real-218726',
-      'real-240132',
-      'real-ink-blade',
-      'real-ink-brush',
-      'real-ink-claw',
-      'real-ink-quill',
-      'real-ink-vine',
-      'ink-blade',
-      'ink-brush',
-      'ink-claw',
-      'ink-quill',
-      'ink-vine'
-    ]);
-    const removed=new Set();
-    for(let i=SHOP_ITEMS.length-1;i>=0;i--){
-      const item=SHOP_ITEMS[i];
-      const name=String(item?.name||'').trim();
+
+    // Passo 1: NÃO removemos itens só porque o sprite estava faltando.
+    // Os sprites oficiais foram enviados para arena-godot/ e devem ser ligados
+    // diretamente ao item pelo ID real.
+    const SPRITES={
+      'real-218726':'arena-godot/218726.png',
+      'real-240132':'arena-godot/240132.png',
+      'real-239792':'arena-godot/239792.png',
+      'real-239793':'arena-godot/239793.png',
+      'real-239794':'arena-godot/239794.png',
+      'real-239795':'arena-godot/239795.png',
+      'real-214973':'arena-godot/214973.png'
+    };
+
+    const INKS={
+      'real-239792':'Ink Quill',
+      'real-239793':'Ink Claw',
+      'real-239794':'Ink Vine',
+      'real-239795':'Ink Brush'
+    };
+
+    for(const item of SHOP_ITEMS){
       const id=String(item?.id||'');
-      if(removeNames.has(name)||removeIds.has(id)||/^Ink (Blade|Brush|Claw|Quill|Vine)$/i.test(name)){
-        removed.add(id);
-        SHOP_ITEMS.splice(i,1);
+      if(SPRITES[id])item.sprite=SPRITES[id];
+
+      // Starlight Vial e Bounty Talisman são Extra Slot na lógica do Tibia;
+      // na Arena isso corresponde à aba Trinkets.
+      if(id==='real-218726' || id==='real-240132'){
+        item.category='trinkets';
+        item.shopDisabled=false;
+      }
+
+      // As Ink reais ficam em Trinkets, nunca em Wands/Rods.
+      if(INKS[id]){
+        item.name=INKS[id];
+        item.category='trinkets';
+        item.shopDisabled=false;
+        item.bonus='Sprite real';
+      }
+
+      // Glooth 214973 usa o sprite enviado e é Glooth Armor.
+      if(id==='real-214973'){
+        item.name='Glooth Armor';
+        item.category='armor';
+        item.shopDisabled=false;
       }
     }
-    if(typeof game!=='undefined'&&game){
-      if(Array.isArray(game.shopOwned))game.shopOwned=game.shopOwned.filter(id=>!removed.has(String(id)));
-      if(game.shopEquipped&&typeof game.shopEquipped==='object'){
-        for(const slot of Object.keys(game.shopEquipped)){
-          if(Array.isArray(game.shopEquipped[slot]))game.shopEquipped[slot]=game.shopEquipped[slot].filter(id=>!removed.has(String(id)));
-          else if(removed.has(String(game.shopEquipped[slot])))game.shopEquipped[slot]=null;
-        }
-      }
-    }
+
+    // Caso uma versão antiga tenha removido alguma entrada de SHOP_ITEMS,
+    // recriamos somente as entradas do Passo 1 usando os sprites existentes.
+    const ensureItem=(id,name,category,sprite)=>{
+      if(SHOP_ITEMS.some(x=>String(x.id)===id))return;
+      SHOP_ITEMS.push({
+        id,name,icon:'🛡️',sprite,category,price:500,attack:0,defense:0,
+        minLevel:1,bonus:'Sprite real'
+      });
+    };
+
+    ensureItem('real-218726','Starlight Vial','trinkets','arena-godot/218726.png');
+    ensureItem('real-240132','Bounty Talisman','trinkets','arena-godot/240132.png');
+    ensureItem('real-239792','Ink Quill','trinkets','arena-godot/239792.png');
+    ensureItem('real-239793','Ink Claw','trinkets','arena-godot/239793.png');
+    ensureItem('real-239794','Ink Vine','trinkets','arena-godot/239794.png');
+    ensureItem('real-239795','Ink Brush','trinkets','arena-godot/239795.png');
+    ensureItem('real-214973','Glooth Armor','armor','arena-godot/214973.png');
   }
 
   function removeQuestTab(){
