@@ -4,6 +4,7 @@ const SHOP_CATEGORIES=[
   {id:'armor',label:'Armaduras'},
   {id:'legs',label:'Legs'},
   {id:'boots',label:'Boots'},
+  {id:'shield',label:'Shields'},
   {id:'helmets',label:'Helmets'},
   {id:'wands',label:'Wands'},
   {id:'rings',label:'Rings'},
