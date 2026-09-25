@@ -175,7 +175,7 @@ const SHOP_ITEMS=[
   {id:'real-bp-mouth',name:'Mouth Backpack',icon:'🎒',sprite:'mouth backpack.png',category:'backpacks',price:9500,attack:0,defense:0,minLevel:14,slots:7,bonus:'7 slots · Amuletos + Trinkets'},
   {id:'real-bp-pillow',name:'Pillow Backpack',icon:'🎒',sprite:'pillow backpack.png',category:'backpacks',price:8000,attack:0,defense:0,minLevel:11,slots:6,bonus:'6 slots · Amuletos + Trinkets'},
   {id:'real-bp-rascacoon',name:'Rascacoon Backpack',icon:'🎒',sprite:'rascacoon backpack.png',category:'backpacks',price:11500,attack:0,defense:0,minLevel:17,slots:7,bonus:'7 slots · Amuletos + Trinkets'},
-  {id:'real-bp-wolf',name:'Wolf Backpack',icon:'🎒',sprite:'wolf backpack.png',category:'backpacks',price:9000,attack:0,defense:0,minLevel:13,slots:7,bonus:'7 slots · Amuletos + Trinkets'}
+  {id:'real-bp-wolf',name:'Wolf Backpack',icon:'🎒',sprite:'wolf backpack.png',category:'backpacks',price:9000,attack:0,defense:0,minLevel:13,slots:7,bonus:'7 slots · Amuletos + Trinkets'},
 
   {id:'real-boots-199464',name:'Boots #199464',icon:'🥾',sprite:'199464.png',category:'boots',price:350,attack:0,defense:5,minLevel:1,bonus:'+5 defesa'},
   {id:'real-boots-199465',name:'Boots #199465',icon:'🥾',sprite:'199465.png',category:'boots',price:410,attack:0,defense:5,minLevel:1,bonus:'+5 defesa'},
