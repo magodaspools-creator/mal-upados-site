@@ -322,8 +322,10 @@ function shopRender(){
     const inSlot=game.shopEquipped[item.category==='weapons'||item.category==='wands'||item.category==='rods'?'weapon':item.category];
     const isEquipped=inSlot===item.id;
     let label=isEquipped?'Equipado':!vocationOk?`Exclusivo · ${esc(arenaShopItemVocation(item))}`:owned?'Equipar':levelOk&&canBuy?`Comprar · ${fmt(item.price)} gold`:!levelOk?`Level ${item.minLevel}`:`${fmt(item.price)} gold`;
-    let disabled=isEquipped||!vocationOk||(!owned&&(!canBuy||!levelOk));
-    return `<div class="shop-item ${isEquipped?'equipped':''} ${levelOk?'':'level-locked'} ${vocationOk?'':'vocation-locked'}"><div class="shop-icon">${item.sprite?`<img src="${window.arenaItemSpriteUrl(item)}" alt="" draggable="false">`:item.icon}</div><div class="shop-info"><strong>${esc(item.name)}</strong><span>${esc(categoryLabel(item.category))} · ${esc(item.bonus)}</span><small>Level ${item.minLevel}+ · ${fmt(item.price)} gold</small></div><button class="shop-btn ${isEquipped?'equipped-btn':''}" data-id="${item.id}" ${disabled?'disabled':''}>${label}</button></div>`;
+    const chargeState=window.arenaElementalState?.getAmuletCharges?.(item);
+    const chargeText=chargeState?` · Cargas ${chargeState.left}/${chargeState.max}`:'';
+    let disabled=isEquipped||!vocationOk||(!owned&&(!canBuy||!levelOk))||(!!chargeState&&chargeState.left<=0);
+    return `<div class="shop-item ${isEquipped?'equipped':''} ${levelOk?'':'level-locked'} ${vocationOk?'':'vocation-locked'}"><div class="shop-icon">${item.sprite?`<img src="${window.arenaItemSpriteUrl(item)}" alt="" draggable="false">`:item.icon}</div><div class="shop-info"><strong>${esc(item.name)}</strong><span>${esc(categoryLabel(item.category))} · ${esc(item.bonus)}</span><small>Level ${item.minLevel}+ · ${fmt(item.price)} gold${chargeText}</small></div><button class="shop-btn ${isEquipped?'equipped-btn':''}" data-id="${item.id}" ${disabled?'disabled':''}>${label}</button></div>`;
   }).join('')||'<div class="small">Nenhum item nesta categoria.</div>';
   box.querySelectorAll('.shop-btn').forEach(btn=>btn.onclick=()=>shopAction(btn.dataset.id));
   syncEquipmentDisplay();
