@@ -46,9 +46,47 @@
     if(!id||typeof SHOP_ITEMS==='undefined')return null;
     return SHOP_ITEMS.find(x=>x.id===id)||null;
   }
+  const FINITE_AMULET_CHARGES={
+    'Protection Amulet':250,
+    'Prismatic Necklace':750,
+    'Glacier Amulet':200,
+    'Terra Amulet':200,
+    'Magma Amulet':200
+  };
+  function ensureAmuletCharges(amulet){
+    if(!amulet||!FINITE_AMULET_CHARGES[amulet.name]||!game)return null;
+    if(!game.shopAmuletCharges||typeof game.shopAmuletCharges!=='object')game.shopAmuletCharges={};
+    const id=String(amulet.id);
+    const max=FINITE_AMULET_CHARGES[amulet.name];
+    let left=Number(game.shopAmuletCharges[id]);
+    if(!Number.isFinite(left)||left<0||left>max)left=max;
+    game.shopAmuletCharges[id]=Math.floor(left);
+    return {id,max,left:Math.floor(left)};
+  }
+  function consumeAmuletCharge(amulet){
+    const state=ensureAmuletCharges(amulet);
+    if(!state||state.left<=0)return false;
+    state.left-=1;
+    game.shopAmuletCharges[state.id]=state.left;
+    if(state.left<=0){
+      const id=state.id;
+      if(game.shopEquipped?.amulet===id)game.shopEquipped.amulet=null;
+      if(Array.isArray(game.shopOwned))game.shopOwned=game.shopOwned.filter(x=>x!==id);
+      persist();
+      toast(`${amulet.name} acabou! O amuleto perdeu todas as cargas.`);
+      if(typeof shopRender==='function')shopRender();
+    }else{
+      persist();
+    }
+    return true;
+  }
   function resistanceFor(element){
     const amulet=currentAmulet();
-    return amulet?.element===element?Number(amulet.elementalResistance)||0:0;
+    if(!amulet)return 0;
+    if(ensureAmuletCharges(amulet)?.left===0)return 0;
+    if(amulet.element===element)return Number(amulet.elementalResistance)||0;
+    const p=amulet.elementalProtection?.[element];
+    return Number(p)>0?Number(p)/100:0;
   }
   function elementForZone(zoneIndex){return ELEMENTS[ZONE_ELEMENTS[zoneIndex]]||ELEMENTS.earth}
   function elementLabel(element){const e=ELEMENTS[element]||ELEMENTS.earth;return `${e.icon} ${e.name}`}
@@ -96,11 +134,14 @@
       if(battle.hp<=0){winBattle();return}
 
       const rawIncoming=Math.max(1,battle.damage+Math.floor(Math.random()*10)-5);
+      const amulet=currentAmulet();
+      const state=ensureAmuletCharges(amulet);
       const resistance=resistanceFor(battle.element);
       const finalIncoming=Math.max(1,Math.floor(rawIncoming*(1-resistance)));
       battle.playerHp=Math.max(0,battle.playerHp-finalIncoming);
+      // Cada golpe recebido que utiliza a proteção consome exatamente 1 carga.
+      if(amulet&&resistance>0)consumeAmuletCharge(amulet);
       const elem=ELEMENTS[battle.element]||ELEMENTS.earth;
-      const amulet=currentAmulet();
       if(resistance>0){
         battleLog(`${esc(battle.name)} ${elem.icon} causou <b>${finalIncoming}</b> de dano (${Math.round(resistance*100)}% resistido pelo ${esc(amulet.name)}).`);
       }else{
