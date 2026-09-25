@@ -118,6 +118,52 @@
     }
   }
 
+  function cleanStep1WrongItems(){
+    if(typeof SHOP_ITEMS==='undefined')return;
+    const removeNames=new Set([
+      'Starlight Vial',
+      'Bounty Talisman',
+      'Ink Blade',
+      'Ink Brush',
+      'Ink Claw',
+      'Ink Quill',
+      'Ink Vine'
+    ]);
+    const removeIds=new Set([
+      'real-218726',
+      'real-240132',
+      'real-ink-blade',
+      'real-ink-brush',
+      'real-ink-claw',
+      'real-ink-quill',
+      'real-ink-vine',
+      'ink-blade',
+      'ink-brush',
+      'ink-claw',
+      'ink-quill',
+      'ink-vine'
+    ]);
+    const removed=new Set();
+    for(let i=SHOP_ITEMS.length-1;i>=0;i--){
+      const item=SHOP_ITEMS[i];
+      const name=String(item?.name||'').trim();
+      const id=String(item?.id||'');
+      if(removeNames.has(name)||removeIds.has(id)||/^Ink (Blade|Brush|Claw|Quill|Vine)$/i.test(name)){
+        removed.add(id);
+        SHOP_ITEMS.splice(i,1);
+      }
+    }
+    if(typeof game!=='undefined'&&game){
+      if(Array.isArray(game.shopOwned))game.shopOwned=game.shopOwned.filter(id=>!removed.has(String(id)));
+      if(game.shopEquipped&&typeof game.shopEquipped==='object'){
+        for(const slot of Object.keys(game.shopEquipped)){
+          if(Array.isArray(game.shopEquipped[slot]))game.shopEquipped[slot]=game.shopEquipped[slot].filter(id=>!removed.has(String(id)));
+          else if(removed.has(String(game.shopEquipped[slot])))game.shopEquipped[slot]=null;
+        }
+      }
+    }
+  }
+
   function removeQuestTab(){
     if(typeof SHOP_CATEGORIES!=='undefined'){
       for(let i=SHOP_CATEGORIES.length-1;i>=0;i--){
@@ -236,6 +282,7 @@
 
     removeQuestTab();
     cleanOldBackpacks();
+    cleanStep1WrongItems();
 
     // Trinkets ficam em sua própria aba; nunca em Backpack/Armor/Amulet.
     if(typeof window.arenaTrinkets!=='undefined'){
