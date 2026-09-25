@@ -15,7 +15,7 @@
   }
 
   function itemSprite(item,slot){
-    if(item?.sprite)return `<img class="arena-item-sprite" src="arena-godot/assets-importados/${encodeURI(item.sprite)}" alt="${esc(item.name)}" draggable="false">`;
+    if(item?.sprite)return `<img class="arena-item-sprite" src="${window.arenaItemSpriteUrl?window.arenaItemSpriteUrl(item):'arena-godot/assets-importados/'+encodeURI(item.sprite)}" alt="${esc(item.name)}" draggable="false">`;
     if(isEmpty(item)){
       const emptyAssets={amulet:'neck.png',helmets:'head.png',backpack:'back.png',weapon:'left-hand.png',armor:'body.png',shield:'right-hand.png',rings:'finger.png',boots:'feet.png',ammo:'ammo.png'};
       const asset=emptyAssets[slot];
