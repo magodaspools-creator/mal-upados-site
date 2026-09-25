@@ -192,6 +192,63 @@
     ensureItem('real-214973','Glooth Armor','armor','arena-godot/214973.png');
   }
 
+  // Passo 2: somente amuletos com sprite realmente presente no repositório.
+  // A lista abaixo foi conferida diretamente na árvore de arena-godot/:
+  // todos os sprites estão em assets-importados/ e os seis itens numéricos
+  // também possuem PNG próprio.
+  const AMULET_SPRITES={
+    'Cobra Amulet':'arena-godot/assets-importados/cobra amulet.png',
+    'Enchanted Merudri Brooch':'arena-godot/assets-importados/enchanted merudri brooch.png',
+    'Enchanted Pendulet':'arena-godot/assets-importados/enchanted pendulet.png',
+    'Enchanted Theurgic Amulet':'arena-godot/assets-importados/enchanted theurgic amulet.png',
+    'Enchanted Turtle Amulet':'arena-godot/assets-importados/enchanted turtle amulet.png',
+    'Enchanted Werewolf Amulet':'arena-godot/assets-importados/enchanted werewolf amulet.png',
+    'Foxtail Amulet':'arena-godot/assets-importados/foxtail amulet.png',
+    'Gill Necklace':'arena-godot/assets-importados/gill necklace.png',
+    'Glacier Amulet':'arena-godot/assets-importados/glacier amulet.png',
+    'Greater Garlic Necklace':'arena-godot/assets-importados/greater garlic necklace.png',
+    'Greawhel Necklace':'arena-godot/assets-importados/greawhel necklace.png',
+    'Lion Amulet':'arena-godot/assets-importados/lion amulet.png',
+    'Magma Amulet':'arena-godot/assets-importados/magma amulet.png',
+    'Prismatic Necklace':'arena-godot/assets-importados/prismatic necklace.png',
+    'Terra Amulet':'arena-godot/assets-importados/terra amulet.png',
+    'Sanguine Collar':'arena-godot/assets-importados/239124.png',
+    'Amuleto #239124':'arena-godot/assets-importados/239124.png',
+    'Bounty Talisman':'arena-godot/assets-importados/240132.png',
+    'Amuleto #240581':'arena-godot/assets-importados/240581.png',
+    'Amuleto #240589':'arena-godot/assets-importados/240589.png',
+    'Amuleto #240605':'arena-godot/assets-importados/240605.png',
+    'Amuleto #240620':'arena-godot/assets-importados/240620.png',
+    'Amuleto #240635':'arena-godot/assets-importados/240635.png'
+  };
+
+  function cleanAmuletsWithoutSprite(){
+    if(typeof SHOP_ITEMS==='undefined')return;
+    const keepIds=new Set();
+    const removedIds=new Set();
+    for(let i=SHOP_ITEMS.length-1;i>=0;i--){
+      const item=SHOP_ITEMS[i];
+      if(item?.category!=='amulets')continue;
+      const sprite=AMULET_SPRITES[item.name];
+      if(sprite){
+        item.sprite=sprite;
+        keepIds.add(String(item.id));
+      }else{
+        removedIds.add(String(item.id));
+        SHOP_ITEMS.splice(i,1);
+      }
+    }
+    if(typeof game!=='undefined'&&game){
+      if(Array.isArray(game.shopOwned))game.shopOwned=game.shopOwned.filter(id=>!removedIds.has(String(id)));
+      if(game.shopEquipped?.amulet&&removedIds.has(String(game.shopEquipped.amulet)))
+        game.shopEquipped.amulet=null;
+      if(game.shopAmuletCharges&&typeof game.shopAmuletCharges==='object'){
+        for(const id of removedIds)delete game.shopAmuletCharges[id];
+      }
+    }
+    return {keepIds:[...keepIds],removedIds:[...removedIds]};
+  }
+
   function removeQuestTab(){
     if(typeof SHOP_CATEGORIES!=='undefined'){
       for(let i=SHOP_CATEGORIES.length-1;i>=0;i--){
@@ -311,6 +368,7 @@
     removeQuestTab();
     cleanOldBackpacks();
     cleanStep1WrongItems();
+    cleanAmuletsWithoutSprite();
 
     // Trinkets ficam em sua própria aba; nunca em Backpack/Armor/Amulet.
     if(typeof window.arenaTrinkets!=='undefined'){
