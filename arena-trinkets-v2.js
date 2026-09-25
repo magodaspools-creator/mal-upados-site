@@ -10,8 +10,35 @@
     {id:'trinket-life-1',name:'Vampiric Fang',icon:'♥',category:'trinkets',type:'lifesteal',level:1,price:1600,minLevel:5,lifesteal:3,bonus:'Rouba 3% do dano em vida'},
     {id:'trinket-life-2',name:'Vampiric Fang',icon:'♥',category:'trinkets',type:'lifesteal',level:2,price:5500,minLevel:15,lifesteal:6,bonus:'Rouba 6% do dano em vida'},
     {id:'trinket-life-3',name:'Vampiric Fang',icon:'♥',category:'trinkets',type:'lifesteal',level:3,price:14500,minLevel:30,lifesteal:10,bonus:'Rouba 10% do dano em vida'}
+    {id:'real-ink-blade',name:'Ink Blade',icon:'✦',sprite:'arena-godot/ink blade.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-moon-mirror',name:'Moon Mirror',icon:'✦',sprite:'arena-godot/moon mirror.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-scarab-ocarina',name:'Scarab Ocarina',icon:'✦',sprite:'arena-godot/scarab ocarina.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-sun-catcher',name:'Sun Catcher',icon:'✦',sprite:'arena-godot/sun catcher.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-conch-shell',name:'Conch Shell',icon:'✦',sprite:'arena-godot/conch shell.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-199470',name:'Trinket #199470',icon:'✦',sprite:'arena-godot/199470.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-210930',name:'Trinket #210930',icon:'✦',sprite:'arena-godot/210930.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-210931',name:'Trinket #210931',icon:'✦',sprite:'arena-godot/210931.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-214972',name:'Trinket #214972',icon:'✦',sprite:'arena-godot/214972.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-214975',name:'Trinket #214975',icon:'✦',sprite:'arena-godot/214975.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-218726',name:'Trinket #218726',icon:'✦',sprite:'arena-godot/218726.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-233482',name:'Trinket #233482',icon:'✦',sprite:'arena-godot/233482.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-236017',name:'Trinket #236017',icon:'✦',sprite:'arena-godot/236017.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-236019',name:'Trinket #236019',icon:'✦',sprite:'arena-godot/236019.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-238621',name:'Trinket #238621',icon:'✦',sprite:'arena-godot/238621.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-238622',name:'Trinket #238622',icon:'✦',sprite:'arena-godot/238622.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-238623',name:'Trinket #238623',icon:'✦',sprite:'arena-godot/238623.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-239123',name:'Trinket #239123',icon:'✦',sprite:'arena-godot/239123.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-239781',name:'Trinket #239781',icon:'✦',sprite:'arena-godot/239781.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-239786',name:'Trinket #239786',icon:'✦',sprite:'arena-godot/239786.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-239788',name:'Trinket #239788',icon:'✦',sprite:'arena-godot/239788.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-239792',name:'Trinket #239792',icon:'✦',sprite:'arena-godot/239792.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-239793',name:'Trinket #239793',icon:'✦',sprite:'arena-godot/239793.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-239794',name:'Trinket #239794',icon:'✦',sprite:'arena-godot/239794.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-239795',name:'Trinket #239795',icon:'✦',sprite:'arena-godot/239795.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-240132',name:'Trinket #240132',icon:'✦',sprite:'arena-godot/240132.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
+    {id:'real-240254',name:'Trinket #240254',icon:'✦',sprite:'arena-godot/240254.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
   ];
-  const TYPES=['loot','crit','lifesteal'];
+  const TYPES=['loot','crit','lifesteal','visual'];
 
   if(typeof SHOP_CATEGORIES!=='undefined'&&!SHOP_CATEGORIES.some(x=>x.id==='trinkets'))SHOP_CATEGORIES.push({id:'trinkets',label:'Trinkets'});
   // A loja mostra somente o card-base. Os níveis 2/3 aparecem exclusivamente como Upgrade.
