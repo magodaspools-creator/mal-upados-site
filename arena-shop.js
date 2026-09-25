@@ -320,7 +320,7 @@ function shopRender(){
     const isEquipped=inSlot===item.id;
     let label=isEquipped?'Equipado':!vocationOk?`Exclusivo · ${esc(arenaShopItemVocation(item))}`:owned?'Equipar':levelOk&&canBuy?`Comprar · ${fmt(item.price)} gold`:!levelOk?`Level ${item.minLevel}`:`${fmt(item.price)} gold`;
     let disabled=isEquipped||!vocationOk||(!owned&&(!canBuy||!levelOk));
-    return `<div class="shop-item ${isEquipped?'equipped':''} ${levelOk?'':'level-locked'} ${vocationOk?'':'vocation-locked'}"><div class="shop-icon">${item.sprite?`<img src="arena-godot/assets-importados/${encodeURI(item.sprite)}" alt="" draggable="false">`:item.icon}</div><div class="shop-info"><strong>${esc(item.name)}</strong><span>${esc(categoryLabel(item.category))} · ${esc(item.bonus)}</span><small>Level ${item.minLevel}+ · ${fmt(item.price)} gold</small></div><button class="shop-btn ${isEquipped?'equipped-btn':''}" data-id="${item.id}" ${disabled?'disabled':''}>${label}</button></div>`;
+    return `<div class="shop-item ${isEquipped?'equipped':''} ${levelOk?'':'level-locked'} ${vocationOk?'':'vocation-locked'}"><div class="shop-icon">${item.sprite?`<img src="${window.arenaItemSpriteUrl(item)}" alt="" draggable="false">`:item.icon}</div><div class="shop-info"><strong>${esc(item.name)}</strong><span>${esc(categoryLabel(item.category))} · ${esc(item.bonus)}</span><small>Level ${item.minLevel}+ · ${fmt(item.price)} gold</small></div><button class="shop-btn ${isEquipped?'equipped-btn':''}" data-id="${item.id}" ${disabled?'disabled':''}>${label}</button></div>`;
   }).join('')||'<div class="small">Nenhum item nesta categoria.</div>';
   box.querySelectorAll('.shop-btn').forEach(btn=>btn.onclick=()=>shopAction(btn.dataset.id));
   syncEquipmentDisplay();
@@ -356,3 +356,25 @@ window.addEventListener('DOMContentLoaded',initArenaShop);
 window.addEventListener('load',initArenaShop);
 setTimeout(initArenaShop,500);
 setTimeout(initArenaShop,1500);
+
+/* Real item sprites uploaded 2026-09-25 */
+(()=>{
+ if(window.__arenaRealItemSpritesInstalled)return;
+ window.__arenaRealItemSpritesInstalled=true;
+ window.arenaItemSpriteUrl=item=>{
+  const sprite=String(item?.sprite||'');
+  return sprite.startsWith('arena-godot/')?encodeURI(sprite):'arena-godot/assets-importados/'+encodeURI(sprite);
+ };
+ if(!SHOP_CATEGORIES.some(x=>x.id==='rods'))SHOP_CATEGORIES.push({id:'rods',label:'Rods'});
+ const items=[
+  ['Blue Legs','blue legs.png','legs'],["Captain's Helmet",'captains helmet.png','helmets'],['Cobra Hood','cobra hood.png','helmets'],['Cobra Rod','cobra rod.png','rods'],['Cobra Wand','cobra wand.png','wands'],
+  ['Dark Vision Bandana','dark vision bandana.png','helmets'],['Demon Mengu','demon mengu.png','helmets'],['Dwanfire Pantaloons','dwanfire pantaloons.png','legs'],['Gill Coat','gill coat.png','armor'],['Gill Legs','gill legs.png','legs'],['Glacier Wand','glacier wand.png','wands'],['Grasshoper Legs','grasshoper legs.png','legs'],['Green Demon Helmet','green demon helmet.png','helmets'],['Green Demon Legs','green demon legs.png','legs'],['Helmet of Enlightenment','helmet of enlightment.png','helmets'],['Ice Hood','ice hood.png','helmets'],['Inferniarch Rod','inferniarch rod.png','rods'],['Inferniarch Wand','inferniarch wand.png','wands'],['Ink Blade','ink blade.png','trinkets'],['Jade Conical Helmet','jade conical helmet.png','helmets'],['Jade Legs','jade legs.png','legs'],['Legs of Enlightenment','legs of enlightment.png','legs'],['Legs of Windsdows','legs of winsdows.png','legs'],['Lightning Headband','lightning headband.png','helmets'],['Lightning Legs','lightning legs.png','legs'],['Magma Monocle','magma monocle.png','helmets'],['Maliceforged Helmet','maliceforged helmet.png','helmets'],['Mino Shield','mino shield.png','shield'],['Moon Mirror','moon mirror.png','trinkets'],['Moonshade Wand','moonshade wand.png','wands'],['Muc Rod','muc rod.png','rods'],['Mutant Hide Trousers','mutant hide trousers.png','legs'],['Norcferatu Bonehood','norcferatu bonehood.png','helmets'],['Norcferatu Fleshguards','norcferatu fleshgards.png','legs'],['Ornate Legs','ornate legs.png','legs'],['Ornate Shield','ornate shield.png','shield'],['Prismatic Helmet','prismatic helmet.png','helmets'],['Prismatic Legs','prismatic legs.png','legs'],['Prismatic Ring','prismatic ring.png','rings'],['Prismatic Shield','prismatic shield.png','shield'],['Rift Shield','rift shield.png','shield'],['Scarab Ocarina','scarab ocarina.png','trinkets'],['Soulfull Legs','soulfull legs.png','legs'],['Stag Helmet','stag helmet.png','helmets'],['Stag Shield','stag shield.png','shield'],['Stoic Iks Fraulds','stoic iks fraulds.png','legs'],['Stoic Iks Headpiece','stoic iks headpiece.png','helmets'],['Sun Catcher','sun catcher.png','trinkets'],['Terra Helmet','terra helmet.png','helmets'],['Terra Hood','terra hood.png','helmets'],['Terra Legs','terra legs.png','legs'],['Void Tiara','void tiara.png','helmets'],['Werewolf Helmet','werewolf helmet.png','helmets'],['Falcon Rod','falcon rod.png','rods'],['Falcon Wand','falcon wand.png','wands'],['Falcon Shield','falcon shield.png','shield']
+ ];
+ const icon=c=>c==='shield'||c==='armor'?'🛡️':c==='helmets'?'⛑️':c==='legs'?'🥋':c==='rings'?'💍':c==='wands'||c==='rods'?'⚔️':'✦';
+ const slug=n=>String(n).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+ items.forEach(([name,file,category])=>{
+   const found=SHOP_ITEMS.find(x=>String(x.name||'').toLowerCase()===name.toLowerCase());
+   if(found){found.sprite='arena-godot/'+file;return;}
+   SHOP_ITEMS.push({id:'real-'+slug(name),name,icon:icon(category),sprite:'arena-godot/'+file,category,price:500,attack:0,defense:0,minLevel:1,bonus:'Sprite real · sem bônus adicional'});
+ });
+})();
