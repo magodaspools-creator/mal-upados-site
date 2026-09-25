@@ -351,6 +351,7 @@ window.arenaShopCombatBonuses=function(){
   return {attack,defense};
 };
 window.shopRender=shopRender;
+window.renderShop=shopRender;
 function initArenaShop(){try{shopEnsure();shopRender()}catch(error){console.error('Arena Shop:',error)}}
 window.addEventListener('DOMContentLoaded',initArenaShop);
 window.addEventListener('load',initArenaShop);
