@@ -91,7 +91,7 @@
   function elementForZone(zoneIndex){return ELEMENTS[ZONE_ELEMENTS[zoneIndex]]||ELEMENTS.earth}
   function elementLabel(element){const e=ELEMENTS[element]||ELEMENTS.earth;return `${e.icon} ${e.name}`}
 
-  window.arenaElementalState={ELEMENTS,ZONE_ELEMENTS,currentAmulet,resistanceFor,elementForZone,elementLabel};
+  window.arenaElementalState={ELEMENTS,ZONE_ELEMENTS,currentAmulet,resistanceFor,elementForZone,elementLabel,getAmuletCharges:ensureAmuletCharges,FINITE_AMULET_CHARGES};
 
   // The canonical skill multiplier is applied by arena-skills.js during
   // startBattle. This subsystem must only handle elemental damage so the
