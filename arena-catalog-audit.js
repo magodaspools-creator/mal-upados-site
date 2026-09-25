@@ -6,6 +6,8 @@
   window.__arenaCatalogAuditInstalled=true;
 
   const CATEGORY_FIXES={
+    // Itens Ink pertencem ao Extra Slot no Tibia; na Arena esse slot é Trinkets.
+    'Ink Blade':'trinkets','Ink Brush':'trinkets','Ink Claw':'trinkets','Ink Quill':'trinkets','Ink Vine':'trinkets',
     'Trinket #199470':'trinkets','Trinket #210930':'trinkets','Trinket #210931':'trinkets',
     'Trinket #214972':'trinkets','Trinket #214975':'trinkets','Trinket #218726':'trinkets',
     'Trinket #233482':'trinkets','Trinket #236017':'trinkets','Trinket #236019':'trinkets',
@@ -66,6 +68,9 @@
 
   // Categoria explícita para itens conhecidos que não devem depender de heurística.
   const EXACT_CATEGORIES={
+    // Correção solicitada: o sprite/item 214973 é usado como Glooth Armor na Arena.
+    'Glooth Armor':'armor',
+    'Glooth Amulet':'armor',
     'Falcon Circlet':'helmets','Falcon Coif':'helmets','Gnome Helmet':'helmets',
     'Gnome Legs':'legs','Gnome Armor':'armor','Gnome Shield':'shield',
     'Falcon Plate':'armor','Falcon Greaves':'legs','Stag Plate':'armor',
@@ -156,6 +161,19 @@
       }
       if(item.name==='Norcferatu Bloohide'){item.name='Norcferatu Bloodhide';nameChanges++}
       if(item.name==='Norcferatu Fleeshguards'){item.name='Norcferatu Fleshguards';nameChanges++}
+
+      // O catálogo oficial deste projeto recebeu 214973 como Glooth Amulet,
+      // mas o item visual usado na Arena deve ser tratado como Glooth Armor.
+      if(String(item.id||'')==='real-214973' || String(item.sprite||'').split('/').pop()==='214973.png'){
+        if(item.name!=='Glooth Armor')nameChanges++;
+        item.name='Glooth Armor';
+        item.category='armor';
+      }
+
+      // Qualquer Ink encontrado no catálogo fica fora de Wands/Rods e entra em Trinkets.
+      if(/^Ink (Blade|Brush|Claw|Quill|Vine)$/i.test(String(item.name||''))){
+        item.category='trinkets';
+      }
     }
 
     removeQuestTab();
