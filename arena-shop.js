@@ -289,28 +289,26 @@ function arenaShopVocation(){
   if(/^monk$/.test(raw))return 'Monk';
   return member?.vocation||'';
 }
-function arenaShopItemVocation(item){
-  if(!item)return '';
-  const explicit=String(item.vocation||item.class||item.vocations||'').trim().toLowerCase();
-  if(explicit.includes('monk'))return 'Monk';
-  if(explicit.includes('sorcerer'))return 'Sorcerer';
-  if(explicit.includes('druid'))return 'Druid';
-  if(explicit.includes('paladin'))return 'Paladin';
-  if(explicit.includes('knight'))return 'Knight';
-  const category=String(item.category||'').toLowerCase();
-  const name=String(item.name||'').toLowerCase();
-  if(category==='wands'||/\bwand\b/.test(name))return 'Sorcerer';
-  if(category==='rods'||/\brod\b/.test(name))return 'Druid';
+function arenaShopItemVocations(item){
+  if(!item)return [];
+  const raw=item.vocations||item.vocation||item.class||'';
+  const values=Array.isArray(raw)?raw:[raw];
+  const explicit=values.flatMap(v=>String(v).split(/[\/,|]+/)).map(v=>v.trim()).filter(Boolean);
+  if(explicit.length)return [...new Set(explicit.map(v=>v[0].toUpperCase()+v.slice(1).toLowerCase()))];
+  const category=String(item.category||'').toLowerCase(),name=String(item.name||'').toLowerCase();
+  if(category==='wands'||/\bwand\b/.test(name))return ['Sorcerer'];
+  if(category==='rods'||/\brod\b/.test(name))return ['Druid'];
   if(category==='weapons'){
-    if(/bow|crossbow|spear|star/.test(name))return 'Paladin';
-    if(/fist|knuckle|gauntlet/.test(name))return 'Monk';
-    return 'Knight';
+    if(/bow|crossbow|spear|star/.test(name))return ['Paladin'];
+    if(/fist|knuckle|gauntlet/.test(name))return ['Monk'];
+    return ['Knight'];
   }
-  return '';
+  return [];
 }
+function arenaShopItemVocation(item){return arenaShopItemVocations(item).join(' / ')}
 function arenaShopVocationAllowed(item){
-  const required=arenaShopItemVocation(item),current=arenaShopVocation();
-  return !required||!current||required===current;
+  const required=arenaShopItemVocations(item),current=arenaShopVocation();
+  return !required.length||!current||required.includes(current);
 }
 function shopRender(){
   shopEnsure();
@@ -318,7 +316,7 @@ function shopRender(){
   if(!box||!game)return;
   if(balance)balance.textContent=fmt(game.gold);
   if(filters){filters.innerHTML=SHOP_CATEGORIES.map(c=>`<button class="shop-filter ${shopFilter===c.id?'active':''}" data-filter="${c.id}">${esc(c.label)}</button>`).join('');filters.querySelectorAll('.shop-filter').forEach(b=>b.onclick=()=>{shopFilter=b.dataset.filter;shopRender()})}
-  const items=SHOP_ITEMS.filter(item=>shopFilter==='all'||item.category===shopFilter);
+  const items=SHOP_ITEMS.filter(item=>!item.shopDisabled&&(shopFilter==='all'||item.category===shopFilter));
   box.innerHTML=items.map(item=>{
     const owned=game.shopOwned.includes(item.id),equipped=Object.values(game.shopEquipped).includes(item.id),canBuy=game.gold>=item.price,levelOk=game.level>=item.minLevel,vocationOk=arenaShopVocationAllowed(item);
     const inSlot=game.shopEquipped[item.category==='weapons'||item.category==='wands'||item.category==='rods'?'weapon':item.category];
@@ -333,7 +331,7 @@ function shopRender(){
 function slotFor(item){if(item.category==='backpacks')return 'backpack';return item.category==='weapons'||item.category==='wands'||item.category==='rods'?'weapon':item.category}
 function shopAction(id){
   shopEnsure();
-  const item=SHOP_ITEMS.find(x=>x.id===id);if(!item)return;
+  const item=SHOP_ITEMS.find(x=>x.id===id);if(!item||item.shopDisabled)return;
   if(!arenaShopVocationAllowed(item)){toast(`Este equipamento é exclusivo do ${arenaShopItemVocation(item)}.`);return}
   if(game.level<item.minLevel){toast(`Você precisa do Arena Level ${item.minLevel}.`);return}
   if(game.shopOwned.includes(id)){
@@ -380,4 +378,25 @@ setTimeout(initArenaShop,1500);
   const sprite=String(item?.sprite||'');
   return sprite.startsWith('arena-godot/')?encodeURI(sprite):'arena-godot/assets-importados/'+encodeURI(sprite);
  };
+})();
+
+
+/* Official real-item catalog correction — 2026-09-25. */
+(()=>{
+ const official=[["199464","Glacier Shoes","boots",[]],["199465","Lightning Boots","boots",[]],["199470","Glacier Kilt","legs",[]],["210930","Depth Galea","helmets",["Knight"]],["210931","Depth Ocrea","legs",["Knight"]],["212189","Crystalline Axe","weapons",["Knight"]],["212190","Mycological Mace","weapons",["Knight"]],["212191","Thorn Spitter","weapons",["Paladin"]],["212192","Mycological Bow","weapons",["Paladin"]],["214379","Umbral Master Blade","weapons",["Knight"]],["214385","Umbral Master Axe","weapons",["Knight"]],["214388","Umbral Master Chopper","weapons",["Knight"]],["214391","Umbral Master Mace","weapons",["Knight"]],["214394","Umbral Master Hammer","weapons",["Knight"]],["214971","Glooth Cape","armor",["Sorcerer","Druid"]],["214972","Rubber Cap","helmets",[]],["214973","Glooth Amulet","amulets",[]],["214974","Heat Core","quest",[]],["214975","Glooth Trousers","legs",[]],["214976","Metal Spats / Glooth Boots","boots",[]],["214978","Metal Bat / Wand of Defiance","weapons",["Knight","Sorcerer"]],["214979","Glooth Whip","weapons",["Knight"]],["214983","Execowtioner Axe","weapons",["Knight"]],["215397","Oriental Shoes","boots",[]],["218726","Starlight Vial","amulets",[]],["220603","Cobra Boots","boots",["Paladin"]],["221304","Embrace of Nature","armor",["Druid"]],["221305","Mortal Mace","weapons",["Knight"]],["221306","Bow of Cataclysm","weapons",["Paladin"]],["221307","Galea Mortis","helmets",["Sorcerer","Druid"]],["222644","Falcon Bow","weapons",["Paladin"]],["233476","Feeverbloom Boots","boots",[]],["233480","Midnight Tunic","armor",["Sorcerer","Druid"]],["233482","Midnight Sarong","legs",["Sorcerer","Druid"]],["236011","Stoic Iks Cuirass","armor",["Knight"]],["236012","Stoic Iks Chestplate","armor",["Knight"]],["236013","Dauntless Dragon Scale Armor","armor",["Knight","Paladin"]],["236014","Unerring Dragon Scale Armor","armor",["Knight","Paladin"]],["236015","Arcane Dragon Robe","armor",["Sorcerer","Druid"]],["236016","Mystical Dragon Robe","armor",["Sorcerer","Druid"]],["236017","Stoic Iks Casque","helmets",["Knight"]],["236019","Stoic Iks Culets","legs",["Knight"]],["236021","Stoic Iks Sandals","boots",[]],["236022","Stoic Iks Boots","boots",[]],["238610","Inferniarch Bow","weapons",["Paladin"]],["238611","Inferniarch Arbalest","weapons",["Paladin"]],["238612","Inferniarch Battleaxe","weapons",["Knight"]],["238613","Inferniarch Greataxe","weapons",["Knight"]],["238614","Inferniarch Flail","weapons",["Knight"]],["238615","Inferniarch Warhammer","weapons",["Knight"]],["238621","Hellstalker Visor","helmets",["Paladin"]],["238622","Dreadfire Headpiece","helmets",["Sorcerer"]],["238623","Demonfang Mask","helmets",["Druid"]],["239123","Bandana","helmets",[]],["239124","Sanguine Collar","amulets",[]],["239165","Plain Monk Robe","armor",[]],["239170","Merudri Scale Mail","armor",["Knight"]],["239171","Merudri Battlemail","armor",["Knight"]],["239172","Eldritch Monk Boots","boots",[]],["239181","Ghazbaran Yoroi","armor",["Knight"]],["239781","Norcferatu Skullguard","helmets",["Knight"]],["239783","Norcferatu Tuskplate","armor",["Knight"]],["239784","Norcferatu Bloohide","armor",["Paladin"]],["239785","Norcferatu Bonecloak","armor",["Sorcerer","Druid"]],["239786","Norcferatu Thornwraps","legs",["Knight","Paladin"]],["239788","Norcferatu Fleeshguards","legs",[]],["239789","Norcferatu Goretrumpers","boots",["Knight"]],["239790","Norcferatu Fangstompers","boots",["Paladin"]],["239792","Ink Quill","wands",["Sorcerer"]],["239793","Ink Claw","rods",["Druid"]],["239794","Ink Vine","rods",["Druid"]],["239795","Ink Brush","wands",["Sorcerer"]],["240132","Bounty Talisman","amulets",[]],["240252","Stag Robe","armor",["Sorcerer","Druid"]],["240253","Stag Plate","armor",["Knight"]],["240254","Stag Legs","legs",["Knight","Paladin"]],["240255","Stag Shinguards","legs",["Knight"]],["240256","Stag Boots","boots",[]],["240578","Captain's Sabre","weapons",["Knight"]],["240581","Enchanted Flamingo of Valor","amulets",["Knight"]],["240589","Enchanted Flamingo of Precision","amulets",["Paladin"]],["240605","Enchanted Flamingo Amulet of Destruction","amulets",[]],["240620","Enchanted Flamingo Amulet of Nature","amulets",["Druid","Sorcerer"]],["240635","Enchanted Swan Amulet of Balance","amulets",[]],["mooh'tah plate","Mooh'tah Plate","armor",["Knight"]]];
+ const findItem=id=>SHOP_ITEMS.find(x=>String(x.id||'')===id||String(x.id||'').endsWith('-'+id)||String(x.sprite||'').split('/').pop()===id+'.png');
+ for(const [id,name,category,vocations] of official){
+  let item=findItem(id);
+  if(!item){
+   item={id:'real-'+id.replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase(),name,icon:'🛡️',sprite:id+'.png',category,price:500,attack:0,defense:0,minLevel:1,bonus:category==='quest'?'Quest':'Equipamento'};
+   SHOP_ITEMS.push(item);
+  }
+  item.name=name;
+  item.category=category;
+  item.sprite=id+'.png';
+  if(vocations.length)item.vocations=vocations;
+  else delete item.vocation;
+  if(category==='quest')item.shopDisabled=true;
+ }
+ if(!SHOP_CATEGORIES.some(x=>x.id==='quest'))SHOP_CATEGORIES.push({id:'quest',label:'Quest'});
 })();
