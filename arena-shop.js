@@ -258,8 +258,13 @@ const SHOP_ITEMS=[
 let shopFilter='all';
 function shopEnsure(){
   if(!game)return;
-  if(!game.shopOwned)game.shopOwned=['base-weapon','base-armor'];
-  if(!game.shopEquipped)game.shopEquipped={weapon:'base-weapon',armor:'base-armor',legs:null,boots:null,helmets:null,wands:null,rings:null,amulet:null};
+  // Normaliza saves antigos/corrompidos antes de qualquer acesso da loja.
+  // Sem isso, shopOwned/ shopEquipped existentes em formato inválido interrompem
+  // o render antes de os filtros e os itens serem inseridos no DOM.
+  if(!Array.isArray(game.shopOwned))game.shopOwned=['base-weapon','base-armor'];
+  if(!game.shopEquipped||typeof game.shopEquipped!=='object'||Array.isArray(game.shopEquipped)){
+    game.shopEquipped={weapon:'base-weapon',armor:'base-armor',legs:null,boots:null,helmets:null,wands:null,rings:null,amulet:null};
+  }
   if(!game.shopOwned.includes('base-weapon'))game.shopOwned.push('base-weapon');
   if(!game.shopOwned.includes('base-armor'))game.shopOwned.push('base-armor');
   if(game.ownedWeapons?.length>0 && game.ownedWeapons.includes(1)&&!game.shopOwned.includes('fire-sword'))game.shopOwned.push('fire-sword');
