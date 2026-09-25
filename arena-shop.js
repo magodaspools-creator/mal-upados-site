@@ -415,3 +415,26 @@ setTimeout(initArenaShop,1500);
  }
  window.arenaShopReplacementReport={disabled,counts:Object.fromEntries(Object.entries(replacements).map(([k,v])=>[k,v.length]))};
 })();
+
+
+/* Balanced stats for official real-item catalog — 2026-09-25. */
+(()=>{
+ const stats={"199464":[35,0,5,"+5 defesa"],"199465":[35,0,5,"+5 defesa"],"199470":[100,0,18,"+18 defesa"],"210930":[150,0,22,"+22 defesa"],"210931":[130,0,19,"+19 defesa"],"212189":[100,32,0,"+32 ataque"],"212190":[120,34,0,"+34 ataque"],"212191":[150,36,0,"+36 ataque"],"212192":[105,33,0,"+33 ataque"],"214379":[250,50,2,"+50 ataque · +2 defesa"],"214385":[250,51,2,"+51 ataque · +2 defesa"],"214388":[250,52,2,"+52 ataque · +2 defesa"],"214391":[250,50,3,"+50 ataque · +3 defesa"],"214394":[250,53,3,"+53 ataque · +3 defesa"],"214971":[100,0,18,"+18 defesa"],"214972":[100,0,21,"+21 defesa"],"214973":[150,2,4,"+2 ataque · +4 defesa"],"214974":[1,0,0,"Quest"],"214975":[100,0,19,"+19 defesa"],"214976":[100,0,8,"+8 defesa"],"214978":[140,38,1,"+38 ataque · +1 defesa"],"214979":[180,40,1,"+40 ataque · +1 defesa"],"214983":[55,43,1,"+43 ataque · +1 defesa"],"215397":[80,0,7,"+7 defesa"],"218726":[200,3,7,"+3 ataque · +7 defesa"],"220603":[80,0,9,"+9 defesa"],"221304":[120,0,20,"+20 defesa"],"221305":[250,48,2,"+48 ataque · +2 defesa"],"221306":[250,46,0,"+46 ataque"],"221307":[200,0,25,"+25 defesa"],"222644":[250,47,0,"+47 ataque"],"233476":[270,0,13,"+13 defesa"],"233480":[200,0,23,"+23 defesa"],"233482":[200,0,22,"+22 defesa"],"236011":[250,0,26,"+26 defesa"],"236012":[250,0,28,"+28 defesa"],"236013":[300,0,30,"+30 defesa"],"236014":[300,0,31,"+31 defesa"],"236015":[300,0,24,"+24 defesa"],"236016":[300,0,25,"+25 defesa"],"236017":[250,0,27,"+27 defesa"],"236019":[250,0,25,"+25 defesa"],"236021":[250,0,12,"+12 defesa"],"236022":[250,0,13,"+13 defesa"],"238610":[300,56,0,"+56 ataque"],"238611":[300,58,0,"+58 ataque"],"238612":[300,55,2,"+55 ataque · +2 defesa"],"238613":[300,57,2,"+57 ataque · +2 defesa"],"238614":[300,54,3,"+54 ataque · +3 defesa"],"238615":[300,59,3,"+59 ataque · +3 defesa"],"238621":[250,0,29,"+29 defesa"],"238622":[250,0,28,"+28 defesa"],"238623":[250,0,28,"+28 defesa"],"239123":[200,0,24,"+24 defesa"],"239124":[270,4,8,"+4 ataque · +8 defesa"],"239165":[100,0,16,"+16 defesa"],"239170":[100,0,17,"+17 defesa"],"239171":[100,0,19,"+19 defesa"],"239172":[300,0,15,"+15 defesa"],"239181":[200,0,27,"+27 defesa"],"239781":[270,0,30,"+30 defesa"],"239783":[270,0,32,"+32 defesa"],"239784":[270,0,28,"+28 defesa"],"239785":[270,0,28,"+28 defesa"],"239786":[270,0,28,"+28 defesa"],"239788":[230,0,24,"+24 defesa"],"239789":[270,0,18,"+18 defesa"],"239790":[270,0,18,"+18 defesa"],"239792":[250,52,0,"+52 ataque"],"239793":[250,51,0,"+51 ataque"],"239794":[300,56,0,"+56 ataque"],"239795":[300,58,1,"+58 ataque · +1 defesa"],"240132":[300,5,10,"+5 ataque · +10 defesa"],"240252":[350,0,30,"+30 defesa"],"240253":[350,0,34,"+34 defesa"],"240254":[350,0,33,"+33 defesa"],"240255":[350,0,18,"+18 defesa"],"240256":[350,0,18,"+18 defesa"],"240578":[350,61,2,"+61 ataque · +2 defesa"],"240581":[350,6,12,"+6 ataque · +12 defesa"],"240589":[350,7,10,"+7 ataque · +10 defesa"],"240605":[350,8,11,"+8 ataque · +11 defesa"],"240620":[350,7,12,"+7 ataque · +12 defesa"],"240635":[350,6,14,"+6 ataque · +14 defesa"],"mooh'tah plate":[300,0,32,"+32 defesa"]};
+ const officialIds=new Set(Object.keys(stats));
+ for(const [id,data] of Object.entries(stats)){
+  const item=SHOP_ITEMS.find(x=>String(x.id||'')===id||String(x.id||'').endsWith('-'+id)||String(x.sprite||'').split('/').pop()===id+'.png');
+  if(!item){console.warn('[Arena Shop] Balance: item não encontrado:',id);continue;}
+  const [minLevel,attack,defense,bonus]=data;
+  item.minLevel=minLevel;
+  item.attack=attack;
+  item.defense=defense;
+  item.bonus=bonus;
+  if(id!=='214974'){
+   item.price=Math.round(250 + minLevel*14 + attack*38 + defense*52);
+  }else{
+   item.price=0;
+   item.shopDisabled=true;
+  }
+ }
+ window.arenaShopBalanceReport={count:Object.keys(stats).length,ids:[...officialIds]};
+})();
