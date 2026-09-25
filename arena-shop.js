@@ -400,3 +400,18 @@ setTimeout(initArenaShop,1500);
  }
  if(!SHOP_CATEGORIES.some(x=>x.id==='quest'))SHOP_CATEGORIES.push({id:'quest',label:'Quest'});
 })();
+
+
+/* Category-for-category replacement — 2026-09-25. */
+(()=>{
+ const replacements={"armor":["real-armor-depth-lorica","real-armor-dwanfire-sherwany","real-armor-gill-coat","real-armor-gnomish-cuirass","real-armor-green-demon-armor","real-armor-ice-robe","real-armor-lightning-robe","real-armor-merudri-nanbando","real-armor-monk-robe","real-armor-naga-tanko","real-armor-ornate-chestplate","real-armor-prismatic-armor","real-armor-robe-of-enlightment","real-armor-soul-mantle","real-armor-stoic-iks-robe","real-armor-terra-mantle","real-armor-zaoan-monk-robe","real-gnome-gnome-armor","real-falcon-falcon-plate"],"boots":["real-boots-enlightment-boots","real-boots-frostflower-boots","real-boots-green-spleepbunny-boots","real-boots-magma-boots","real-boots-nightmare-boots","real-boots-prismatic-boots","real-boots-stag-boots","real-boots-stoic-iks-boots","real-boots-terra-boots","real-boots-void-boots","real-boots-yalahari-boots","real-boots-gnomish-footwraps"],"weapons":["real-weapon-nunchaku-of-enlightment","real-weapon-nunchaku","real-weapon-sai-of-enlightment","real-weapon-sai","real-weapon-shiny-blade","real-weapon-tagralt-blade","real-weapon-the-impaler","real-weapon-umbral-master-katar","real-weapon-umbral-master-slayer","real-rp-cobra-crossbow","real-rp-glooth-spear","real-rp-naga-crossbow","real-rp-ornate-crossbow","real-rp-rift-bow","real-rp-rift-crossbow","real-rp-umbral-master-bow","real-rp-umbral-master-crossbow","real-gnome-gnome-sword","real-falcon-falcon-battleaxe","real-falcon-falcon-bow","real-falcon-falcon-longword","real-falcon-falcon-mace"],"amulets":["amulet-foxtail","amulet-gill-necklace","amulet-glacier","amulet-greater-garlic","amulet-greawhel","amulet-lion","amulet-magma","amulet-prismatic","amulet-terra"],"helmets":["real-gnome-gnome-helmet","real-falcon-falcon-circlet","steel-helmet","crown-helmet","royal-helmet","demon-helmet","warrior-helmet","cobra-hood","falcon-coif"],"legs":["knight-legs","crown-legs","golden-legs","demon-legs","ornate-legs","fabulous-legs","falcon-legs","celestial-legs","real-gnome-gnome-legs"],"wands":["real-falcon-falcon-wand","arcanist-wand"],"rods":["real-falcon-falcon-rod"]};
+ const disabled=[];
+ for(const [category,ids] of Object.entries(replacements)){
+  for(const id of ids){
+   const item=SHOP_ITEMS.find(x=>x.id===id&&x.category===category);
+   if(item){item.shopDisabled=true;item.shopReplacement=true;disabled.push({category,id,name:item.name});}
+   else console.warn('[Arena Shop] Item antigo não encontrado para substituição:',category,id);
+  }
+ }
+ window.arenaShopReplacementReport={disabled,counts:Object.fromEntries(Object.entries(replacements).map(([k,v])=>[k,v.length]))};
+})();
