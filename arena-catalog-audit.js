@@ -87,8 +87,7 @@
     'Demon Mengu':'helmets','Norcferatu Bonehood':'helmets',
     'Dark Vision Bandana':'helmets','Enchanted Werewolf Helmet (Fist)':'helmets',
     'Ethereal Coned Hat':'helmets','Dauntless Dragon Scale Armor':'armor',
-    'Unerring Dragon Scale Armor':'armor','Glooth Cape':'armor',
-    'Glooth Amulet':'amulets','Sanguine Collar':'amulets','Bounty Talisman':'amulets'
+    'Unerring Dragon Scale Armor':'armor','Glooth Cape':'armor','Sanguine Collar':'amulets','Bounty Talisman':'amulets'
   };
 
   const normalizeVocations=v=>[...new Set((Array.isArray(v)?v:[v]).flatMap(x=>String(x||'').split(/[\\/,|]+/))
@@ -102,10 +101,20 @@
   function cleanOldBackpacks(){
     if(typeof SHOP_ITEMS==='undefined')return;
     const oldIds=new Set(['small-backpack','adventurer-backpack','dragon-backpack','demon-backpack','infernal-backpack']);
-    for(let i=SHOP_ITEMS.length-1;i>=0;i--)if(oldIds.has(SHOP_ITEMS[i].id))SHOP_ITEMS.splice(i,1);
+    const removedIds=new Set(oldIds);
+    for(let i=SHOP_ITEMS.length-1;i>=0;i--){
+      const item=SHOP_ITEMS[i];
+      // Backpacks antigas/placeholder sem sprite não podem existir no catálogo.
+      const isBackpack=String(item?.category||'').toLowerCase()==='backpacks';
+      const hasSprite=!!String(item?.sprite||'').trim();
+      if(oldIds.has(item.id)||(isBackpack&&!hasSprite)){
+        removedIds.add(item.id);
+        SHOP_ITEMS.splice(i,1);
+      }
+    }
     if(typeof game!=='undefined'&&game){
-      if(Array.isArray(game.shopOwned))game.shopOwned=game.shopOwned.filter(id=>!oldIds.has(id));
-      if(game.shopEquipped?.backpack&&oldIds.has(game.shopEquipped.backpack))game.shopEquipped.backpack=null;
+      if(Array.isArray(game.shopOwned))game.shopOwned=game.shopOwned.filter(id=>!removedIds.has(id));
+      if(game.shopEquipped?.backpack&&removedIds.has(game.shopEquipped.backpack))game.shopEquipped.backpack=null;
     }
   }
 
@@ -135,6 +144,53 @@
     if(/helmet|hood|visor|casque|headguard|headpiece|mask|bandana|circlet|galea|mengu|coned hat|hat/.test(n))return 'helmets';
     if(/armor|plate|mail|cuirass|chestplate|robe|cape|mantle|lorica|tunic|coat|nanbando|tanko|oyoroi|sherwani/.test(n))return 'armor';
     return null;
+  }
+
+  const AMULET_PROTECTION={
+    'Magma Amulet':{fire:20,ice:-10},
+    'Terra Amulet':{earth:20,fire:-10},
+    'Glacier Amulet':{ice:20,fire:-10},
+    'Lightning Pendant':{energy:20,earth:-10},
+    'Prismatic Necklace':{physical:10,energy:15},
+    'Protection Amulet':{physical:6},
+    'Sacred Tree Amulet':{physical:60,earth:40},
+    'Shockwave Amulet':{physical:60,energy:40},
+    'Bonfire Amulet':{physical:60,fire:40},
+    'Leviathan\\'s Amulet':{physical:60,ice:40},
+    'Stone Skin Amulet':{physical:80,death:80},
+    'Strange Talisman':{energy:10},
+    'Silver Amulet':{earth:10},
+    'Koshei\\'s Ancient Amulet':{death:8},
+    'Rainbow Necklace':{physical:3,fire:6,ice:-5}
+  };
+  const NEW_AMULET_DEFAULTS={
+    'Cobra Amulet':{physical:3},
+    'Enchanted Merudri Brooch':{earth:5},
+    'Enchanted Pendulet':{death:5},
+    'Enchanted Theurgic Amulet':{energy:8},
+    'Enchanted Turtle Amulet':{physical:5},
+    'Enchanted Werewolf Amulet':{death:5},
+    'Foxtail Amulet':{physical:4},
+    'Gill Necklace':{ice:5},
+    'Greater Garlic Necklace':{death:5},
+    'Greawhel Necklace':{earth:5},
+    'Lion Amulet':{physical:5},
+    'Amuleto #239124':{physical:5},
+    'Amuleto #240581':{fire:5},
+    'Amuleto #240589':{ice:5},
+    'Amuleto #240605':{energy:5},
+    'Amuleto #240620':{earth:5},
+    'Amuleto #240635':{death:5}
+  };
+  function applyAmuletProtection(item){
+    if(item?.category!=='amulets')return;
+    const p=AMULET_PROTECTION[item.name]||NEW_AMULET_DEFAULTS[item.name]||{physical:3};
+    item.elementalProtection={...p};
+    const labels=Object.entries(p).map(([k,v])=>`${k} ${v>0?'+':''}${v}%`);
+    item.protection=labels.join(' · ');
+    if(item.name?.startsWith('Amuleto #')||item.name?.includes('Enchanted')||['Cobra Amulet','Foxtail Amulet','Gill Necklace','Greater Garlic Necklace','Greawhel Necklace','Lion Amulet'].includes(item.name)){
+      item.bonus=`Proteção: ${labels.join(' · ')}`;
+    }
   }
 
   function apply(){
@@ -174,6 +230,8 @@
       if(/^Ink (Blade|Brush|Claw|Quill|Vine)$/i.test(String(item.name||''))){
         item.category='trinkets';
       }
+
+      applyAmuletProtection(item);
     }
 
     removeQuestTab();
@@ -205,7 +263,11 @@
     window.arenaCatalogAuditReport={
       categoryChanges,vocationChanges,nameChanges,
       shopItems:SHOP_ITEMS.length,
-      categories:typeof SHOP_CATEGORIES!=='undefined'?SHOP_CATEGORIES.map(x=>x.id):[]
+      categories:typeof SHOP_CATEGORIES!=='undefined'?SHOP_CATEGORIES.map(x=>x.id):[],
+      duplicateIds:[...new Set(SHOP_ITEMS.map(x=>x.id).filter((id,i,a)=>a.indexOf(id)!==i))],
+      duplicateNames:[...new Set(SHOP_ITEMS.map(x=>String(x.name||'').trim().toLowerCase()).filter((n,i,a)=>n&&a.indexOf(n)!==i))],
+      backpacksWithoutSprite:SHOP_ITEMS.filter(x=>x.category==='backpacks'&&!String(x.sprite||'').trim()).map(x=>x.name),
+      amuletsWithElementalProtection:SHOP_ITEMS.filter(x=>x.category==='amulets'&&x.elementalProtection).map(x=>({name:x.name,protection:x.protection}))
     };
   }
 
