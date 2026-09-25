@@ -9,7 +9,7 @@
     {id:'trinket-crit-3',name:'Critical Eye',icon:'◆',category:'trinkets',type:'crit',level:3,price:13500,minLevel:30,crit:15,bonus:'+15% chance de crítico'},
     {id:'trinket-life-1',name:'Vampiric Fang',icon:'♥',category:'trinkets',type:'lifesteal',level:1,price:1600,minLevel:5,lifesteal:3,bonus:'Rouba 3% do dano em vida'},
     {id:'trinket-life-2',name:'Vampiric Fang',icon:'♥',category:'trinkets',type:'lifesteal',level:2,price:5500,minLevel:15,lifesteal:6,bonus:'Rouba 6% do dano em vida'},
-    {id:'trinket-life-3',name:'Vampiric Fang',icon:'♥',category:'trinkets',type:'lifesteal',level:3,price:14500,minLevel:30,lifesteal:10,bonus:'Rouba 10% do dano em vida'}
+    {id:'trinket-life-3',name:'Vampiric Fang',icon:'♥',category:'trinkets',type:'lifesteal',level:3,price:14500,minLevel:30,lifesteal:10,bonus:'Rouba 10% do dano em vida'},
     {id:'real-ink-blade',name:'Ink Blade',icon:'✦',sprite:'arena-godot/ink blade.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
     {id:'real-moon-mirror',name:'Moon Mirror',icon:'✦',sprite:'arena-godot/moon mirror.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
     {id:'real-scarab-ocarina',name:'Scarab Ocarina',icon:'✦',sprite:'arena-godot/scarab ocarina.png',category:'trinkets',type:'visual',level:1,price:500,minLevel:1,bonus:'Sprite real'},
