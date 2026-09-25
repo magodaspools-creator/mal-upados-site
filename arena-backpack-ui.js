@@ -80,6 +80,7 @@
   }
 
   function sprite(it){
+    if(it?.sprite)return `<img src="arena-godot/assets-importados/${encodeURI(it.sprite)}" alt="${esc(it.name)}" draggable="false" style="width:44px;height:44px;image-rendering:pixelated;object-fit:contain">`;
     const n=String(it?.name||'').toLowerCase();
     let c='#aeb4bd';
     if(n.includes('earth'))c='#78a85d';else if(n.includes('fire'))c='#df7448';else if(n.includes('energy'))c='#6e91d9';else if(n.includes('frost'))c='#67b8d4';else if(n.includes('death'))c='#9f8bc4';else if(n.includes('lucky'))c='#d8b85b';else if(n.includes('critical'))c='#d96a62';else if(n.includes('vampiric'))c='#a65c6b';
