@@ -481,3 +481,5 @@ setTimeout(initArenaShop,1500);
   arenaLevelMap:'<=50:5, <=80:10, <=100:15, <=120:20, <=150:25, <=180:30, <=200:35, <=230:40, <=250:45, <=270:50, <=300:60, >300:70'
  };
 })();
+
+(()=>{const item=SHOP_ITEMS.find(x=>x.id==='real-mooh-tah-plate');if(item){item.tibiaLevel=300;item.minLevel=60;item.price=77700;}})();
