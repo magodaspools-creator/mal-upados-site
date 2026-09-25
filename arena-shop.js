@@ -398,7 +398,7 @@ setTimeout(initArenaShop,1500);
   else delete item.vocation;
   if(category==='quest')item.shopDisabled=true;
  }
- if(!SHOP_CATEGORIES.some(x=>x.id==='quest'))SHOP_CATEGORIES.push({id:'quest',label:'Quest'});
+ // Quest items remain hidden from the Arena shop; there is no Quest tab.
 })();
 
 
