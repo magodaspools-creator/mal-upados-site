@@ -18,7 +18,12 @@
     return ids.map(id=>typeof SHOP_ITEMS!=='undefined'?SHOP_ITEMS.find(x=>x.id===id):null).filter(Boolean);
   }
   function itemSprite(item,slot){
-    if(isEmpty(item))return `<svg class="arena-item-sprite arena-empty-sprite" viewBox="0 0 32 32" aria-hidden="true" shape-rendering="crispEdges"><rect x="2" y="2" width="28" height="28" fill="#101216" stroke="#34383e"/><path d="M7 16h18M16 7v18" stroke="#292d33" stroke-width="2"/><rect x="11" y="11" width="10" height="10" fill="none" stroke="#3a3e45"/></svg>`;
+    if(isEmpty(item)){
+      const emptyAssets={amulet:'neck.png',helmets:'head.png',backpack:'back.png',weapon:'left-hand.png',armor:'body.png',shield:'right-hand.png',rings:'finger.png',boots:'feet.png'};
+      const asset=emptyAssets[slot];
+      if(asset)return `<img class="arena-item-sprite arena-empty-sprite" src="arena-godot/assets-importados/${asset}" alt="" aria-hidden="true" draggable="false">`;
+      return `<svg class="arena-item-sprite arena-empty-sprite" viewBox="0 0 32 32" aria-hidden="true" shape-rendering="crispEdges"><rect x="2" y="2" width="28" height="28" fill="#101216" stroke="#34383e"/><path d="M7 16h18M16 7v18" stroke="#292d33" stroke-width="2"/><rect x="11" y="11" width="10" height="10" fill="none" stroke="#3a3e45"/></svg>`;
+    }
     const id=String(item.id||'').toLowerCase(),name=String(item.name||'').toLowerCase();
     const accent=/dragon|draken|frost/i.test(name)?'#78b6d9':/demon|abyss|hell/i.test(name)?'#9f78c2':/golden|celestial|royal|crown/i.test(name)?'#e4bd5d':/phoenix|fire|inferno|everblazing/i.test(name)?'#dd754d':/nature|fabulous|falcon|cobra/i.test(name)?'#78b87c':/lucky/i.test(name)?'#d8b85b':/critical/i.test(name)?'#d96a62':/vampiric/i.test(name)?'#a65c6b':/wand|rod|magic|arcan/i.test(name)?'#91a9d8':'#aeb4bd';
     let body='';
