@@ -6,7 +6,7 @@
     {id:'adventurer-backpack',name:"Adventurer's Backpack",icon:'🎒',category:'backpacks',price:3500,attack:0,defense:0,minLevel:5,slots:5,bonus:'5 slots · Amuletos + Trinkets'},
     {id:'dragon-backpack',name:'Dragon Backpack',icon:'🎒',category:'backpacks',price:9000,attack:0,defense:0,minLevel:12,slots:6,bonus:'6 slots · Amuletos + Trinkets'},
     {id:'demon-backpack',name:'Demon Backpack',icon:'🎒',category:'backpacks',price:18000,attack:0,defense:0,minLevel:20,slots:7,bonus:'7 slots · Amuletos + Trinkets'},
-    {id:'infernal-backpack',name:'Infernal Backpack',icon:'🎒',category:'backpacks',price:35000,attack:0,defense:0,minLevel:35,slots:8,bonus:'8 slots · Amuletos + Trinkets'}
+    {id:'infernal-backpack',name:'Infernal Backpack',icon:'🎒',category:'backpacks',price:35000,attack:0,defense:0,minLevel:35,slots:8,bonus:'8 slots · Amuletos + Trinkets'},
 
     {id:'real-bp-20-years',name:'20 Years Backpack',icon:'🎒',sprite:'20 years backpack.png',category:'backpacks',price:5000,attack:0,defense:0,minLevel:5,slots:6,bonus:'6 slots · Amuletos + Trinkets'},
     {id:'real-bp-adventurer',name:"Adventurer's Backpack",icon:'🎒',sprite:"adventurer's backpack.png",category:'backpacks',price:3500,attack:0,defense:0,minLevel:5,slots:5,bonus:'5 slots · Amuletos + Trinkets'},
