@@ -43,7 +43,7 @@
   }
 
   function renderSet(){const box=document.getElementById(SET_ID);if(!box||typeof game==='undefined'||!game)return;const slots=[['amulet','Amuleto'],['helmets','Helmet'],['backpack','Backpack'],['weapon','Arma'],['armor','Armadura'],['shield','Escudo / Arma'],['rings','Ring'],['boots','Boots'],['ammo','Ammo']];box.innerHTML=`<div class="arena-equipment-stage">${slots.map(([slot,label])=>slotHtml(slot,label)).join('')}</div>`}
-  function slotHtml(slot,label){const item=itemFor(slot),bonus=item.bonus||'';return `<div class="arena-equipment-slot slot-${slot} ${isEmpty(item)?'is-empty':'is-equipped'}" title="${esc(item.name)}"><div class="arena-item-icon">${itemSprite(item,slot)}</div><small>${label}</small><strong>${esc(item.name)}</strong>${bonus?`<em>${esc(bonus)}</em>`:''}</div>`}
+  function slotHtml(slot,label){const item=itemFor(slot);return `<div class="arena-equipment-slot slot-${slot} ${isEmpty(item)?'is-empty':'is-equipped'}" title="${esc(item.name)}"><div class="arena-item-icon">${itemSprite(item,slot)}</div><strong>${esc(item.name)}</strong></div>`}
   function installStyle(){
     if(document.getElementById(STYLE_ID))return;
     const style=document.createElement('style');style.id=STYLE_ID;style.textContent=`
