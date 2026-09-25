@@ -6,7 +6,8 @@ const SHOP_CATEGORIES=[
   {id:'boots',label:'Boots'},
   {id:'helmets',label:'Helmets'},
   {id:'wands',label:'Wands'},
-  {id:'rings',label:'Rings'}
+  {id:'rings',label:'Rings'},
+  {id:'amulets',label:'Amuletos'}
 ];
 const SHOP_ITEMS=[
   {id:'fire-sword',name:'Fire Sword',icon:'🗡️',category:'weapons',price:150,attack:8,defense:0,minLevel:1,bonus:'+8 ataque'},
@@ -64,13 +65,34 @@ const SHOP_ITEMS=[
   {id:'ring-of-bless',name:'Ring of Blessing',icon:'💍',category:'rings',price:1000,attack:8,defense:9,minLevel:16,bonus:'+8 ataque · +9 defesa'},
   {id:'prismatic-ring',name:'Prismatic Ring',icon:'💎',category:'rings',price:1500,attack:10,defense:12,minLevel:21,bonus:'+10 ataque · +12 defesa'},
   {id:'demonbone-ring',name:'Demonbone Ring',icon:'💀',category:'rings',price:2200,attack:14,defense:14,minLevel:28,bonus:'+14 ataque · +14 defesa'},
-  {id:'celestial-ring',name:'Celestial Ring',icon:'🌟',category:'rings',price:3400,attack:18,defense:20,minLevel:36,bonus:'+18 ataque · +20 defesa'}
+  {id:'celestial-ring',name:'Celestial Ring',icon:'🌟',category:'rings',price:3400,attack:18,defense:20,minLevel:36,bonus:'+18 ataque · +20 defesa'},
+  {id:'amulet-cobra',name:'Cobra Amulet',icon:'✦',sprite:'cobra amulet.png',category:'amulets',price:500,attack:0,defense:0,minLevel:1,bonus:'Amuleto'},
+  {id:'amulet-enchanted-merudri',name:'Enchanted Merudri Brooch',icon:'✦',sprite:'enchanted merudri brooch.png',category:'amulets',price:500,attack:0,defense:0,minLevel:1,bonus:'Amuleto'},
+  {id:'amulet-enchanted-pendulet',name:'Enchanted Pendulet',icon:'✦',sprite:'enchanted pendulet.png',category:'amulets',price:500,attack:0,defense:0,minLevel:1,bonus:'Amuleto'},
+  {id:'amulet-enchanted-theurgic',name:'Enchanted Theurgic Amulet',icon:'✦',sprite:'enchanted theurgic amulet.png',category:'amulets',price:500,attack:0,defense:0,minLevel:1,bonus:'Amuleto'},
+  {id:'amulet-enchanted-turtle',name:'Enchanted Turtle Amulet',icon:'✦',sprite:'enchanted turtle amulet.png',category:'amulets',price:500,attack:0,defense:0,minLevel:1,bonus:'Amuleto'},
+  {id:'amulet-enchanted-werewolf',name:'Enchanted Werewolf Amulet',icon:'✦',sprite:'enchanted werewolf amulet.png',category:'amulets',price:500,attack:0,defense:0,minLevel:1,bonus:'Amuleto'},
+  {id:'amulet-foxtail',name:'Foxtail Amulet',icon:'✦',sprite:'foxtail amulet.png',category:'amulets',price:500,attack:0,defense:0,minLevel:1,bonus:'Amuleto'},
+  {id:'amulet-gill-necklace',name:'Gill Necklace',icon:'✦',sprite:'gill necklace.png',category:'amulets',price:500,attack:0,defense:0,minLevel:1,bonus:'Amuleto'},
+  {id:'amulet-glacier',name:'Glacier Amulet',icon:'✦',sprite:'glacier amulet.png',category:'amulets',price:500,attack:0,defense:0,minLevel:1,bonus:'Amuleto'},
+  {id:'amulet-greater-garlic',name:'Greater Garlic Necklace',icon:'✦',sprite:'greater garlic necklace.png',category:'amulets',price:500,attack:0,defense:0,minLevel:1,bonus:'Amuleto'},
+  {id:'amulet-greawhel',name:'Greawhel Necklace',icon:'✦',sprite:'greawhel necklace.png',category:'amulets',price:500,attack:0,defense:0,minLevel:1,bonus:'Amuleto'},
+  {id:'amulet-lion',name:'Lion Amulet',icon:'✦',sprite:'lion amulet.png',category:'amulets',price:500,attack:0,defense:0,minLevel:1,bonus:'Amuleto'},
+  {id:'amulet-magma',name:'Magma Amulet',icon:'✦',sprite:'magma amulet.png',category:'amulets',price:500,attack:0,defense:0,minLevel:1,bonus:'Amuleto'},
+  {id:'amulet-prismatic',name:'Prismatic Necklace',icon:'✦',sprite:'prismatic necklace.png',category:'amulets',price:500,attack:0,defense:0,minLevel:1,bonus:'Amuleto'},
+  {id:'amulet-terra',name:'Terra Amulet',icon:'✦',sprite:'terra amulet.png',category:'amulets',price:500,attack:0,defense:0,minLevel:1,bonus:'Amuleto'},
+  {id:'amulet-239124',name:'Amuleto #239124',icon:'✦',sprite:'239124.png',category:'amulets',price:500,attack:0,defense:0,minLevel:1,bonus:'Amuleto'},
+  {id:'amulet-240581',name:'Amuleto #240581',icon:'✦',sprite:'240581.png',category:'amulets',price:500,attack:0,defense:0,minLevel:1,bonus:'Amuleto'},
+  {id:'amulet-240589',name:'Amuleto #240589',icon:'✦',sprite:'240589.png',category:'amulets',price:500,attack:0,defense:0,minLevel:1,bonus:'Amuleto'},
+  {id:'amulet-240605',name:'Amuleto #240605',icon:'✦',sprite:'240605.png',category:'amulets',price:500,attack:0,defense:0,minLevel:1,bonus:'Amuleto'},
+  {id:'amulet-240620',name:'Amuleto #240620',icon:'✦',sprite:'240620.png',category:'amulets',price:500,attack:0,defense:0,minLevel:1,bonus:'Amuleto'},
+  {id:'amulet-240635',name:'Amuleto #240635',icon:'✦',sprite:'240635.png',category:'amulets',price:500,attack:0,defense:0,minLevel:1,bonus:'Amuleto'},
 ];
 let shopFilter='all';
 function shopEnsure(){
   if(!game)return;
   if(!game.shopOwned)game.shopOwned=['base-weapon','base-armor'];
-  if(!game.shopEquipped)game.shopEquipped={weapon:'base-weapon',armor:'base-armor',legs:null,boots:null,helmets:null,wands:null,rings:null};
+  if(!game.shopEquipped)game.shopEquipped={weapon:'base-weapon',armor:'base-armor',legs:null,boots:null,helmets:null,wands:null,rings:null,amulet:null};
   if(!game.shopOwned.includes('base-weapon'))game.shopOwned.push('base-weapon');
   if(!game.shopOwned.includes('base-armor'))game.shopOwned.push('base-armor');
   if(game.ownedWeapons?.length>0 && game.ownedWeapons.includes(1)&&!game.shopOwned.includes('fire-sword'))game.shopOwned.push('fire-sword');
@@ -131,7 +153,7 @@ function shopRender(){
     const isEquipped=inSlot===item.id;
     let label=isEquipped?'Equipado':!vocationOk?`Exclusivo · ${esc(arenaShopItemVocation(item))}`:owned?'Equipar':levelOk&&canBuy?`Comprar · ${fmt(item.price)} gold`:!levelOk?`Level ${item.minLevel}`:`${fmt(item.price)} gold`;
     let disabled=isEquipped||!vocationOk||(!owned&&(!canBuy||!levelOk));
-    return `<div class="shop-item ${isEquipped?'equipped':''} ${levelOk?'':'level-locked'} ${vocationOk?'':'vocation-locked'}"><div class="shop-icon">${item.icon}</div><div class="shop-info"><strong>${esc(item.name)}</strong><span>${esc(categoryLabel(item.category))} · ${esc(item.bonus)}</span><small>Level ${item.minLevel}+ · ${fmt(item.price)} gold</small></div><button class="shop-btn ${isEquipped?'equipped-btn':''}" data-id="${item.id}" ${disabled?'disabled':''}>${label}</button></div>`;
+    return `<div class="shop-item ${isEquipped?'equipped':''} ${levelOk?'':'level-locked'} ${vocationOk?'':'vocation-locked'}"><div class="shop-icon">${item.sprite?`<img src="arena-godot/assets-importados/${encodeURI(item.sprite)}" alt="" draggable="false">`:item.icon}</div><div class="shop-info"><strong>${esc(item.name)}</strong><span>${esc(categoryLabel(item.category))} · ${esc(item.bonus)}</span><small>Level ${item.minLevel}+ · ${fmt(item.price)} gold</small></div><button class="shop-btn ${isEquipped?'equipped-btn':''}" data-id="${item.id}" ${disabled?'disabled':''}>${label}</button></div>`;
   }).join('')||'<div class="small">Nenhum item nesta categoria.</div>';
   box.querySelectorAll('.shop-btn').forEach(btn=>btn.onclick=()=>shopAction(btn.dataset.id));
   syncEquipmentDisplay();
