@@ -158,6 +158,10 @@
         item.category='trinkets';
         item.shopDisabled=false;
         item.bonus='Sprite real';
+        if(id==='real-239792')item.vocations=['paladin','knight'];
+        if(id==='real-239793')item.vocations=['monk'];
+        if(id==='real-239794')item.vocations=['druid'];
+        if(id==='real-239795')item.vocations=['sorcerer'];
       }
 
       // Glooth 214973 usa o sprite enviado e é Glooth Armor.
