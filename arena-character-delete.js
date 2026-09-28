@@ -4,7 +4,7 @@
 
   const style=()=>{
     if(document.getElementById('arena-delete-style'))return;
-    const s=document.createElement('style');s.id='arena-delete-style';s.textContent='
+    const s=document.createElement('style');s.id='arena-delete-style';s.textContent=`
       .arena-delete-btn{width:100%;margin-top:8px;padding:9px 12px;border:1px solid #5b3030;background:#171012;color:#d99a9a;cursor:pointer;font:800 10px Inter,sans-serif;letter-spacing:.7px}
       .arena-delete-btn:hover{border-color:#9b4d4d;background:#211316;color:#f0b1b1}
       .arena-delete-modal{position:fixed;inset:0;z-index:100060;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.82);backdrop-filter:blur(7px)}
@@ -19,7 +19,7 @@
       .arena-delete-cancel,.arena-delete-confirm{padding:10px 14px;border:1px solid #45484d;background:#15181c;color:#ccc;cursor:pointer;font-weight:800}
       .arena-delete-confirm{border-color:#7b3c3c;background:#391b1e;color:#f1b5b5}
       .arena-delete-confirm:disabled{opacity:.35;cursor:not-allowed}
-    ';document.head.appendChild(s);
+    `;document.head.appendChild(s);
   };
 
   function currentName(){return typeof game!=='undefined'&&game?.character?String(game.character):''}
