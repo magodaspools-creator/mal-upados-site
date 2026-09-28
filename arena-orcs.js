@@ -87,8 +87,9 @@
       n.discoverClue('map2_second_fragment');
       n.setFlag(GATE_FLAG,true);
       n.discoverClue('map2_two_shadows');
-      if(typeof toast==='function')toast('A linha de defesa caiu. O portão colossal começa a se abrir.');
-      setTimeout(renderScene,80);
+      if(typeof toast==='function')toast('O Chefe Orc caiu. O portão colossal se abre — o caminho para o deserto está livre.');
+      renderScene();
+      if(typeof renderAll==='function')renderAll();
     };
     window.__arenaOrcWinHook=true;
   }
