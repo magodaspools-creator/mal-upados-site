@@ -3,7 +3,13 @@
   window.__arenaCharacterSyncFix=true;
 
   const getClient=()=>window.malUpadosSupabase;
+  // Mantém o personagem explicitamente escolhido/criado como prioridade.
+  // Isso evita uma sincronização antiga de inicialização devolver o personagem anterior.
+  let activeCharacterName=null;
+  let syncGeneration=0;
   const sync=async(preferredName=null)=>{
+    if(preferredName)activeCharacterName=preferredName;
+    const generation=++syncGeneration;
     const supabase=getClient();
     if(!supabase?.auth)return false;
     const {data:{user}}=await supabase.auth.getUser();
@@ -33,9 +39,14 @@
     try{all=JSON.parse(localStorage.getItem('malupados_arena_v1')||'{}')}catch{}
 
     const fallback=data[0].name;
-    const current=preferredName&&data.some(c=>c.name===preferredName)
-      ?preferredName
+    const requestedName=activeCharacterName||preferredName||null;
+    const current=requestedName&&data.some(c=>c.name===requestedName)
+      ?requestedName
       :(game?.character&&data.some(c=>c.name===game.character)?game.character:fallback);
+
+    // Se outra sincronização mais recente já escolheu um personagem, esta
+    // resposta antiga não pode sobrescrevê-lo.
+    if(generation!==syncGeneration)return false;
 
     if(typeof loadGame==='function')loadGame(current);
 
