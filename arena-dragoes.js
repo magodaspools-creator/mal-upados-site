@@ -41,14 +41,30 @@
         n.discoverClue('map4_exploitation');
         n.discoverClue('map4_split_seal');
         setTimeout(()=>{
-          if(window.ArenaNarrativeNPCs?.openDialogue)window.ArenaNarrativeNPCs.openDialogue('kaelen',MAP_ID);
-          setTimeout(()=>{
+          const cutscene=window.ArenaCutscene;
+          const finishEntry=()=>{
             if(!n.hasEvent(KAELEN_BREAK_EVENT)){
               n.completeEvent(KAELEN_BREAK_EVENT,{reason:'dragon_lair'});
               const scene=document.getElementById('arenaDragonScene');
               scene?.classList.add('kaelen-broken');
             }
-          },250);
+          };
+          if(cutscene?.play){
+            cutscene.play({
+              chapter:'CAPÍTULO IV · COVIL DOS DRAGÕES',
+              speaker:'Kaelen',
+              role:'O Guia',
+              icon:'⚔',
+              steps:[
+                {type:'narration',text:'O covil revela sua verdade: dragões acorrentados alimentam máquinas antigas. As correntes carregam o mesmo selo rachado encontrado nos outros domínios.'},
+                {speaker:'Kaelen',text:'Eles não são vítimas. São monstros. Mate-os e tome o poder que guardam.'},
+                {type:'narration',text:'Pela primeira vez, Kaelen abandona a postura de guia. Sua voz não pede cautela — exige violência.'},
+                {speaker:'Kaelen',text:'O mecanismo precisa continuar funcionando. Não questione o que foi necessário para manter este mundo de pé.'},
+                {type:'narration',text:'Entre as correntes, uma marca associada a Kaelen brilha por um instante. A pergunta que você evitava finalmente surge: de que lado ele realmente está?'}
+              ],
+              onComplete:finishEntry
+            });
+          }else finishEntry();
         },220);
       }
     }
@@ -77,6 +93,23 @@
       if(typeof toast==='function')toast('O General das Feras caiu. O Abismo se abre diante de você.');
       renderScene();
       if(typeof renderAll==='function')renderAll();
+      setTimeout(()=>{
+        const cutscene=window.ArenaCutscene;
+        if(!cutscene?.play)return;
+        cutscene.play({
+          chapter:'CAPÍTULO IV · AS CORRENTES DO MUNDO',
+          speaker:'Kaelen',
+          role:'O Guia',
+          icon:'⚔',
+          steps:[
+            {type:'narration',text:'O General das Feras cai. As correntes começam a vibrar e o mecanismo abaixo do covil perde sua estabilidade.'},
+            {speaker:'General das Feras',role:'Guardião das Correntes',icon:'☀',text:'Nós acorrentamos o mundo... para que você não precisasse. O Abismo está aberto. O Trono o aguarda.'},
+            {type:'narration',text:'O quarto fragmento se completa. Por trás das máquinas, uma passagem desce para uma escuridão que parece muito mais antiga que o próprio covil.'},
+            {speaker:'Kaelen',text:'Não olhe para trás. O que está abaixo é a última parte do caminho.'},
+            {speaker:'Kaelen',text:'Desça. No Abismo, você finalmente verá o que o Cisma realmente esconde.'}
+          ]
+        });
+      },450);
     };
     window.__arenaDragonWinHook=true;
   }
