@@ -54,6 +54,21 @@
         if(typeof persist==='function')persist();
       }else{
         game={...game,character:current,gender:game.gender||record?.gender,vocation:game.vocation||record?.vocation};
+
+        // Mesmo no mesmo Level, uma skill de teste/treino pode ter sido
+        // alterada no servidor. Não deixe o estado local padrão (ex.: skill 10)
+        // apagar uma skill maior salva no personagem.
+        const serverSkills=server?.skills&&typeof server.skills==='object'?server.skills:null;
+        const localSkills=game?.skills&&typeof game.skills==='object'?game.skills:null;
+        if(serverSkills&&localSkills){
+          const vocationField=({Knight:'melee',Paladin:'distance',Sorcerer:'magic',Druid:'magic',Monk:'fist'})[record?.vocation]||'melee';
+          const remoteSkill=Number(serverSkills[vocationField]);
+          const localSkill=Number(localSkills[vocationField]);
+          if(Number.isFinite(remoteSkill)&&(!Number.isFinite(localSkill)||remoteSkill>localSkill)){
+            game.skills={...localSkills,...serverSkills};
+            if(typeof persist==='function')persist();
+          }
+        }
       }
     }
 
