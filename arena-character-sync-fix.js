@@ -99,6 +99,7 @@
   const resync=()=>setTimeout(()=>sync(),100);
   window.addEventListener('arena-character-created',event=>{
     const name=event.detail?.character?.name||null;
+    if(name)activeCharacterName=name;
     setTimeout(()=>sync(name),0);
   });
   window.addEventListener('mal-auth-changed',resync);
