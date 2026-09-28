@@ -1,0 +1,13 @@
+.arena-map1-explorer{margin:0 0 18px;border:1px solid #3b3527;background:#080a0d;box-shadow:0 20px 60px rgba(0,0,0,.28)}
+.arena-map1-head{display:flex;align-items:end;justify-content:space-between;gap:14px;padding:14px 16px;border-bottom:1px solid #2b2f34;background:linear-gradient(180deg,#15130f,#0b0d10)}
+.arena-map1-head h3{margin:2px 0 0;font:900 1.05rem Cinzel,serif;color:#e3c36d}.arena-map1-head p{margin:4px 0 0;color:#8f949c;font-size:.68rem}.arena-map1-head strong{font-size:.62rem;color:#bba46d;white-space:nowrap}
+.arena-map1-stage{position:relative;width:100%;overflow:hidden;background:#050607}.arena-map1-stage img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;user-select:none}
+.arena-map1-hotspot{position:absolute;transform:translate(-50%,-50%);border:1px solid transparent;background:transparent;padding:0;margin:0;cursor:pointer;z-index:5;border-radius:8px;transition:.18s;outline:none}
+.arena-map1-hotspot:hover,.arena-map1-hotspot:focus-visible{border-color:rgba(229,194,105,.8);background:rgba(194,154,57,.10);box-shadow:0 0 0 2px rgba(0,0,0,.28),0 0 24px rgba(220,177,75,.16)}
+.arena-map1-hotspot.found{border-color:rgba(180,158,103,.28)}
+.arena-map1-hotspot.found:before{content:"✓";position:absolute;right:4px;top:3px;color:#dbc47d;font:800 10px Inter,sans-serif;text-shadow:0 1px 4px #000}
+.arena-map1-hint{padding:10px 14px;border-top:1px solid #262a2f;color:#777d86;font-size:.63rem;background:#0c0e11}
+.arena-map1-modal{position:fixed;inset:0;z-index:100090;display:grid;place-items:center;padding:18px;background:rgba(2,3,5,.78);backdrop-filter:blur(7px)}
+.arena-map1-dialog{width:min(560px,100%);max-height:88vh;overflow:auto;background:linear-gradient(145deg,#17191e,#090b0f);border:1px solid rgba(194,151,67,.55);box-shadow:0 30px 100px rgba(0,0,0,.8);padding:24px;border-radius:12px}
+.arena-map1-kicker{font:800 10px Inter,sans-serif;letter-spacing:1.8px;color:#a88a50;text-transform:uppercase}.arena-map1-dialog h3{font:900 24px Cinzel,serif;color:#e6c66f;margin:7px 0 10px}.arena-map1-dialog p{font:500 13px/1.7 Inter,sans-serif;color:#c3c7cd;margin:0 0 18px}.arena-map1-clue{padding:10px 12px;border:1px solid #363027;background:#12110d;color:#a9aeb6;font-size:.67rem;margin-bottom:14px}.arena-map1-dialog button{border:1px solid #c7a456;background:#17181b;color:#eee;padding:10px 15px;font-weight:800;cursor:pointer}
+@media(max-width:620px){.arena-map1-head{align-items:flex-start;flex-direction:column}.arena-map1-stage img{aspect-ratio:auto;min-height:280px;object-fit:cover}.arena-map1-dialog{padding:20px}}
