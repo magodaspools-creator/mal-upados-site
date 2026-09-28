@@ -22,7 +22,7 @@
   const loadForge=()=>loadScript('arena-forge-v2.js?v=forge-v4-20260915','data-arena-forge-v2');
   const loadDungeon=()=>loadScript('arena-dungeon.js?v=abyssal-gardens-v2-20260915','data-arena-dungeon');
   const loadCharacterCreation=()=>loadScript('arena-character-creation.js?v=character-creation-20260915b','data-arena-character-creation');
-  const loadCharacterSync=()=>loadScript('arena-character-sync-fix.js?v=character-sync-fix-20260915a','data-arena-character-sync-fix');
+  const loadCharacterSync=()=>loadScript('arena-character-sync-fix.js?v=character-sync-fix-20260928-skill','data-arena-character-sync-fix');
   const loadCharacterCreationUI=()=>loadScript('arena-character-creation-ui.js?v=character-creation-ui-20260915','data-arena-character-creation-ui');
   const loadWorldMap=()=>loadScript('arena-world-map.js?v=world-map-20260914','data-arena-world-map');
 
