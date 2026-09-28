@@ -66,7 +66,21 @@
       if(!data?.id||!data?.name)throw new Error('O servidor não retornou o personagem criado.');
       if(typeof members!=='undefined'&&Array.isArray(members)){members.length=0;members.push({name:data.name,vocation:data.vocation,gender:data.gender,characterId:data.id})}
       if(typeof loadGame==='function')loadGame(data.name);
-      if(typeof game!=='undefined'&&game){game.gender=gender;game.vocation=vocation;if(typeof persist==='function')persist()}
+      if(typeof game!=='undefined'&&game){
+        game.gender=gender;
+        game.vocation=vocation;
+        // Personagem recém-criado sempre começa na Floresta Sombria.
+        // Não herda a área atual de outro personagem nem de um estado local antigo.
+        game.zone=0;
+        game.manualZone=0;
+        game.xp=0;
+        game.wins=0;
+        game.kills=0;
+        game.damage=0;
+        game.streak=0;
+        game.bestStreak=0;
+        if(typeof persist==='function')persist();
+      }
       creating=false;close();
       if(typeof renderAll==='function')renderAll();
       window.dispatchEvent(new CustomEvent('arena-character-created',{detail:{character:data}}));
