@@ -83,6 +83,12 @@
       }
     }
 
+    if(typeof game!=='undefined'&&game?.__freshCharacter===true){
+      game.zone=0;
+      game.manualZone=0;
+      if(typeof persist==='function')persist();
+    }
+
     if(typeof window.__arenaCharacterDraw==='function')window.__arenaCharacterDraw();
     if(typeof renderAll==='function')renderAll();
     // Ao entrar com um personagem já existente, renderAll() desenha o mapa,
