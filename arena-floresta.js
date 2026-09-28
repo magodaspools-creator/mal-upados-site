@@ -86,6 +86,26 @@
     const warning=card.querySelector('.boss-battle-warning');
     (warning||card.querySelector('.battle-head'))?.after(line);
   }
+  function playBossCutscene(){
+    const n=narrative();
+    if(!n||!n.hasEvent('map1_boss_defeat')||n.hasFlag('map1_boss_cutscene_seen'))return;
+    const cutscene=window.ArenaCutscene;
+    if(!cutscene?.play)return;
+    n.setFlag('map1_boss_cutscene_seen',true);
+    cutscene.play({
+      chapter:'CAPÍTULO I · O GUARDIÃO CAÍDO',
+      speaker:'Kaelen',
+      role:'O Guia',
+      icon:'⚔',
+      steps:[
+        {type:'narration',text:'O Guardião cai. Por um instante, a floresta inteira parece prender a respiração.'},
+        {type:'narration',text:'Sob as raízes, algo desperta. Um fragmento antigo pulsa como se ainda lembrasse do mundo antes do Cisma.'},
+        {speaker:'Kaelen',text:'Você conseguiu. Mas isso não era apenas um monstro. Era um guardião de algo que alguém tentou esconder.'},
+        {speaker:'Kaelen',text:'Pegue o fragmento. As raízes vão se abrir. O caminho adiante nos levará mais perto da verdade.'}
+      ]
+    });
+  }
+
   function installBossRewardHook(){
     if(window.__arenaForestWinHook)return;
     const original=window.winBattle; if(typeof original!=='function')return;
@@ -104,6 +124,7 @@
           renderScene();
           if(typeof renderAll==='function')renderAll();
         }
+        setTimeout(playBossCutscene,450);
       }
     };
     window.__arenaForestWinHook=true;
@@ -113,7 +134,14 @@
     new MutationObserver(()=>setTimeout(()=>{renderScene();applyDefensiveBoss();renderBossLine();installBossRewardHook()},0))
       .observe(map,{subtree:true,childList:true,attributes:true,attributeFilter:['class','data-zone']});
     setInterval(()=>{renderScene();applyDefensiveBoss();installBossRewardHook()},350);
-    setTimeout(()=>{renderScene();renderBossLine();installBossRewardHook()},250);
+    setTimeout(()=>{
+      renderScene();
+      renderBossLine();
+      installBossRewardHook();
+      // Se o boss já foi derrotado antes desta versão da cutscene,
+      // exibe a cena uma única vez na próxima entrada do mapa.
+      setTimeout(playBossCutscene,650);
+    },250);
   }
   function boot(){if(!narrative())return;narrative().setChapter(MAP_ID);observe()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
