@@ -21,8 +21,31 @@
        +'<div class="abyss-warning"><span>O QUE AINDA NÃO FOI REVELADO</span><strong>Não toque no corpo.</strong><p>O trono guarda a resposta para tudo o que veio antes. A verdade permanece oculta até o momento certo.</p></div></section>';
       battleArea.insertAdjacentHTML('beforebegin',html);
       if(!n.hasEvent(ENTRY_EVENT)){
-        n.setChapter(MAP_ID); n.completeEvent(ENTRY_EVENT,{entry:'abyss_cathedral'});
-        n.discoverClue('map5_mourning_guard'); n.discoverClue('map5_perfect_architecture');
+        n.setChapter(MAP_ID);
+        setTimeout(()=>{
+          const cutscene=window.ArenaCutscene;
+          const finishEntry=()=>{
+            n.completeEvent(ENTRY_EVENT,{entry:'abyss_cathedral'});
+            n.discoverClue('map5_mourning_guard');
+            n.discoverClue('map5_perfect_architecture');
+          };
+          if(cutscene?.play){
+            cutscene.play({
+              chapter:'CAPÍTULO V · ABISMO DEMONÍACO',
+              speaker:'Kaelen',
+              role:'O Guia',
+              icon:'⚔',
+              steps:[
+                {type:'narration',text:'O caminho termina numa catedral enterrada no Abismo. Pela primeira vez, os chamados demônios não parecem monstros: parecem uma guarda real em luto.'},
+                {speaker:'Kaelen',text:'Não se deixe enganar. Eles protegem o que resta do inimigo. Avance.'},
+                {type:'narration',text:'As armaduras brancas estão marcadas pelo preto do Cisma. Não há troféus, pilhagem ou celebração. Apenas silêncio.'},
+                {speaker:'Kaelen',text:'A arquitetura deste lugar é perfeita demais para ser uma fortaleza demoníaca. Mas isso não importa mais. O caminho termina aqui.'},
+                {type:'narration',text:'Ao fundo, além da última linha de guardas, existe uma sala do trono. Algo espera por você lá dentro.'}
+              ],
+              onComplete:finishEntry
+            });
+          }else finishEntry();
+        },220);
       }
       if(!n.hasEvent(THRONE_EVENT))n.completeEvent(THRONE_EVENT,{entry:'throne_room',revelationReady:true});
     }
@@ -49,6 +72,23 @@
       n.completeEvent(BOSS_EVENT,{source:'royal_guard',boss:'deathbringer'});
       if(typeof toast==='function')toast('A última vigília caiu. O caminho para o trono está aberto.');
       setTimeout(renderScene,100);
+      setTimeout(()=>{
+        const cutscene=window.ArenaCutscene;
+        if(!cutscene?.play)return;
+        cutscene.play({
+          chapter:'CAPÍTULO V · A ÚLTIMA VIGÍLIA',
+          speaker:'Guarda Real',
+          role:'Guardião do Trono',
+          icon:'✦',
+          steps:[
+            {type:'narration',text:'A última guarda cai. Não há grito de vitória. Apenas o som das correntes antigas ecoando pela catedral.'},
+            {speaker:'Guarda Real',role:'Último Guardião',icon:'✦',text:'Nós não defendíamos monstros. Defendíamos nosso rei.'},
+            {type:'narration',text:'As portas da sala do trono se abrem. No centro, um rei mumificado permanece sentado, com o peito aberto e vazio.'},
+            {speaker:'Kaelen',text:'Não toque no corpo. Ainda não. A verdade que você procura está diante de nós, mas o Cisma ainda não terminou.'},
+            {type:'narration',text:'Os quatro fragmentos começam a reagir. Tudo o que aconteceu na floresta, no acampamento, no deserto e no covil converge para aquele trono.'}
+          ]
+        });
+      },450);
     };
     window.__arenaAbyssWinHook=true;
   }
