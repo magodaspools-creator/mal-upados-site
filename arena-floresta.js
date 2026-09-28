@@ -23,12 +23,34 @@
       battleArea.insertAdjacentHTML('beforebegin',html);
       if(n&&!n.hasEvent('map1_intro')){
         setTimeout(()=>{
-          if(window.ArenaNarrativeNPCs?.openDialogue)window.ArenaNarrativeNPCs.openDialogue('kaelen',MAP_ID);
-          n.completeEvent('map1_intro',{entry:'forest'});
-          n.discoverClue('map1_statues_outward');
-          n.discoverClue('map1_water_shadow');
-          n.discoverClue('map1_kaelen_shadow_absent');
-          n.discoverClue('map1_split_crown_mark');
+          const cutscene=window.ArenaCutscene;
+          if(cutscene?.play){
+            cutscene.play({
+              chapter:'CAPÍTULO I · FLORESTA SOMBRIA',
+              speaker:'Kaelen',
+              role:'O Guia',
+              icon:'⚔',
+              steps:[
+                {type:'narration',text:'A floresta fica em silêncio quando você se aproxima. Entre as árvores, Kaelen espera por você.'},
+                {type:'narration',text:'A luz alcança seu corpo — mas nenhuma sombra toca o chão.'},
+                {speaker:'Kaelen',text:'Nós precisamos consertar o que foi quebrado, guerreiro. A coroa deve ser restaurada.'}
+              ],
+              onComplete:()=>{
+                n.completeEvent('map1_intro',{entry:'forest'});
+                n.discoverClue('map1_statues_outward');
+                n.discoverClue('map1_water_shadow');
+                n.discoverClue('map1_kaelen_shadow_absent');
+                n.discoverClue('map1_split_crown_mark');
+              }
+            });
+          }else{
+            if(window.ArenaNarrativeNPCs?.openDialogue)window.ArenaNarrativeNPCs.openDialogue('kaelen',MAP_ID);
+            n.completeEvent('map1_intro',{entry:'forest'});
+            n.discoverClue('map1_statues_outward');
+            n.discoverClue('map1_water_shadow');
+            n.discoverClue('map1_kaelen_shadow_absent');
+            n.discoverClue('map1_split_crown_mark');
+          }
         },180);
       }
     }
