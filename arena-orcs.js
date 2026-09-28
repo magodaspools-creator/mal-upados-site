@@ -28,11 +28,33 @@
       if(n&&!n.hasEvent(INTRO_EVENT)){
         setTimeout(()=>{
           n.setChapter(MAP_ID);
-          n.completeEvent(INTRO_EVENT,{entry:'orc_camp'});
-          n.discoverClue('map2_broken_sun');
-          n.discoverClue('map2_orc_defense');
-          n.discoverClue('map2_split_crown_mark');
-          if(window.ArenaNarrativeNPCs?.openDialogue)window.ArenaNarrativeNPCs.openDialogue('vara',MAP_ID);
+          const cutscene=window.ArenaCutscene;
+          if(cutscene?.play){
+            cutscene.play({
+              chapter:'CAPÍTULO II · ACAMPAMENTO ORC',
+              speaker:'Vara',
+              role:'A Xamã',
+              icon:'◇',
+              steps:[
+                {type:'narration',text:'O caminho termina diante de um acampamento que não parece ter sido construído para vencer uma guerra — mas para sobreviver a ela.'},
+                {speaker:'Vara',text:'Pare. Você carrega o mesmo sinal que apareceu na floresta. A coroa partida não pertence a este lugar... mas os Orcs estão guardando alguma coisa.'},
+                {speaker:'Vara',text:'Eles não estão lutando por território. Estão tentando impedir que algo atravesse aquele portão.'},
+                {speaker:'Kaelen',text:'Não dê ouvidos a ela. O portão precisa ser aberto. Continue e encontraremos as respostas do outro lado.'},
+                {type:'narration',text:'Entre os estandartes do Sol Partido, você percebe a mesma rachadura gravada na pedra da floresta. Alguém esteve aqui antes de você.'}
+              ],
+              onComplete:()=>{
+                n.completeEvent(INTRO_EVENT,{entry:'orc_camp'});
+                n.discoverClue('map2_broken_sun');
+                n.discoverClue('map2_orc_defense');
+                n.discoverClue('map2_split_crown_mark');
+              }
+            });
+          }else{
+            n.completeEvent(INTRO_EVENT,{entry:'orc_camp'});
+            n.discoverClue('map2_broken_sun');
+            n.discoverClue('map2_orc_defense');
+            n.discoverClue('map2_split_crown_mark');
+          }
         },220);
       }
     } else {
@@ -90,6 +112,23 @@
       if(typeof toast==='function')toast('O Chefe Orc caiu. O portão colossal se abre — o caminho para o deserto está livre.');
       renderScene();
       if(typeof renderAll==='function')renderAll();
+      setTimeout(()=>{
+        const cutscene=window.ArenaCutscene;
+        if(!cutscene?.play)return;
+        cutscene.play({
+          chapter:'CAPÍTULO II · O PORTÃO COLOSSAL',
+          speaker:'Kaelen',
+          role:'O Guia',
+          icon:'⚔',
+          steps:[
+            {type:'narration',text:'O Chefe Orc cai de joelhos. Atrás dele, o portão colossal começa a se mover.'},
+            {speaker:'Chefe Orc',role:'Guardião do Portão',icon:'☀',text:'Nós não protegíamos o acampamento... protegíamos vocês.'},
+            {speaker:'Kaelen',text:'Cale-se. O que está além daquele portão não pertence a este mundo.'},
+            {type:'narration',text:'Por um instante, duas sombras aparecem sobre a areia do outro lado. Uma é sua. A outra não deveria estar ali.'},
+            {speaker:'Kaelen',text:'Continue. O deserto guarda a próxima parte da verdade.'}
+          ]
+        });
+      },450);
     };
     window.__arenaOrcWinHook=true;
   }
