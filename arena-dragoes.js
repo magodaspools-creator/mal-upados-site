@@ -74,8 +74,9 @@
       n.discoverClue('map4_fourth_fragment');
       n.completeEvent(DESCENT_EVENT,{source:'dragon_lair',destination:'abyss'});
       n.discoverClue('map4_final_words',{text:'Nós acorrentamos o mundo... para que você não precisasse... O Abismo está aberto. O Trono o aguarda.'});
-      if(typeof toast==='function')toast('Quarto fragmento absorvido. O chão começa a ceder para o Abismo.');
-      setTimeout(renderScene,100);
+      if(typeof toast==='function')toast('O General das Feras caiu. O Abismo se abre diante de você.');
+      renderScene();
+      if(typeof renderAll==='function')renderAll();
     };
     window.__arenaDragonWinHook=true;
   }
