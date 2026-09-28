@@ -69,8 +69,9 @@
       if(typeof game!=='undefined'&&game){game.gender=gender;game.vocation=vocation;if(typeof persist==='function')persist()}
       creating=false;close();
       if(typeof renderAll==='function')renderAll();
-      if(typeof showZone==='function')showZone(typeof game!=='undefined'?game.zone:0);
       window.dispatchEvent(new CustomEvent('arena-character-created',{detail:{character:data}}));
+      if(typeof window.arenaOpenIntro==='function')window.arenaOpenIntro();
+      else if(typeof showZone==='function')showZone(typeof game!=='undefined'?game.zone:0);
     }catch(error){
       console.error('Arena character creation:',error);
       creating=false;
