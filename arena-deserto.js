@@ -66,8 +66,9 @@
       n.setFlag(FLASH_FLAG,true);
       n.completeEvent('map3_flashback',{source:'arena_desert'});
       n.discoverClue('map3_key_in_mind');
-      if(typeof toast==='function')toast('Terceiro fragmento absorvido. Uma memória proibida desperta.');
-      setTimeout(renderScene,100);
+      if(typeof toast==='function')toast('O General da Magia caiu. A memória se completa — o caminho para o Covil dos Dragões foi revelado.');
+      renderScene();
+      if(typeof renderAll==='function')renderAll();
     };
     window.__arenaDesertWinHook=true;
   }
