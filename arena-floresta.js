@@ -74,11 +74,13 @@
         const n=narrative();
         if(n&&!n.hasEvent(FRAGMENT_EVENT)){
           n.addFragment(1);
+          n.completeEvent('map1_boss_defeat',{source:'forest_guardian'});
           n.completeEvent(FRAGMENT_EVENT,{source:'forest_guardian'});
           n.setFlag(ROOT_FLAG,true);
           n.discoverClue('map1_first_fragment');
-          if(typeof toast==='function')toast('Fragmento dourado encontrado. As raízes começam a se abrir.');
-          setTimeout(renderScene,50);
+          if(typeof toast==='function')toast('O Guardião caiu. Um caminho oculto se revela sob as raízes.');
+          renderScene();
+          if(typeof renderAll==='function')renderAll();
         }
       }
     };
