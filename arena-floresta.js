@@ -86,12 +86,19 @@
     const warning=card.querySelector('.boss-battle-warning');
     (warning||card.querySelector('.battle-head'))?.after(line);
   }
+  function bossCutsceneStorageKey(){
+    const character=typeof game!=='undefined'&&game?.character?String(game.character):'unknown';
+    return 'arena_map1_boss_cutscene_seen_'+encodeURIComponent(character);
+  }
+
   function playBossCutscene(){
-    const n=narrative();
-    if(!n||!n.hasEvent('map1_boss_defeat')||n.hasFlag('map1_boss_cutscene_seen'))return;
+    if(typeof game==='undefined'||!game||Number(game.zone)!==ZONE)return;
+    let seen=false;
+    try{seen=localStorage.getItem(bossCutsceneStorageKey())==='1'}catch{}
+    if(seen)return;
     const cutscene=window.ArenaCutscene;
     if(!cutscene?.play)return;
-    n.setFlag('map1_boss_cutscene_seen',true);
+    try{localStorage.setItem(bossCutsceneStorageKey(),'1')}catch{}
     cutscene.play({
       chapter:'CAPÍTULO I · O GUARDIÃO CAÍDO',
       speaker:'Kaelen',
@@ -105,6 +112,12 @@
       ]
     });
   }
+
+  window.addEventListener('arena:boss-defeated',event=>{
+    const zone=Number(event?.detail?.zoneIndex);
+    if(zone!==ZONE)return;
+    setTimeout(playBossCutscene,250);
+  });
 
   function installBossRewardHook(){
     if(window.__arenaForestWinHook)return;
