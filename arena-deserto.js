@@ -22,11 +22,33 @@
       if(n&&!n.hasEvent('map3_elias_encounter')){
         setTimeout(()=>{
           n.setChapter(MAP_ID);
-          n.completeEvent('map3_elias_encounter',{entry:'lost_desert'});
-          n.discoverClue('map3_destruction_inside_out');
-          n.discoverClue('map3_no_invasion_marks');
-          n.discoverClue('map3_split_seal');
-          if(window.ArenaNarrativeNPCs?.openDialogue)window.ArenaNarrativeNPCs.openDialogue('elias',MAP_ID);
+          const cutscene=window.ArenaCutscene;
+          if(cutscene?.play){
+            cutscene.play({
+              chapter:'CAPÍTULO III · DESERTO PERDIDO',
+              speaker:'Elias',
+              role:'O Arquivista',
+              icon:'◇',
+              steps:[
+                {type:'narration',text:'A areia termina diante de uma cidade enterrada. Torres surgem do chão ao contrário, como se algo tivesse puxado a cidade para dentro do deserto.'},
+                {speaker:'Elias',text:'Você chegou tarde. Eu procurei sinais de uma invasão... mas não encontrei nenhum.'},
+                {speaker:'Elias',text:'As paredes queimaram de dentro para fora. Quem destruiu esta cidade já estava aqui quando tudo começou.'},
+                {type:'narration',text:'Sob uma camada de areia de vidro, você encontra o mesmo selo rachado que apareceu na floresta e no acampamento Orc.'},
+                {speaker:'Kaelen',text:'Não perca tempo com ruínas. O Abismo está abaixo de nós. O caminho precisa continuar.'}
+              ],
+              onComplete:()=>{
+                n.completeEvent('map3_elias_encounter',{entry:'lost_desert'});
+                n.discoverClue('map3_destruction_inside_out');
+                n.discoverClue('map3_no_invasion_marks');
+                n.discoverClue('map3_split_seal');
+              }
+            });
+          }else{
+            n.completeEvent('map3_elias_encounter',{entry:'lost_desert'});
+            n.discoverClue('map3_destruction_inside_out');
+            n.discoverClue('map3_no_invasion_marks');
+            n.discoverClue('map3_split_seal');
+          }
         },220);
       }
     }
@@ -69,6 +91,23 @@
       if(typeof toast==='function')toast('O General da Magia caiu. A memória se completa — o caminho para o Covil dos Dragões foi revelado.');
       renderScene();
       if(typeof renderAll==='function')renderAll();
+      setTimeout(()=>{
+        const cutscene=window.ArenaCutscene;
+        if(!cutscene?.play)return;
+        cutscene.play({
+          chapter:'CAPÍTULO III · A GRANDE VERGONHA',
+          speaker:'Kaelen',
+          role:'O Guia',
+          icon:'⚔',
+          steps:[
+            {type:'narration',text:'O General da Magia cai. A areia de vidro começa a se mover, revelando fragmentos de memória presos sob a cidade.'},
+            {speaker:'Elias',role:'O Arquivista',icon:'◇',text:'Agora eu entendo. Não houve invasão. A cidade foi destruída por aqueles que deveriam protegê-la.'},
+            {type:'narration',text:'Uma lembrança atravessa o deserto: fogo dentro do palácio, soldados correndo para impedir que os registros fossem encontrados.'},
+            {speaker:'Kaelen',text:'A verdade foi enterrada de propósito. E alguém ainda está tentando mantê-la enterrada.'},
+            {speaker:'Kaelen',text:'O terceiro fragmento está completo. No Covil dos Dragões, vamos descobrir quem se beneficiou com o Cisma.'}
+          ]
+        });
+      },450);
     };
     window.__arenaDesertWinHook=true;
   }
