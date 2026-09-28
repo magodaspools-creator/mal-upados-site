@@ -162,6 +162,7 @@
     persist();
     updateTokenBalance();
     removeTemporaryBoss();
+    window.dispatchEvent(new CustomEvent('arena:boss-defeated',{detail:{zoneIndex:zone,bossName:b.name,character:game.character}}));
     const result=document.getElementById('battleArea');
     if(result){const loot=tokenDrop?`<strong class="boss-token-loot">+${tokenDrop} Boss Token${tokenDrop>1?'s':''}</strong>`:'<span>Token não caiu desta vez.</span>';result.innerHTML=`<div class="battle-empty result"><div class="battle-icon">🏆</div><div class="battle-zone">${esc(ZONES[zone].name)} · BOSS DERROTADO</div><h3>${esc(b.name)} derrotado!</h3><p><strong class="loot">Boss Token</strong> · ${loot}</p><p class="small">Cooldown: ${fmtTime(b.cooldown*1000)} · dificuldade futura +${Math.min(100,(oldKills+1)*5)}%</p><button class="btn active" id="againBtn">Voltar para a área</button></div>`;document.getElementById('againBtn').onclick=()=>showZone(game.zone)}
     activeBoss=null;
