@@ -79,6 +79,9 @@
         game.damage=0;
         game.streak=0;
         game.bestStreak=0;
+        // Marcador temporário: durante a entrada deste personagem, nenhuma
+        // rotina de renderização/sincronização pode promovê-lo para outra área.
+        game.__freshCharacter=true;
         if(typeof persist==='function')persist();
       }
       creating=false;close();
