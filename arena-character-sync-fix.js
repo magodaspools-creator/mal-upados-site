@@ -74,6 +74,12 @@
 
     if(typeof window.__arenaCharacterDraw==='function')window.__arenaCharacterDraw();
     if(typeof renderAll==='function')renderAll();
+    // Ao entrar com um personagem já existente, renderAll() desenha o mapa,
+    // mas não abre a área selecionada. Garanta que a primeira área liberada
+    // também seja carregada no painel de combate.
+    if(typeof showZone==='function'&&typeof game!=='undefined'&&game){
+      setTimeout(()=>showZone(game.zone),0);
+    }
     return true;
   };
 
