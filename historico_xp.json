@@ -1,220 +1,4 @@
 {
-  "2026-10-03": {
-    "captured_at": "2026-10-03T14:33:31.924139Z",
-    "world": "Jadebra",
-    "members": {
-      "Chines Protetor": {
-        "level": 521,
-        "experience": 2330254086,
-        "experience_exact": true,
-        "experience_source": "TibiaData/highscores"
-      },
-      "Bella Longuinho": {
-        "level": 173,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Lugas": {
-        "level": 300,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Nykor": {
-        "level": 169,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Shyn Chan": {
-        "level": 136,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Braiz da Lucas": {
-        "level": 69,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Brunett Full Bebezinha": {
-        "level": 247,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Cotrijal": {
-        "level": 158,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Dro Uid": {
-        "level": 159,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Ezra Gladius": {
-        "level": 487,
-        "experience": 1904160149,
-        "experience_exact": true,
-        "experience_source": "TibiaData/highscores"
-      },
-      "Hardzin rpzinn": {
-        "level": 107,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Lordebumbumole": {
-        "level": 192,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Sir Bilu": {
-        "level": 60,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Stewer Fox": {
-        "level": 356,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Tapa Monstro": {
-        "level": 400,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Acidos Graxos": {
-        "level": 302,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Arm llock": {
-        "level": 230,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Bestiary Track": {
-        "level": 62,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Dono de Terreno": {
-        "level": 8,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Krion Xavens": {
-        "level": 72,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Minotaur Imber": {
-        "level": 115,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Moonkito": {
-        "level": 24,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Promocao Relampago": {
-        "level": 107,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Pugas": {
-        "level": 15,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Shopee Ofertas": {
-        "level": 63,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Soucharlove Nomain": {
-        "level": 71,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Sylvie Stormbringer": {
-        "level": 30,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Tal do Pampinha": {
-        "level": 33,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Tilambu Ukano": {
-        "level": 18,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Verginia Junior": {
-        "level": 82,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Vialacto": {
-        "level": 221,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Viny Pavillongo": {
-        "level": 93,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Dolly Benzetacil": {
-        "level": 169,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Gepone": {
-        "level": 155,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Nico Eternity": {
-        "level": 332,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      }
-    }
-  },
   "2026-10-04": {
     "captured_at": "2026-10-04T15:08:25.311439Z",
     "world": "Jadebra",
@@ -425,6 +209,234 @@
       },
       "Nico Eternity": {
         "level": 333,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      }
+    }
+  },
+  "2026-10-05": {
+    "captured_at": "2026-10-05T19:03:09.755381Z",
+    "world": "Jadebra",
+    "members": {
+      "Chines Protetor": {
+        "level": 524,
+        "experience": 2370876908,
+        "experience_exact": true,
+        "experience_source": "TibiaData/highscores"
+      },
+      "Bella Longuinho": {
+        "level": 175,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Lugas": {
+        "level": 303,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Nykor": {
+        "level": 169,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Shyn Chan": {
+        "level": 136,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Braiz da Lucas": {
+        "level": 71,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Brunett Full Bebezinha": {
+        "level": 247,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Cotrijal": {
+        "level": 172,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Dro Uid": {
+        "level": 159,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Ezra Gladius": {
+        "level": 487,
+        "experience": 1904160149,
+        "experience_exact": true,
+        "experience_source": "TibiaData/highscores"
+      },
+      "Hardzin rpzinn": {
+        "level": 107,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Lordebumbumole": {
+        "level": 192,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Sir Bilu": {
+        "level": 60,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Stewer Fox": {
+        "level": 356,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Tapa Monstro": {
+        "level": 403,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Acidos Graxos": {
+        "level": 303,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Arm llock": {
+        "level": 230,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Bestiary Track": {
+        "level": 62,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Dono de Terreno": {
+        "level": 8,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Krion Xavens": {
+        "level": 76,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Minotaur Imber": {
+        "level": 115,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Moonkito": {
+        "level": 24,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Promocao Relampago": {
+        "level": 107,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Pugas": {
+        "level": 15,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Shopee Ofertas": {
+        "level": 63,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Soucharlove Nomain": {
+        "level": 71,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Sylvie Stormbringer": {
+        "level": 30,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Tal do Pampinha": {
+        "level": 33,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Tilambu Ukano": {
+        "level": 18,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Verginia Junior": {
+        "level": 82,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Vialacto": {
+        "level": 221,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Viny Pavillongo": {
+        "level": 93,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Dolly Benzetacil": {
+        "level": 171,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Gepone": {
+        "level": 156,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Mochi Tibao": {
+        "level": 26,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Nico Eternity": {
+        "level": 334,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Rayzet": {
+        "level": 376,
         "experience": null,
         "experience_exact": false,
         "experience_source": null
