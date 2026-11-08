@@ -1,154 +1,4 @@
 {
-  "2026-11-06": {
-    "captured_at": "2026-11-06T17:10:27.423567Z",
-    "world": "Jadebra",
-    "members": {
-      "Chines Protetor": {
-        "level": 550,
-        "experience": 2754867743,
-        "experience_exact": true,
-        "experience_source": "TibiaData/highscores"
-      },
-      "Bella Longuinho": {
-        "level": 191,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Lugas": {
-        "level": 324,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Nykor": {
-        "level": 175,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Tenshoku": {
-        "level": 579,
-        "experience": 3205007698,
-        "experience_exact": true,
-        "experience_source": "TibiaData/highscores"
-      },
-      "Biz Naga": {
-        "level": 560,
-        "experience": 2906117455,
-        "experience_exact": true,
-        "experience_source": "TibiaData/highscores"
-      },
-      "Braiz da Lucas": {
-        "level": 93,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Cotrijal": {
-        "level": 222,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Krion Xavens": {
-        "level": 123,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Lordebumbumole": {
-        "level": 192,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Momolador": {
-        "level": 56,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Sapozilla": {
-        "level": 123,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Sir Bilu": {
-        "level": 84,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Tapa Monstro": {
-        "level": 417,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Acidos Graxos": {
-        "level": 313,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Dono de Terreno": {
-        "level": 8,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Dro Uid": {
-        "level": 161,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Mumbelis Wakeri": {
-        "level": 42,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Shyn Chan": {
-        "level": 138,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Verginia Junior": {
-        "level": 83,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Dolly Benzetacil": {
-        "level": 185,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Gepone": {
-        "level": 190,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Nico Eternity": {
-        "level": 342,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Magnuusss": {
-        "level": 107,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      }
-    }
-  },
   "2026-11-07": {
     "captured_at": "2026-11-07T16:06:00.107196Z",
     "world": "Jadebra",
@@ -281,6 +131,156 @@
       },
       "Gepone": {
         "level": 190,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Nico Eternity": {
+        "level": 342,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Magnuusss": {
+        "level": 107,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      }
+    }
+  },
+  "2026-11-08": {
+    "captured_at": "2026-11-08T16:30:02.762907Z",
+    "world": "Jadebra",
+    "members": {
+      "Chines Protetor": {
+        "level": 555,
+        "experience": 2827888318,
+        "experience_exact": true,
+        "experience_source": "TibiaData/highscores"
+      },
+      "Bella Longuinho": {
+        "level": 191,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Lugas": {
+        "level": 324,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Nykor": {
+        "level": 176,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Tenshoku": {
+        "level": 583,
+        "experience": 3271417797,
+        "experience_exact": true,
+        "experience_source": "TibiaData/highscores"
+      },
+      "Biz Naga": {
+        "level": 561,
+        "experience": 2916880388,
+        "experience_exact": true,
+        "experience_source": "TibiaData/highscores"
+      },
+      "Braiz da Lucas": {
+        "level": 93,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Cotrijal": {
+        "level": 222,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Krion Xavens": {
+        "level": 129,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Lordebumbumole": {
+        "level": 192,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Momolador": {
+        "level": 56,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Sapozilla": {
+        "level": 130,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Sir Bilu": {
+        "level": 86,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Tapa Monstro": {
+        "level": 418,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Acidos Graxos": {
+        "level": 313,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Dono de Terreno": {
+        "level": 8,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Dro Uid": {
+        "level": 161,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Mumbelis Wakeri": {
+        "level": 42,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Shyn Chan": {
+        "level": 138,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Verginia Junior": {
+        "level": 83,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Dolly Benzetacil": {
+        "level": 185,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Gepone": {
+        "level": 192,
         "experience": null,
         "experience_exact": false,
         "experience_source": null
