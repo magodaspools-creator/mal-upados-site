@@ -1,208 +1,4 @@
 {
-  "2026-11-22": {
-    "captured_at": "2026-11-22T17:37:14.397526Z",
-    "world": "Jadebra",
-    "members": {
-      "Chines Protetor": {
-        "level": 579,
-        "experience": 3202022229,
-        "experience_exact": true,
-        "experience_source": "TibiaData/highscores"
-      },
-      "Bella Longuinho": {
-        "level": 213,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Nykor": {
-        "level": 188,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Tapa Monstro": {
-        "level": 423,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Tenshoku": {
-        "level": 601,
-        "experience": 3587252205,
-        "experience_exact": true,
-        "experience_source": "TibiaData/highscores"
-      },
-      "Braiz da Lucas": {
-        "level": 95,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Cotrijal": {
-        "level": 236,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Dolly Benzetacil": {
-        "level": 209,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Gepone": {
-        "level": 207,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Javali do Batidao": {
-        "level": 573,
-        "experience": 3117684549,
-        "experience_exact": true,
-        "experience_source": "TibiaData/highscores"
-      },
-      "Krion Xavens": {
-        "level": 165,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Lugas": {
-        "level": 324,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Mal Upado": {
-        "level": 8,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Nico Eternity": {
-        "level": 349,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Sapozilla": {
-        "level": 205,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Sir Bilu": {
-        "level": 98,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Acidos Graxos": {
-        "level": 324,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Dono de Terreno": {
-        "level": 8,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Lordebumbumole": {
-        "level": 192,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Mago de Chapeu": {
-        "level": 45,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Momolador": {
-        "level": 56,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Shyn Chan": {
-        "level": 138,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Verginia Junior": {
-        "level": 83,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Arkervena": {
-        "level": 381,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Ironside Arrogante": {
-        "level": 482,
-        "experience": 1852061765,
-        "experience_exact": true,
-        "experience_source": "TibiaData/highscores"
-      },
-      "Jovinin": {
-        "level": 126,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Kayn Maximus": {
-        "level": 401,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Magnuusss": {
-        "level": 109,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Medioval": {
-        "level": 395,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Meiker Alumbrado": {
-        "level": 214,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Pluza Thunda": {
-        "level": 200,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Professor of Solera": {
-        "level": 461,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      },
-      "Shutt Down": {
-        "level": 457,
-        "experience": null,
-        "experience_exact": false,
-        "experience_source": null
-      }
-    }
-  },
   "2026-11-23": {
     "captured_at": "2026-11-23T21:53:08.866816Z",
     "world": "Jadebra",
@@ -401,6 +197,210 @@
       },
       "Shutt Down": {
         "level": 458,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      }
+    }
+  },
+  "2026-11-24": {
+    "captured_at": "2026-11-24T20:29:27.407283Z",
+    "world": "Jadebra",
+    "members": {
+      "Chines Protetor": {
+        "level": 581,
+        "experience": 3235277211,
+        "experience_exact": true,
+        "experience_source": "TibiaData/highscores"
+      },
+      "Bella Longuinho": {
+        "level": 219,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Nykor": {
+        "level": 188,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Tapa Monstro": {
+        "level": 423,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Tenshoku": {
+        "level": 601,
+        "experience": 3595740021,
+        "experience_exact": true,
+        "experience_source": "TibiaData/highscores"
+      },
+      "Braiz da Lucas": {
+        "level": 96,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Cotrijal": {
+        "level": 236,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Dolly Benzetacil": {
+        "level": 219,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Gepone": {
+        "level": 212,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Javali do Batidao": {
+        "level": 578,
+        "experience": 3191340459,
+        "experience_exact": true,
+        "experience_source": "TibiaData/highscores"
+      },
+      "Krion Xavens": {
+        "level": 167,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Lugas": {
+        "level": 324,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Mal Upado": {
+        "level": 8,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Nico Eternity": {
+        "level": 351,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Sapozilla": {
+        "level": 218,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Sir Bilu": {
+        "level": 98,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Acidos Graxos": {
+        "level": 326,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Dono de Terreno": {
+        "level": 8,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Lordebumbumole": {
+        "level": 192,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Mago de Chapeu": {
+        "level": 46,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Momolador": {
+        "level": 56,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Shyn Chan": {
+        "level": 138,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Verginia Junior": {
+        "level": 83,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Arkervena": {
+        "level": 384,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Ironside Arrogante": {
+        "level": 486,
+        "experience": 1890580080,
+        "experience_exact": true,
+        "experience_source": "TibiaData/highscores"
+      },
+      "Jovinin": {
+        "level": 140,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Kayn Maximus": {
+        "level": 404,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Magnuusss": {
+        "level": 109,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Medioval": {
+        "level": 398,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Meiker Alumbrado": {
+        "level": 214,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Pluza Thunda": {
+        "level": 201,
+        "experience": null,
+        "experience_exact": false,
+        "experience_source": null
+      },
+      "Professor of Solera": {
+        "level": 466,
+        "experience": 1674333896,
+        "experience_exact": true,
+        "experience_source": "TibiaData/highscores"
+      },
+      "Shutt Down": {
+        "level": 459,
         "experience": null,
         "experience_exact": false,
         "experience_source": null
